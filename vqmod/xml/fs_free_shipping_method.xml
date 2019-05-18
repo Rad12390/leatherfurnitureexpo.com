@@ -1,0 +1,36 @@
+<modification>
+    <id>Free Shipping Method</id>
+    <version>1.0</version>
+    <vqmver>2.3.0</vqmver>
+    <author>Intersoft Professional</author>
+
+    <file name="admin/view/template/shipping/free.tpl">
+        <operation>
+            <search position="before"><![CDATA[</table>]]></search>		
+            <add><![CDATA[ <tr>
+            <td>Date Upto Free Shipping Available</td>
+            <td><input type="text" name="free_last_date" id="free-last-date" value="<?php echo $free_last_date; ?>"  /></td>
+          </tr>
+		]]></add>
+        </operation>
+        <operation>
+            <search position="before"><![CDATA[<?php echo $footer; ?>]]></search>		
+            <add><![CDATA[<script type="text/javascript"><!--
+$('#free-last-date').datepicker({dateFormat: 'yy-mm-dd'});
+//--></script>]]></add>
+        </operation>
+    </file>
+
+
+    <file name="admin/controller/shipping/free.php">
+        <operation>
+            <search position="before"><![CDATA[$this->template = 'shipping/free.tpl';]]></search>		
+            <add><![CDATA[ if (isset($this->request->post['free_last_date'])) {
+			$this->data['free_last_date'] = $this->request->post['free_last_date'];
+		} else {
+			$this->data['free_last_date'] = $this->config->get('free_last_date');
+		}]]></add>
+        </operation>
+       
+    </file>                    
+</modification>

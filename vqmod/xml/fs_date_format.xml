@@ -1,0 +1,37 @@
+<modification>
+	<id>Date Format and other small changes</id>
+	<version>1.0</version>
+	<vqmver>2.3.0</vqmver>
+	<author>Intersoft Professional</author>
+
+<file name="admin/language/english/english.php">
+    <operation>
+		<search position="after"><![CDATA[$_['date_format_short']             = 'd/m/Y';]]></search>		
+		<add><![CDATA[ $_['date_format_short']             = 'm/d/Y';]]></add>
+	</operation>   
+</file>
+<file name="catalog/language/english/english.php">
+    <operation>
+		<search position="after"><![CDATA[$_['date_format_short']     = 'd/m/Y';]]></search>		
+		<add><![CDATA[$_['date_format_short']     = 'm/d/Y';]]></add>
+	</operation>   
+</file>
+<file name="admin/controller/sale/customer.php">
+    <operation>
+		<search position="after"><![CDATA['date_added' => date('d/m/y', strtotime($result['date_added'])),]]></search>		
+		<add><![CDATA['date_added' => date($this->language->get('date_format_short'), strtotime($result['date_added'])),]]></add>
+    </operation>   
+</file>
+<file name="admin/controller/sale/coupon.php">
+    <operation>
+		<search position="replace"><![CDATA[if ((utf8_strlen($this->request->post['code']) < 3) || (utf8_strlen($this->request->post['code']) > 10)) {]]></search>		
+		<add><![CDATA[if ((utf8_strlen($this->request->post['code']) < 3) || (utf8_strlen($this->request->post['code']) > 30)) {]]></add>
+    </operation>   
+</file>
+<file name="admin/language/english/sale/coupon.php">
+    <operation>
+		<search position="replace"><![CDATA[$_['error_code']          = 'Code must be between 3 and 10 characters!';]]></search>		
+		<add><![CDATA[$_['error_code']          = 'Code must be between 3 and 30 characters!';]]></add>
+    </operation>   
+</file>
+</modification>

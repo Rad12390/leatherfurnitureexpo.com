@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+	<id>CUSTOM CHANGES DONE BY NAVNEET SINGH</id>
+	<version>1</version>
+	<vqmver>1.0.0</vqmver>
+	<author>NAVNEET SINGH</author>
+	<!-- SEO URLS -->
+	<file error="abort" name="system/library/response.php">
+		<operation>
+			<search position="after"><![CDATA[ 
+				public function output() {
+			]]></search>
+			<add><![CDATA[  
+			if ($this->output) {
+				// REPLACE URLS WITH SEO URLS
+				function my_repl($value) {
+					if( defined(ENT_COMPAT) && defined(ENT_HTML401) && defined(ENT_IGNORE) )
+						return rawurlencode(strtolower(trim(strtr(html_entity_decode(strip_tags($value),ENT_COMPAT|ENT_HTML401|ENT_IGNORE,"UTF-8"),"`~!@#$%^&*()-_=+\\|[{]};:'\",<.>/?","                                "))));
+					elseif( defined(ENT_COMPAT) && defined(ENT_IGNORE) )
+						return rawurlencode(strtolower(trim(strtr(html_entity_decode(strip_tags($value),ENT_COMPAT|ENT_IGNORE,"UTF-8"),"`~!@#$%^&*()-_=+\\|[{]};:'\",<.>/?","                                "))));
+					else
+						return rawurlencode(strtolower(trim(strtr(html_entity_decode(strip_tags($value),ENT_COMPAT,"UTF-8"),"`~!@#$%^&*()-_=+\\|[{]};:'\",<.>/?","                                "))));
+				}
+				function my_preg_replace($m1) {
+					if($m1[1]=='information/information') $p2 = 'i';
+					elseif($m1[1]=='product/category') $p2 = 'c';
+					elseif($m1[1]=='product/manufacturer/info') $p2 = 'm';
+					elseif($m1[1]=='product/product' && $m1[2]=='product_id') $p2 = 'pp';
+					elseif($m1[1]=='product/product' && $m1[2]=='manufacturer_id') $p2 = 'pm';
+					elseif($m1[1]=='product/product' && $m1[2]=='path') $p2 = 'pc';
+					else return;
+					
+					// IF IMG TAG, USE IMG ALT TEXT IN SEO URL; ELSE, USE ANCHOR TEXT IN SEO URL
+					if($p2=='i' || $p2=='c' || $p2=='m' || $p2=='pp') {
+						if( preg_match( '#<img.*alt="([^"]*)"#iUs', $m1[4], $m2 ) )
+							$u1 = my_repl($m2[1]);
+						else
+							$u1 = my_repl($m1[4]);
+						return $p2 . trim($m1[3]) . "-" . $u1 . '">' . $m1[4] . "</a>";
+					}
+					elseif($p2=='pc') {
+						if( preg_match( '#<img.*alt="([^"]*)"#iUs', $m1[5], $m2 ) )
+							$u1 = my_repl($m2[1]);
+						else
+							$u1 = my_repl($m1[5]);
+						return $p2 . trim($m1[4]) . "-c" . trim($m1[3]) . "-" . $u1 . '">' . $m1[5] . "</a>";
+					}
+					elseif($p2=='pm') {
+						if( preg_match( '#<img.*alt="([^"]*)"#iUs', $m1[5], $m2 ) )
+							$u1 = my_repl($m2[1]);
+						else
+							$u1 = my_repl($m1[5]);
+						return $p2 . trim($m1[4]) . "-m" . trim($m1[3]) . "-" . $u1 . '">' . $m1[5] . "</a>";
+					}
+				}
+				// PATTERNS TO SEARCH FOR SEO URL REPLACEMENT
+				$p1s = array(
+				"#index\.php\?route\=(product/category)&amp;(path)=([0-9_]+?)\">(.*)</a>#iUs",
+				"#index\.php\?route\=(product/manufacturer/info)&amp;(manufacturer_id)=([0-9]+?)\">(.*)</a>#iUs",
+				"#index\.php\?route\=(information/information)&amp;(information_id)=([0-9]+?)\">(.*)</a>#iUs",
+				"#index\.php\?route\=(product/product)&amp;(product_id)=([0-9]+?)[^\"]*\">(.*)</a>#iUs",
+				"#index\.php\?route\=(product/product)&amp;(path)=([0-9_]+?)&amp;product_id=([0-9]+?)\">(.*)</a>#iUs",
+				"#index\.php\?route\=(product/product)&amp;(manufacturer_id)=([0-9]+?)&amp;product_id=([0-9]+?)\">(.*)</a>#iUs",
+				);
+				$this->output = preg_replace_callback( $p1s, "my_preg_replace", $this->output );
+			}
+			]]></add>
+		</operation>
+	</file>
+</modification>

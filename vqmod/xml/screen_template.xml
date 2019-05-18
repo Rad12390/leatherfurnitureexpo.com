@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+        <id>Screen Template</id>
+        <version>1.0</version>
+	<vqmver>2.3.0</vqmver>
+	<author>Intersoft Professional</author>
+        
+        <file name="catalog/controller/common/header.php">
+            <operation>
+                    <search position="before"><![CDATA[if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/header.tpl')) {]]></search>
+                    <add><![CDATA[ 
+                            $devices = $this->device_detect->getScreen(); 
+                            if (($devices == 'phone') && file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/mobile_template/common/header.tpl')) {
+                                    $this->template = $this->config->get('config_template') . '/mobile_template/common/header.tpl';
+                            } else]]> </add>
+            </operation>
+        </file>
+        
+        <file name="catalog/controller/product/category.php">
+            <operation>
+                <search position="before"><![CDATA[if (file_exists(DIR_TEMPLATE . $this->config->get('config_template')]]></search>
+                <add><![CDATA[
+                            $devices = $this->device_detect->getScreen();
+                            if ( ($devices == 'phone') && file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/mobile_template/product/category.tpl')) {
+                                 $this->template = $this->config->get('config_template') . '/mobile_template/product/category.tpl';
+                            } elseif ( ($devices == 'tablet') && file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/tablet_template/product/category.tpl')) {
+
+                                 $this->template = $this->config->get('config_template') . '/tablet_template/product/category.tpl';
+                            } else]]> 
+                </add>
+            </operation>
+        </file>
+      <file name="catalog/controller/product/product_grouped.php">
+                 <operation>
+                     <search position="before"><![CDATA[if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/product/product_' . $temtab . '_' . $temtabpos . '.tpl')) {]]></search>
+                     <add><![CDATA[$devices = $this->device_detect->getScreen();
+
+                                  if($devices == 'phone')
+                                  {
+
+                 if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/mobile_template/product/product_' . $temtab . '_' . $temtabpos . '.tpl')) {
+
+                     $this->template = $this->config->get('config_template') . '/mobile_template/product/product_' . $temtab . '_' . $temtabpos . '.tpl';
+                 } elseif(file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/error/not_found.tpl')) {
+                     $this->template = $this->config->get('config_template') . '/template/error/not_found.tpl';
+                 }else {
+                     $this->template = 'default/template/error/not_found.tpl';
+                 }
+     }
+                         else]]> </add>
+                 </operation>
+                 <operation>
+                     <search position="before"><![CDATA[$this->data['breadcrumbs'] = array();]]></search>
+                     <add><![CDATA[ $devices = $this->device_detect->getScreen();]]></add>
+                 </operation>
+             </file> 
+                        
+        <file name="catalog/controller/module/banner.php,catalog/controller/module/newslettersubscribe.php,catalog/controller/module/multipurpose_banner.php">
+            <operation>
+                <search position="after"><![CDATA[ function index(]]></search>
+                <add><![CDATA[
+                        $devices= $this->device_detect->getScreen();
+                        if((!isset($setting['device'][$devices])) && (!$setting['device'][$devices])  ) {
+                           return;
+                        }
+                        ]]> 
+                </add>
+            </operation>
+        </file>
+        
+        <file name="catalog/controller/module/custommenu.php">
+            <operation>
+                    <search position="before"><![CDATA[if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/module/custommenu.tpl')) {]]></search>
+                    <add><![CDATA[ 
+                            $devices = $this->device_detect->getScreen(); 
+                            if (($devices == 'phone') && file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/mobile_template/module/custommenu.tpl')) {
+                                    $this->template = $this->config->get('config_template') . '/mobile_template/module/custommenu.tpl';
+                            } else]]> </add>
+            </operation>
+        </file>
+        
+        
+</modification>   

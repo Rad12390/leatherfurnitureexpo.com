@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+	<id>Add / to URL's except those with .html at the end</id>
+	<version>1.0.0</version>
+	<vqmver>2.X</vqmver>
+	<author>Jay Gilford - jay@jaygilford.com</author>
+    
+	<file name="catalog/controller/common/seo_url.php">
+		<operation>
+			<search position="after"><![CDATA[if ($url) { ]]></search>
+			<add><![CDATA[ if($data['route']=='product/category'){ if(substr($url, -5) != '.html') $url = rtrim($url, '/') . '/';}]]></add>
+		</operation>
+	</file>
+    
+    <!-- TEMPLATE
+    
+	<file name="">
+		<operation>
+			<search position="before"><![CDATA[]]></search>
+			<add><![CDATA[]]></add>
+		</operation>
+	</file>
+    
+	<file name="">
+		<operation>
+			<search position="after"><![CDATA[]]></search>
+			<add><![CDATA[]]></add>
+		</operation>
+	</file>
+    
+    -->
+    
+</modification>

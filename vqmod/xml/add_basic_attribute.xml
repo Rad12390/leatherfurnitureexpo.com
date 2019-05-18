@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+        <id>Adding basic attributes</id>
+        <version>1.0</version>
+        <vqmver>2.X</vqmver>
+        <author>Aman Choudhary</author>
+        <file name="/admin/view/template/catalog/product_grouped_form.tpl">
+                <operation>
+                        <search position="after"><![CDATA[<?php $attribute_row = 0; ?>]]></search>
+                                <add><![CDATA[                  <?php if(!$product_attributes){  $attribute_row = 18; } else { $attribute_row = 0; }?>
+                  <?php if(!$product_attributes){ ?>
+                  <tbody id="attribute-row0">
+                    <tr>
+                      <td class="left">
+                        <input type="text" value="Color Shown:" name="product_attribute[0][name]" class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+                        <input type="hidden" value="15" name="product_attribute[0][attribute_id]">
+                      </td>  
+                      <td class="left">
+                        <textarea rows="5" cols="40" name="product_attribute[0][product_attribute_description][1][text]"></textarea>
+                        <img align="top" title="English" src="view/image/flags/gb.png"><br> 
+                      </td>
+                      <td class="left">
+                        <a class="button" onclick="$('#attribute-row0').remove();">Remove</a>
+                      </td> 
+                    </tr>
+                  </tbody>
+
+                  <tbody id="attribute-row1">
+                    <tr>
+                      <td class="left">
+                        <input type="text" value="Production Time:" name="product_attribute[1][name]" class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+                        <input type="hidden" value="28" name="product_attribute[1][attribute_id]">
+                      </td>    
+                      <td class="left">
+                        <!--<textarea rows="5" cols="40" name="product_attribute[1][product_attribute_description][1][text]"></textarea>
+                        <img align="top" title="English" src="view/image/flags/gb.png">-->
+
+                           <select name="product_attribute[1][product_attribute_description][1][text]">
+                            <?php foreach($product_time as $production_times){ ?>
+
+                                          <option value="<?php echo $production_times['Production_value']; ?>"><?php echo $production_times['Production_value']; ?></option>
+
+                           <?php } ?>
+                                         
+
+                                        </select> 
+                      </td>
+                      <td class="left">
+                        <a class="button" onclick="$('#attribute-row1').remove();">Remove</a>
+                      </td>
+                    </tr>
+                  </tbody>
+
+                  <tbody id="attribute-row2">
+                    <tr> 
+                     <td class="left">
+                      <input type="text" value="Leather Type:" name="product_attribute[2][name]" class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+                      <input type="hidden" value="16" name="product_attribute[2][attribute_id]">
+                    </td>    
+                    <td class="left"><textarea rows="5" cols="40" name="product_attribute[2][product_attribute_description][1][text]"></textarea>
+                    <img align="top" title="English" src="view/image/flags/gb.png"><br>  
+                  </td>  
+                  <td class="left"><a class="button" onclick="$('#attribute-row2').remove();">Remove</a>
+                  </td> 
+                </tr>
+              </tbody>
+
+              <tbody id="attribute-row3"> 
+               <tr>   
+                 <td class="left">
+                  <input type="text" value="Manufacturer:" name="product_attribute[3][name]" class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+                  <input type="hidden" value="17" name="product_attribute[3][attribute_id]">
+                </td>  
+                <td class="left">
+                  <textarea rows="5" cols="40" name="product_attribute[3][product_attribute_description][1][text]"></textarea>
+                  <img align="top" title="English" src="view/image/flags/gb.png"><br>   
+                </td>   
+                <td class="left">
+                  <a class="button" onclick="$('#attribute-row3').remove();">Remove</a>
+                </td>  
+              </tr>
+            </tbody>
+
+            <tbody id="attribute-row4"> 
+             <tr>  
+              <td class="left">
+                <input type="text" value="Country of Origin:" name="product_attribute[4][name]" class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+                <input type="hidden" value="18" name="product_attribute[4][attribute_id]">
+              </td>   
+              <td class="left">
+                <textarea rows="5" cols="40" name="product_attribute[4][product_attribute_description][1][text]"></textarea>
+                <img align="top" title="English" src="view/image/flags/gb.png"><br>  
+              </td>  
+              <td class="left">
+                <a class="button" onclick="$('#attribute-row4').remove();">Remove</a>
+              </td>  
+            </tr>
+          </tbody>
+
+          <tbody id="attribute-row5"> 
+           <tr>   
+             <td class="left">
+              <input type="text" value="Floor to Seat Height:" name="product_attribute[5][name]" class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+              <input type="hidden" value="34" name="product_attribute[5][attribute_id]">
+            </td>   
+            <td class="left">
+              <textarea rows="5" cols="40" name="product_attribute[5][product_attribute_description][1][text]"></textarea><img align="top" title="English" src="view/image/flags/gb.png"><br>  
+            </td>    
+            <td class="left">
+              <a class="button" onclick="$('#attribute-row5').remove();">Remove</a>
+            </td> 
+          </tr>
+        </tbody>
+
+        <tbody id="attribute-row6">
+          <tr>   
+           <td class="left">
+            <input type="text" value="Interior Seat Depth:" name="product_attribute[6][name]" class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+            <input type="hidden" value="35" name="product_attribute[6][attribute_id]">
+          </td>    
+          <td class="left">
+            <textarea rows="5" cols="40" name="product_attribute[6][product_attribute_description][1][text]"></textarea>
+            <img align="top" title="English" src="view/image/flags/gb.png"><br>   
+          </td>  
+          <td class="left">
+            <a class="button" onclick="$('#attribute-row6').remove();">Remove</a>
+          </td> 
+        </tr>
+      </tbody>
+
+      <tbody id="attribute-row7"> 
+       <tr>   
+         <td class="left">
+          <input type="text" value="Arm Height:" name="product_attribute[7][name]" class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+          <input type="hidden" value="36" name="product_attribute[7][attribute_id]">
+        </td>  
+        <td class="left">
+          <textarea rows="5" cols="40" name="product_attribute[7][product_attribute_description][1][text]"></textarea>
+          <img align="top" title="English" src="view/image/flags/gb.png"><br> 
+        </td>  
+        <td class="left">
+          <a class="button" onclick="$('#attribute-row7').remove();">Remove</a>
+        </td>  
+      </tr>
+    </tbody>
+
+    <tbody id="attribute-row8"> 
+     <tr> 
+       <td class="left">
+        <input type="text" value="Seat Cushions:" name="product_attribute[8][name]" class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+        <input type="hidden" value="37" name="product_attribute[8][attribute_id]">
+      </td>  
+      <td class="left">
+        <textarea rows="5" cols="40" name="product_attribute[8][product_attribute_description][1][text]"></textarea><img align="top" title="English" src="view/image/flags/gb.png"><br> 
+      </td>
+      <td class="left">
+        <a class="button" onclick="$('#attribute-row8').remove();">Remove</a>
+      </td> 
+    </tr>
+  </tbody>
+
+  <tbody id="attribute-row9"> 
+   <tr>   
+     <td class="left">
+      <input type="text" value="Back Cushions:" name="product_attribute[9][name]" class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+      <input type="hidden" value="38" name="product_attribute[9][attribute_id]">
+    </td>   
+    <td class="left">
+      <textarea rows="5" cols="40" name="product_attribute[9][product_attribute_description][1][text]"></textarea>
+      <img align="top" title="English" src="view/image/flags/gb.png"><br> 
+    </td>  
+    <td class="left">
+      <a class="button" onclick="$('#attribute-row9').remove();">Remove</a>
+    </td> 
+  </tr>
+</tbody>
+
+<tbody id="attribute-row10"> 
+ <tr>  
+  <td class="left">
+    <input type="text" value="Seating System:" name="product_attribute[10][name]" class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+    <input type="hidden" value="20" name="product_attribute[10][attribute_id]"></td>  
+    <td class="left">
+      <textarea rows="5" cols="40" name="product_attribute[10][product_attribute_description][1][text]"></textarea>
+      <img align="top" title="English" src="view/image/flags/gb.png"><br>  
+    </td>   
+    <td class="left">
+      <a class="button" onclick="$('#attribute-row10').remove();">Remove</a>
+    </td> 
+  </tr>
+</tbody>
+
+<tbody id="attribute-row11"> 
+ <tr>  
+  <td class="left">
+    <input type="text" value="Frame:" name="product_attribute[11][name]" class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+    <input type="hidden" value="21" name="product_attribute[11][attribute_id]"></td>  
+    <td class="left">
+      <textarea rows="5" cols="40" name="product_attribute[11][product_attribute_description][1][text]"></textarea>
+      <img align="top" title="English" src="view/image/flags/gb.png"><br>  
+    </td> 
+    <td class="left">
+      <a class="button" onclick="$('#attribute-row11').remove();">Remove</a>
+    </td> 
+  </tr>
+</tbody>
+
+<tbody id="attribute-row12"> 
+ <tr>  
+  <td class="left">
+    <input type="text" value="Reclining Mechanism:" name="product_attribute[12][name]" class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+    <input type="hidden" value="27" name="product_attribute[12][attribute_id]"></td> 
+    <td class="left">
+      <textarea rows="5" cols="40" name="product_attribute[12][product_attribute_description][1][text]"></textarea>
+      <img align="top" title="English" src="view/image/flags/gb.png"><br>  
+    </td> 
+    <td class="left">
+      <a class="button" onclick="$('#attribute-row12').remove();">Remove</a>
+    </td> 
+  </tr>
+</tbody>
+
+<tbody id="attribute-row13"> 
+ <tr>  
+  <td class="left">
+    <input type="text" value="Warranty: " name="product_attribute[13][name]" class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+    <input type="hidden" value="19" name="product_attribute[13][attribute_id]">
+  </td>  
+  <td class="left">
+    <textarea rows="5" cols="40" name="product_attribute[13][product_attribute_description][1][text]"></textarea>
+    <img align="top" title="English" src="view/image/flags/gb.png"><br>  
+  </td>  
+  <td class="left">
+    <a class="button" onclick="$('#attribute-row13').remove();">Remove</a>
+  </td> 
+</tr>
+</tbody>
+
+<tbody id="attribute-row14"> 
+ <tr>  
+  <td class="left">
+    <input type="text" value="No Worries Shipping Insurance (included free): " name="product_attribute[14][name]" class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+    <input type="hidden" value="33" name="product_attribute[14][attribute_id]">
+  </td>  
+  <td class="left">
+    <textarea rows="5" cols="40" name="product_attribute[14][product_attribute_description][1][text]">All items are shipped insured. In the rare event your furniture is damaged during shipment you will not be responsible. Our dedicated team of customer service representatives are available 7 days a week from 10am-9pm EST to assist you throughout the entire shipping process.All Items are factory packaged and brand new.</textarea>
+    <img align="top" title="English" src="view/image/flags/gb.png"><br>  
+  </td>  
+  <td class="left">
+    <a class="button" onclick="$('#attribute-row14').remove();">Remove</a>
+  </td> 
+</tr>
+</tbody>
+                                    
+<tbody id="attribute-row15"> 
+ <tr>  
+  <td class="left">
+    <input type="text" value="Overall Dimensions: " name="product_attribute[15][name]" class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+    <input type="hidden" value="42" name="product_attribute[15][attribute_id]">
+  </td>  
+  <td class="left">
+    <textarea rows="5" cols="40" name="product_attribute[15][product_attribute_description][1][text]"></textarea>
+    <img align="top" title="English" src="view/image/flags/gb.png"><br>  
+  </td>  
+  <td class="left">
+    <a class="button" onclick="$('#attribute-row15').remove();">Remove</a>
+  </td> 
+</tr>
+</tbody>
+                                    
+<tbody id="attribute-row16"> 
+ <tr>  
+  <td class="left">
+    <input type="text" value="Seat Dimensions: " name="product_attribute[16][name]" class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+    <input type="hidden" value="43" name="product_attribute[16][attribute_id]">
+  </td>  
+  <td class="left">
+    <textarea rows="5" cols="40" name="product_attribute[16][product_attribute_description][1][text]"></textarea>
+    <img align="top" title="English" src="view/image/flags/gb.png"><br>  
+  </td>  
+  <td class="left">
+    <a class="button" onclick="$('#attribute-row16').remove();">Remove</a>
+  </td> 
+</tr>
+</tbody>
+                                    
+ <tbody id="attribute-row17">
+    <tr>
+      <td class="left">
+        <input type="text" value="Distance From Wall Needed For Full Recline:" name="product_attribute[17][name]" class="ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+        <input type="hidden" value="44" name="product_attribute[17][attribute_id]">
+      </td>  
+      <td class="left">
+        <textarea rows="5" cols="40" name="product_attribute[17][product_attribute_description][1][text]"></textarea>
+        <img align="top" title="English" src="view/image/flags/gb.png"><br> 
+      </td>
+      <td class="left">
+        <a class="button" onclick="$('#attribute-row17').remove();">Remove</a>
+      </td> 
+    </tr>
+</tbody>                                   
+                                    
+                                    
+
+
+<?php } ?>]]></add>
+                                </operation>
+                        </file>
+                </modification>

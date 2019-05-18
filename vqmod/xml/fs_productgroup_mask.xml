@@ -1,0 +1,233 @@
+<modification>
+	<id>Grouped Product Mask</id>
+	<version>4.0</version>
+	<vqmver>2.3.0</vqmver>
+	<author>www.fabiom7.com - fabiome77@hotmail.it</author>
+	
+<!-- Mask price (starting price, starting special price, price from, price to), Mask model, Mask stock -->
+<file name="catalog/controller/product/product.php">
+	<operation>
+		<search position="before"><![CDATA[$this->data['products'][] = array(]]></search>
+		<add><![CDATA[ //related products
+		if ($price && $result['model'] == 'grouped' && !(float)$result['pgprice_from']) {
+			$price = (!$special ? $this->language->get('text_price_start') : $this->language->get('text_price_start_special')) . ' ' . $price;
+		} elseif ($price && $result['model'] == 'grouped' && (float)$result['pgprice_from']) {
+			$price = $this->language->get('text_price_from') . $this->currency->format($this->tax->calculate($result['pgprice_from'], $result['tax_class_id'], $this->config->get('config_tax')));
+			if ((float)$result['pgprice_to']) {
+				$price .= $this->language->get('text_price_to') . $this->currency->format($this->tax->calculate($result['pgprice_to'], $result['tax_class_id'], $this->config->get('config_tax')));
+			}
+		}
+		]]></add>
+	</operation>
+</file>
+<file name="catalog/controller/product/category.php">
+	<operation>
+		<search position="after"><![CDATA[public function index() {]]></search>
+		<add><![CDATA[$this->language->load('product/product_grouped');]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[$this->data['products'][] = array(]]></search>		
+		<add><![CDATA[
+		if ($price && $result['model'] == 'grouped' && !(float)$result['pgprice_from']) {
+			$price = (!$special ? $this->language->get('text_price_start') : $this->language->get('text_price_start_special')) . ' ' . $price;
+		} elseif ($price && $result['model'] == 'grouped' && (float)$result['pgprice_from']) {
+			$price = $this->language->get('text_price_from') . $this->currency->format($this->tax->calculate($result['pgprice_from'], $result['tax_class_id'], $this->config->get('config_tax')));
+			$tax = $tax ? $this->currency->format($result['pgprice_from']) : '';
+			if ((float)$result['pgprice_to']) {
+				$price .= $this->language->get('text_price_to') . $this->currency->format($this->tax->calculate($result['pgprice_to'], $result['tax_class_id'], $this->config->get('config_tax')));
+				$tax .= $tax ? ' / ' . $this->currency->format($result['pgprice_to']) : ''; 
+			}
+		}
+		]]></add>
+	</operation>
+</file>
+<file name="catalog/controller/product/manufacturer.php">
+	<operation>
+		<search position="after"><![CDATA[public function info() {]]></search>
+		<add><![CDATA[$this->language->load('product/product_grouped');]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[$this->data['products'][] = array(]]></search>		
+		<add><![CDATA[
+		if ($price && $result['model'] == 'grouped' && !(float)$result['pgprice_from']) {			
+			$price = (!$special ? $this->language->get('text_price_start') : $this->language->get('text_price_start_special')) . ' ' . $price;
+		} elseif ($price && $result['model'] == 'grouped' && (float)$result['pgprice_from']) {
+			$price = $this->language->get('text_price_from') . $this->currency->format($this->tax->calculate($result['pgprice_from'], $result['tax_class_id'], $this->config->get('config_tax')));
+			$tax = $tax ? $this->currency->format($result['pgprice_from']) : '';
+			if ((float)$result['pgprice_to']) {
+				$price .= $this->language->get('text_price_to') . $this->currency->format($this->tax->calculate($result['pgprice_to'], $result['tax_class_id'], $this->config->get('config_tax')));
+				$tax .= $tax ? ' / ' . $this->currency->format($result['pgprice_to']) : ''; 
+			}
+		}
+		]]></add>
+	</operation>
+</file>
+<file name="catalog/controller/product/search.php">
+	<operation>
+		<search position="after"><![CDATA[public function index() {]]></search>
+		<add><![CDATA[$this->language->load('product/product_grouped');]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[$this->data['products'][] = array(]]></search>		
+		<add><![CDATA[
+		if ($price && $result['model'] == 'grouped' && !(float)$result['pgprice_from']) {			
+			$price = (!$special ? $this->language->get('text_price_start') : $this->language->get('text_price_start_special')) . ' ' . $price;
+		} elseif ($price && $result['model'] == 'grouped' && (float)$result['pgprice_from']) {
+			$price = $this->language->get('text_price_from') . $this->currency->format($this->tax->calculate($result['pgprice_from'], $result['tax_class_id'], $this->config->get('config_tax')));
+			$tax = $tax ? $this->currency->format($result['pgprice_from']) : '';
+			if ((float)$result['pgprice_to']) {
+				$price .= $this->language->get('text_price_to') . $this->currency->format($this->tax->calculate($result['pgprice_to'], $result['tax_class_id'], $this->config->get('config_tax')));
+				$tax .= $tax ? ' / ' . $this->currency->format($result['pgprice_to']) : ''; 
+			}
+		}
+		]]></add>
+	</operation>
+</file>
+<file name="catalog/controller/product/compare.php">
+	<operation>
+		<search position="after"><![CDATA[public function index() {]]></search>
+		<add><![CDATA[$this->language->load('product/product_grouped');]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[$this->data['products'][$product_id] = array(]]></search>		
+		<add><![CDATA[
+			if ($price && $product_info['model'] == 'grouped' && !(float)$product_info['pgprice_from']) {
+				$product_info['model'] = $this->language->get('text_mask_model');
+				$availability = $this->language->get('text_mask_stock');
+				$price = (!$special ? $this->language->get('text_price_start') : $this->language->get('text_price_start_special')) . ' ' . $price;
+			} elseif ($price && $product_info['model'] == 'grouped' && (float)$product_info['pgprice_from']) {
+				$product_info['model'] = $this->language->get('text_mask_model');
+				$availability = $this->language->get('text_mask_stock');
+				$price = $this->language->get('text_price_from') . $this->currency->format($this->tax->calculate($product_info['pgprice_from'], $product_info['tax_class_id'], $this->config->get('config_tax')));
+				if ((float)$product_info['pgprice_to']) {
+					$price .= $this->language->get('text_price_to') . $this->currency->format($this->tax->calculate($product_info['pgprice_to'], $product_info['tax_class_id'], $this->config->get('config_tax')));
+				}
+			}
+		]]></add>
+	</operation>
+</file>
+<file name="catalog/controller/module/bestseller.php">
+	<operation>
+		<search position="after"><![CDATA[protected function index($setting) {]]></search>		
+		<add><![CDATA[$this->language->load('product/product_grouped');]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[$this->data['products'][] = array(]]></search>		
+		<add><![CDATA[
+		if ($price && $result['model'] == 'grouped' && !(float)$result['pgprice_from']) {			
+			$price = (!$special ? $this->language->get('text_price_start') : $this->language->get('text_price_start_special')) . ' ' . $price;
+		} elseif ($price && $result['model'] == 'grouped' && (float)$result['pgprice_from']) {
+			$price = $this->language->get('text_price_from') . $this->currency->format($this->tax->calculate($result['pgprice_from'], $result['tax_class_id'], $this->config->get('config_tax')));
+			if ((float)$result['pgprice_to']) {
+				$price .= $this->language->get('text_price_to') . $this->currency->format($this->tax->calculate($result['pgprice_to'], $result['tax_class_id'], $this->config->get('config_tax')));
+			}
+		}
+		]]></add>
+	</operation>
+</file>
+<file name="catalog/controller/module/latest.php">
+	<operation>
+		<search position="after"><![CDATA[protected function index($setting) {]]></search>		
+		<add><![CDATA[$this->language->load('product/product_grouped');]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[$this->data['products'][] = array(]]></search>		
+		<add><![CDATA[
+		if ($price && $result['model'] == 'grouped' && !(float)$result['pgprice_from']) {			
+			$price = (!$special ? $this->language->get('text_price_start') : $this->language->get('text_price_start_special')) . ' ' . $price;
+		} elseif ($price && $result['model'] == 'grouped' && (float)$result['pgprice_from']) {
+			$price = $this->language->get('text_price_from') . $this->currency->format($this->tax->calculate($result['pgprice_from'], $result['tax_class_id'], $this->config->get('config_tax')));
+			if ((float)$result['pgprice_to']) {
+				$price .= $this->language->get('text_price_to') . $this->currency->format($this->tax->calculate($result['pgprice_to'], $result['tax_class_id'], $this->config->get('config_tax')));
+			}
+		}
+		]]></add>
+	</operation>
+</file>
+<file name="catalog/controller/account/wishlist.php">
+	<operation>
+		<search position="after"><![CDATA[public function index() {]]></search>		
+		<add><![CDATA[$this->language->load('product/product_grouped');]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[$this->data['products'][] = array(]]></search>		
+		<add><![CDATA[
+			if ($price && $product_info['model'] == 'grouped' && !(float)$product_info['pgprice_from']) {
+				$product_info['model'] = $this->language->get('text_mask_model');
+				$stock = $this->language->get('text_mask_stock');
+				$price = (!$special ? $this->language->get('text_price_start') : $this->language->get('text_price_start_special')) . ' ' . $price;
+			} elseif ($price && $product_info['model'] == 'grouped' && (float)$product_info['pgprice_from']) {
+				$product_info['model'] = $this->language->get('text_mask_model');
+				$stock = $this->language->get('text_mask_stock');
+				$price = $this->language->get('text_price_from') . $this->currency->format($this->tax->calculate($product_info['pgprice_from'], $product_info['tax_class_id'], $this->config->get('config_tax')));
+				if ((float)$product_info['pgprice_to']) {
+					$price .= $this->language->get('text_price_to') . $this->currency->format($this->tax->calculate($product_info['pgprice_to'], $product_info['tax_class_id'], $this->config->get('config_tax')));
+				}
+			}
+		]]></add>
+	</operation>
+</file>
+<file name="catalog/controller/checkout/cart.php">
+	<operation>
+		<search position="after"><![CDATA[public function index() {]]></search>
+		<add><![CDATA[$this->language->load('product/product_grouped');]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[$this->data['products'][] = array(]]></search>
+		<add><![CDATA[if ($product['model'] == 'grouped') { $product['model'] = $this->language->get('text_mask_model'); }]]></add>
+	</operation>
+</file>
+<file name="catalog/controller/checkout/confirm.php">
+	<operation>
+		<search position="after"><![CDATA[public function index() {]]></search>		
+		<add><![CDATA[$this->language->load('product/product_grouped');]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[$this->data['products'][] = array(]]></search>		
+		<add><![CDATA[if ($product['model'] == 'grouped') { $product['model'] = $this->language->get('text_mask_model'); }]]></add>
+	</operation>
+</file>
+
+<!-- Admin references -->
+<file name="admin/language/*/sale/order.php">
+	<operation>
+		<search position="before"><![CDATA[?>]]></search>
+		<add><![CDATA[$_['text_mask_model'] = 'N/A';]]></add>
+	</operation>
+</file>
+<file name="admin/view/template/sale/order_form.tpl">
+	<operation>
+		<search position="replace"><![CDATA[
+			html += '  <td class="left">' + product['model'] + 
+		]]></search>
+		<add><![CDATA[ // Totals AND if (json['order_product'] != '') {
+			if (product['model'] != 'grouped') {
+				product_model_mask = product['model'];
+			} else if (product['model'] == 'grouped') {
+				product_model_mask = '<?php echo $this->language->get('text_mask_model'); ?>';
+			}
+			html += '  <td class="left">' + product_model_mask + 
+		]]></add>
+	</operation>
+</file>
+<file name="admin/view/template/sale/order_info.tpl">
+	<operation>
+		<search position="replace"><![CDATA[
+			$product['model'];
+		]]></search>
+		<add><![CDATA[ 
+			$product['model'] != 'grouped' ? $product['model'] : $this->language->get('text_mask_model');
+		]]></add>
+	</operation>
+</file>
+<file name="admin/view/template/sale/order_invoice.tpl">
+	<operation>
+		<search position="replace"><![CDATA[
+			$product['model'];
+		]]></search>
+		<add><![CDATA[ 
+			$product['model'] != 'grouped' ? $product['model'] : $this->language->get('text_mask_model');
+		]]></add>
+	</operation>
+</file>
+</modification>

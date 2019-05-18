@@ -1,0 +1,253 @@
+<modification>
+	<id>To change default come usage to unlimited</id>
+	<version>1.0.0</version>
+	<vqmver>2.X</vqmver>
+	<author>Intersoft Professional</author>
+    	
+        <file name="admin/language/english/sale/coupon.php">
+                <operation>
+                    <search position="after"><![CDATA[$_['entry_discount']      = 'Discount:';]]></search>
+			<add><![CDATA[$_['entry_shipping']      = 'Shipping:';
+                                    $_['entry_warranty']      = 'Warranty:';]]></add>
+		</operation>
+        </file>
+        
+        <file name="admin/controller/sale/coupon.php">
+            
+		<operation>
+                    <search position="replace"><![CDATA[$this->data['uses_total'] = 1;]]></search>
+			<add><![CDATA[$this->data['uses_total'] = 0;]]></add>
+		</operation>
+                <operation>
+                    <search position="replace"><![CDATA[$this->data['uses_customer'] = 1;]]></search>
+			<add><![CDATA[$this->data['uses_customer'] = 0;]]></add>
+		</operation>
+                
+                <operation>
+                    <search position="after"><![CDATA[$this->data['entry_discount'] = $this->language->get('entry_discount');]]></search>
+			<add><![CDATA[$this->data['entry_shipping'] = $this->language->get('entry_shipping');
+                        $this->data['entry_warranty'] = $this->language->get('entry_warranty');]]></add>
+		</operation>
+                
+                <operation>
+                    <search position="before"><![CDATA[if (isset($this->request->post['discount'])) {]]></search>
+			<add><![CDATA[if (isset($this->request->post['shipping_method'])) {
+                                    $this->data['shipping_method'] = $this->request->post['shipping_method'];
+                                } elseif (!empty($coupon_info)) {
+                                            $this->data['shipping_method'] = $coupon_info['shipping_method'];
+                                    } else {
+                                    $this->data['shipping_method'] = '';
+                                }
+                            
+                                if (isset($this->request->post['warranty'])) {
+                                    $this->data['warranty'] = $this->request->post['warranty'];
+                                } elseif (!empty($coupon_info)) {
+                                            $this->data['warranty'] = $coupon_info['warranty'];
+                                    } else {
+                                    $this->data['warranty'] = '';
+                                }
+                             
+                                $available_extra_discount_opt = array(0 => 'Select');
+                                $available_warranty_offers_opt = array(0 => 'Select');
+                                
+                            
+                                /*   To get addons and warranty offers on the coupon screen */
+                                if($this->config->get('addons_status')) { 
+                                        $available_extra_discount_opt['addons'] = $this->config->get('addons_model_name');
+                                }
+                                
+                                if($this->config->get('week_special_status')) { 
+                                    $available_extra_discount_opt['week_special'] = $this->config->get('week_special_title');
+                                   
+                                }
+ 
+                                $this->data['available_extra_discount_opt'] = $available_extra_discount_opt;
+                                
+                            
+                                $this->load->model('total/warranty_offers');
+                                if($this->config->get('warranty_offers_status')){
+                                    $offers_info = $this->model_total_warranty_offers->getOffers();
+                                    if(isset($offers_info))
+                                    { 
+                                        foreach($offers_info as $offer_info) { 
+                                            if($offer_info['status'] && (!$offer_info['selected'])) {
+                                                $available_warranty_offers_opt[$offer_info['offer_id']] = $offer_info['title'];
+                                            }
+                                        }
+                                    } 
+                                } 
+                                $this->data['available_warranty_offers_opt'] = $available_warranty_offers_opt; 
+
+                            ]]>       
+</add>
+		</operation>
+        </file>
+        
+        <file name="admin/model/sale/coupon.php">
+                <operation>
+                    <search position="replace"><![CDATA[$this->db->query("UPDATE " . DB_PREFIX . "coupon SET name = '" . $this->db->escape($data['name']) . "', code = '" . $this->db->escape($data['code']) . "', discount = '" . (float)$data['discount'] . "', type = '" . $this->db->escape($data['type']) . "', total = '" . (float)$data['total'] . "', logged = '" . (int)$data['logged'] . "', shipping = '" . (int)$data['shipping'] . "', date_start = '" . $this->db->escape($data['date_start']) . "', date_end = '" . $this->db->escape($data['date_end']) . "', date_expire = '" . $this->db->escape($data['date_expire']) ."', uses_total = '" . (int)$data['uses_total'] . "', uses_customer = '" . (int)$data['uses_customer'] . "', status = '" . (int)$data['status'] . "' WHERE coupon_id = '" . (int)$coupon_id . "'");]]></search>
+			<add><![CDATA[$this->db->query("UPDATE " . DB_PREFIX . "coupon SET name = '" . $this->db->escape($data['name']) . "', code = '" . $this->db->escape($data['code']) . "', discount = '" . (float)$data['discount'] . "', shipping_method = '" . $this->db->escape($data['shipping_method']) . "'  , warranty = '" . ($data['warranty']) . "', type = '" . $this->db->escape($data['type']) . "', total = '" . (float)$data['total'] . "', logged = '" . (int)$data['logged'] . "', shipping = '" . (int)$data['shipping'] . "', date_start = '" . $this->db->escape($data['date_start']) . "', date_end = '" . $this->db->escape($data['date_end']) . "',date_expire = '" . $this->db->escape($data['date_expire']) ."', uses_total = '" . (int)$data['uses_total'] . "', uses_customer = '" . (int)$data['uses_customer'] . "', status = '" . (int)$data['status'] . "' WHERE coupon_id = '" . (int)$coupon_id . "'");]]></add>
+		</operation>
+                <operation>
+                    <search position="replace"><![CDATA[$this->db->query("INSERT INTO " . DB_PREFIX . "coupon SET name = '" . $this->db->escape($data['name']) . "', code = '" . $this->db->escape($data['code']) . "', discount = '" . (float)$data['discount'] . "', type = '" . $this->db->escape($data['type']) . "', total = '" . (float)$data['total'] . "', logged = '" . (int)$data['logged'] . "', shipping = '" . (int)$data['shipping'] . "', date_start = '" . $this->db->escape($data['date_start']) . "', date_end = '" . $this->db->escape($data['date_end']) . "', date_expire = '" . $this->db->escape($data['date_expire']) . "', uses_total = '" . (int)$data['uses_total'] . "', uses_customer = '" . (int)$data['uses_customer'] . "', status = '" . (int)$data['status'] . "', date_added = NOW()");]]></search>
+			<add><![CDATA[$this->db->query("INSERT INTO " . DB_PREFIX . "coupon SET name = '" . $this->db->escape($data['name']) . "', code = '" . $this->db->escape($data['code']) . "', discount = '" . (float)$data['discount'] . "', shipping_method = '" . $this->db->escape($data['shipping_method']) . "'  , warranty = '" . ($data['warranty']) . "' ,  type = '" . $this->db->escape($data['type']) . "', total = '" . (float)$data['total'] . "', logged = '" . (int)$data['logged'] . "', shipping = '" . (int)$data['shipping'] . "', date_start = '" . $this->db->escape($data['date_start']) . "', date_end = '" . $this->db->escape($data['date_end']) . "', uses_total = '" . (int)$data['uses_total'] . "', uses_customer = '" . (int)$data['uses_customer'] . "', status = '" . (int)$data['status'] . "', date_added = NOW()");]]></add>
+		</operation>
+        </file>
+        
+        <file name="admin/view/template/sale/coupon_form.tpl">
+            <operation>
+                    <search position="before"><![CDATA[          </table>]]></search>
+			<add><![CDATA[<tr>
+                                <td><?php echo $entry_shipping; ?></td>
+                                <td>
+                                  <select name="shipping_method">
+                                    <?php foreach($available_extra_discount_opt as $key=>$value) { ?>
+                                    <option value="<?php echo $key; ?>" <?php if($key == $shipping_method) echo 'selected';  ?> ><?php echo $value; ?></option>
+                                    <?php  } ?>  
+                                  </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><?php echo $entry_warranty; ?></td>
+                                <td>
+                                  <select name="warranty">
+                                    <?php foreach($available_warranty_offers_opt as $key=>$value) { ?>
+                                    <option value="<?php echo $key; ?>" <?php if($key == $warranty) echo 'selected';  ?> ><?php echo $value; ?></option>
+                                    <?php  } ?>  
+                                  </select>
+                                </td>
+                            </tr>]]>
+                        </add>
+	    </operation>
+        </file>
+        
+        <file name="catalog/model/checkout/coupon.php">
+            <operation>
+                    <search position="after"><![CDATA['discount'      => $coupon_query->row['discount'],]]></search>
+			<add><![CDATA['shipping_method'      => $coupon_query->row['shipping_method'],
+                             'warranty'      => $coupon_query->row['warranty'],   
+                             ]]></add>
+	    </operation>
+        </file>
+        
+        <file name="catalog/model/total/coupon.php">
+            <operation>
+                    <search position="before"><![CDATA[$total_data[] = array(]]></search>
+		    <add><![CDATA[        
+                        $coupon_main_discount_amount = $discount_total;
+                        $coupon_amount_text = '';   
+                        if($coupon_info['type'] == 'P') {
+                               $coupon_amount_text = ' (' . round($coupon_info['discount'], '2') . "%)";
+                        }
+                                   
+                            $discount_total_text = '<tr class=\'coupon-item-details\'><td valign=\'top\'>' . $this->language->get('text_coupon_discount') . $coupon_amount_text . ' :</td><td  valign=\'top\'> '  .$this->currency->format(-$discount_total). '</td></tr>' ;
+                        
+                            if( ($coupon_info['shipping_method']) && ((isset($this->session->data[$coupon_info['shipping_method']]))))
+                            {
+                                $discount_total += $this->config->get($coupon_info['shipping_method'].'_price');
+                              	
+                                $discount_total_text .=   '<tr class=\'coupon-item-details\'><td valign=\'top\'>' . $this->config->get($coupon_info['shipping_method'].'_title'). ' :</td><td  valign=\'top\'> '  . $this->currency->format(-$this->config->get($coupon_info['shipping_method'].'_price')) . '</td></tr>' ;
+                            }
+                        
+                            if(  ($coupon_info['warranty']))
+                            {
+                                if(isset($this->session->data['warranty']))
+                                {
+                                        foreach ($this->session->data['warranty'] as $offers) {
+                                            if($offers == $coupon_info['warranty'] )
+                                            {
+                                                $query = $this->db->query("SELECT *  FROM " . DB_PREFIX . "warranty_offer WHERE offer_id = " . $offers);
+                                                $offer = $query->row;
+                                                $discount_total +=  $offer['amount'];
+                                                $discount_total_text .= '<tr class=\'coupon-item-details\'><td valign=\'top\'>' . $offer['title'] . ' :</td> <td valign=\'top\'> ' . $this->currency->format(-$offer['amount']) . '</td></tr>' ;
+                                            }
+                                        }
+                                }
+                                else { 
+                                        $query = $this->db->query("SELECT *  FROM " . DB_PREFIX . "warranty_offer WHERE status=1 AND selected=1 order by sort_order ASC");
+                                        foreach ($query->rows as $offer) {
+                                            if($offer['offer_id'] == $coupon_info['warranty'] )
+                                            {    
+                                                $discount_total +=  $offer['amount'];
+                                                $discount_total_text .= '<tr class=\'coupon-item-details\'><td valign=\'top\'>' . $offer['title'] .' :</td> <td valign=\'top\'> ' . $this->currency->format(-$offer['amount']). '</td></tr>';
+                                            }
+                                        }
+                                } 
+                                                             
+                            }
+                        if($discount_total > $coupon_main_discount_amount ) {
+                           $coupon_discount_title =  '<table class=\'coupon-details\' cellpadding=\'0\' cellspacing=\'0\'>' .$discount_total_text  . ' <tr class=\'coupon-item-details\'><td  valign=\'top\'><b>'.sprintf($this->language->get('text_coupon_total_discount'), $this->session->data['coupon'])  .  ' </b>:</td> <td valign=\'top\'> '.$this->currency->format(-$discount_total) . '</td></tr></table>' ;
+                        } else {
+                               $coupon_discount_title = $this->currency->format(-$discount_total);
+                        }
+                        
+                    ]]></add>
+                    </operation>
+                    <operation>
+                     <search position="replace"><![CDATA['title'      => sprintf($this->language->get('text_coupon'), $this->session->data['coupon']),]]></search>
+		      <add><![CDATA['title'      => $this->session->data['coupon_name'].' ('.$this->session->data['coupon'].')' ,]]></add>
+                    </operation>
+                    <operation>
+                     <search position="replace"><![CDATA['text'       => $this->currency->format(-$discount_total),]]></search>
+		      <add><![CDATA['text'       =>  $coupon_discount_title ,]]></add>
+                    </operation>
+                         
+        </file>
+        
+    <file name="catalog/controller/checkout/cart.php">
+            <operation>
+                    <search position="after"><![CDATA[$coupon_details = $this->model_checkout_coupon->getCoupon($this->request->post['coupon']);]]></search>
+		    <add><![CDATA[ if($this->config->get($coupon_details['shipping_method']. '_status'))
+                        {
+                           if(isset($coupon_details['shipping_method']) && ($coupon_details['shipping_method'])  )
+                            {
+                                $this->session->data[$coupon_details['shipping_method']] = 1;
+                            }
+                        }
+                       
+                        if($this->config->get('warranty_offers_status'))
+                        {
+                            if(isset($coupon_details['warranty']) && ($coupon_details['warranty']) )
+                            {
+                                
+                                if(isset( $this->session->data['warranty']))
+                                { 
+
+                                    if(!(in_array($coupon_details['warranty'], $this->session->data['warranty'])))
+                                    {   
+                                        $this->session->data['warranty'][] = $coupon_details['warranty'];
+                                    }
+
+                                }
+                                else
+                                {
+                                   $this->load->model('total/warranty_offers');  
+                                   $this->session->data['warranty'] = $this->model_total_warranty_offers->getOffersId();
+                                   $this->session->data['warranty'][] = $coupon_details['warranty'];
+                                }       
+                                
+                            }
+                        }                     
+                    ]]></add>
+                    </operation>
+                         
+    </file>
+    <file name="catalog/view/theme/*/template/mail/custom_order.tpl,catalog/view/theme/*/template/mail/custom_order_admin.tpl,admin/view/template/mail/custom_order.tpl">
+        <operation>
+            <search position="after"><![CDATA[<?php foreach ($totals as $total) { ?>]]></search>
+		<add><![CDATA[ <?php //hack to give style to coupon section 
+                        if($total['code'] == 'coupon')
+                               {
+                                $total['text'] = str_replace("<table", "<table style='width:100%' cellpadding='0' cellspacing='0'",$total['text']);
+                    
+                               }       ?>   
+                ]]></add>
+            </operation>
+    </file>
+    <file name="admin/view/template/sale/customorder_invoice.tpl,admin/view/template/sale/customorder_sendinvoice.tpl,admin/view/template/sale/customorder_reports.tpl">
+        <operation>
+            <search position="replace"><![CDATA[<td align="right" colspan="3"><?php echo $total['text']; ?></td>]]></search>
+		<add><![CDATA[ <td <?php if($total['code'] == 'coupon') echo 'class="coupon-price"'?> align="right" colspan="3"><?php echo $total['text']; ?></td>]]></add>
+            </operation>
+    </file>
+</modification>

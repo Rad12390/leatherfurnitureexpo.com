@@ -1,0 +1,68 @@
+<modification>
+	<id>Warranty Offers</id>
+	<version>1.0</version>
+	<vqmver>2.3.0</vqmver>
+	<author>Intersoft Professional</author>
+	
+<file name="admin/controller/common/header.php">
+	<operation>
+		<search position="after"><![CDATA[$this->data['voucher_theme'] = $this->url->link('sale/voucher_theme', 'token=' . $this->session->data['token'], 'SSL');]]></search>		
+		<add><![CDATA[
+			$this->data['warranty_offers'] = $this->url->link('sale/warranty_offers', 'token=' . $this->session->data['token'], 'SSL');
+		]]></add>
+	</operation>
+        <operation>
+		<search position="after"><![CDATA[$this->data['text_coupon'] = $this->language->get('text_coupon');]]></search>		
+		<add><![CDATA[
+			$this->data['text_warranty_offers'] = $this->language->get('text_warranty_offers');
+		]]></add>
+	</operation>
+</file>
+
+
+<file name="admin/view/template/common/header.tpl">
+	<operation>
+		<search position="after"><![CDATA[<li><a href="<?php echo $coupon; ?>"><?php echo $text_coupon; ?></a></li>]]></search>		
+		<add><![CDATA[ <li><a href="<?php echo $warranty_offers; ?>"><?php echo $text_warranty_offers; ?></a></li>]]></add>
+	</operation>   
+</file>
+
+<file name="admin/language/english/common/header.php">
+	<operation>
+		<search position="after"><![CDATA[$_['text_coupon']                      = 'Coupons';]]></search>		
+		<add><![CDATA[ $_['text_warranty_offers']                      = 'Warranty Offers';]]></add>
+	</operation>   
+</file>
+
+<file name="catalog/controller/checkout/cart.php">
+        <operation>
+		<search position="before"><![CDATA[if (isset($this->request->post['shipping_method'])) {]]></search>		
+		<add><![CDATA[ $this->load->model('total/warranty_offers');
+                        $offers_info = $this->model_total_warranty_offers->getOffers();
+                        
+                       if(isset($offers_info))
+                       {
+                           $this->data['offers_info'] = $offers_info;
+                       } else {
+                           $this->data['offers_info'] = '';
+                       }]]></add>
+	</operation>   
+	<operation>
+		<search position="before"><![CDATA[if (isset($this->request->post['shipping_method'])) {]]></search>		
+		<add><![CDATA[ $this->data['warranty_offer_status'] = $this->config->get('warranty_offers_status');
+                        if(isset($this->request->post['next_warranty_offer']) && !isset($this->request->post['warranty'])){
+                                $this->data['warranty'] = '';
+                                unset($this->session->data['warranty']);
+                        }
+                        elseif (isset($this->request->post['next_warranty_offer']) && isset($this->request->post['warranty'])) { 
+                                $this->data['warranty'] = $this->request->post['warranty'];
+                                $this->session->data['warranty'] = $this->request->post['warranty'];
+			} elseif(isset( $this->session->data['warranty'])){
+                                $this->data['warranty'] =  $this->session->data['warranty'];
+                        } else {
+                             $this->data['warranty'] = $this->model_total_warranty_offers->getOffersId();
+                        }]]></add>
+	</operation>   
+</file>
+                      
+</modification>

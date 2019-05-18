@@ -1,0 +1,88 @@
+body {
+	background: #FFFFFF;
+}
+body, td, th, input, select, textarea, option, optgroup {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+}
+.invoice-container{
+	width:210mm;
+	margin:0 auto;
+	border:1px solid #ccc;
+	border-radius:5px;
+	margin-bottom:20px;
+	border-bottom:0;
+}
+h1 {
+	color:#003A88;
+	text-align:left;
+	font-size:16px;
+	font-weight: normal;
+	padding:5px 10px;
+	margin-top: 0px;
+	margin-bottom: 15px;
+	border-bottom: 1px solid #CDDDDD;
+}
+.store {
+	width: 100%;
+	/*margin-bottom: 20px;*/
+	padding:0 10px;
+}
+.div2 {
+	float: left;
+	display: inline-block;
+}
+.div3 {
+	float: right;
+	display: inline-block;
+	padding: 5px;
+}
+.heading td {
+	background: #E7EFEF;
+}
+.address, .product {
+	border-collapse: collapse;
+}
+.address {
+	width: 100%;
+	/*margin-bottom: 20px;
+	border-right: 1px solid #CDDDDD;*/
+	border-top: 1px solid #CDDDDD;
+}
+.comment, .history {
+	border-top:0;
+}
+.address th, .address td {
+	border-left: 1px solid #CDDDDD;
+	border-bottom: 1px solid #CDDDDD;
+	padding: 5px 10px;
+	vertical-align: text-bottom;
+}
+.address th:first-child, .address td:first-child , .product td:first-child, .product th:first-child{
+	border-left:0;
+}
+.address td {
+	
+}
+.product {
+	width: 100%;
+	/*margin-bottom: 20px;
+	border-right: 1px solid #CDDDDD;
+	/*border-top: 1px solid #CDDDDD;*/
+}
+.product td {
+	border-left: 1px solid #CDDDDD;
+	border-bottom: 1px solid #CDDDDD;
+	padding: 5px 10px;
+}
+.product td.right{
+	text-align:right;
+}
+
+
+
+td.coupon-price{ padding:0; }
+td.coupon-price table{ width:100%; }
+td.coupon-price table tr td{ text-align:right; border:0; border-top:1px solid #dddddd; }
+td.coupon-price table tr:first-child td{ border-top:0;}

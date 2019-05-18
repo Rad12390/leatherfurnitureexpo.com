@@ -1,0 +1,23 @@
+<modification>
+        <file name="catalog/controller/product/search.php">
+	 <operation>
+            <search position="after"><![CDATA[$this->load->model('tool/image');]]></search>
+            <add><![CDATA[if (isset($this->request->get['search'])) {
+                   $this->data['modules'] = $this->config->get('search_redirect_module');
+                   foreach($this->data['modules'] as $search_redirect)
+                   {
+                       if(strtolower($search_redirect['query'])==strtolower($this->request->get['search']))
+                       {
+                           $this->redirect($search_redirect['url'].'?search='.$this->request->get['search'].'&redirect=true',301);
+                       }
+                   }
+                }]]></add>
+        </operation>
+	</file>
+       <file name="system/engine/controller.php">
+	 <operation>
+            <search position="replace"><![CDATA[header('Status: ' . $status);]]></search>
+            <add><![CDATA[http_response_code($status);]]></add>
+        </operation>
+	</file>
+</modification>

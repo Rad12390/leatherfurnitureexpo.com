@@ -1,0 +1,185 @@
+<modification>
+	<id>Grouped Product</id>
+	<version>4.0</version>
+	<vqmver>2.3.0</vqmver>
+	<author>www.fabiom7.com - fabiome77@hotmail.it</author>
+	
+<file name="catalog/view/theme/*/*/common/header.tpl">
+	<operation>
+		<search position="before"><![CDATA[</head>]]></search>		
+		<add><![CDATA[
+			<link rel="stylesheet" type="text/css" href="catalog/view/theme/sofa/stylesheet/product_grouped.css" />
+			<?php if ($grouped_product_custom_style = $this->config->get('grouped_product_custom_style')) { ?>
+			<style type="text/css"><?php echo $grouped_product_custom_style; ?></style>
+			<?php } ?>
+		]]></add>
+	</operation>
+</file>
+
+<file name="catalog/model/catalog/product.php">
+	<operation>
+		<search position="after"><![CDATA[return array(]]></search>
+		<add><![CDATA[
+			'pgprice_to'      => $query->row['pgprice_to'],
+			'pgprice_from'    => $query->row['pgprice_from'],
+			'tag_title'       => $query->row['tag_title'],
+			'stock_status_id' => $query->row['stock_status_id'],
+		]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[if (!empty($data['filter_name']) || !empty($data['filter_tag'])) {]]></search>
+		<add><![CDATA[$sql .= " AND p.pgvisibility = '1'";]]></add>
+	</operation>
+</file>
+
+<file name="catalog/controller/product/product.php">
+	<operation>
+		<search position="after"><![CDATA[public function index() {]]></search>		
+		<add><![CDATA[
+		if (isset($this->request->get['product_id'])) {
+			$new_product_id = 0;
+			
+			$product_master_query = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product_grouped_type WHERE product_id = '" . (int)$this->request->get['product_id'] . "' LIMIT 1");
+			
+			if ($product_master_query->num_rows) {
+				$new_product_id = $product_master_query->row['product_id'];
+			} else {
+				$product_slave_query = $this->db->query("SELECT pg.product_id FROM " . DB_PREFIX . "product_grouped pg LEFT JOIN " . DB_PREFIX . "product p ON (pg.grouped_id = p.product_id) WHERE p.model != 'grouped' AND p.pgvisibility = '0' AND p.status = '1' AND pg.grouped_id = '" . (int)$this->request->get['product_id'] . "' LIMIT 1");
+				
+				if ($product_slave_query->num_rows) {
+					$new_product_id = $product_slave_query->row['product_id'];
+				}
+			}
+			
+			if ($new_product_id) {
+				$url = '';
+				
+				if (isset($this->request->get['path'])) {
+					$url .= '&path=' . $this->request->get['path'];
+				}
+				if (isset($this->request->get['manufacturer_id'])) {
+					$url .= '&manufacturer_id=' . $this->request->get['manufacturer_id'];
+				}
+				if (isset($this->request->get['filter_name'])) {
+					$url .= '&filter_name=' . $this->request->get['filter_name'];
+				}
+				if (isset($this->request->get['filter_tag'])) {
+					$url .= '&filter_tag=' . $this->request->get['filter_tag'];
+				}
+				if (isset($this->request->get['filter_description'])) {
+					$url .= '&filter_description=' . $this->request->get['filter_description'];
+				}
+				if (isset($this->request->get['filter_category_id'])) {
+					$url .= '&filter_category_id=' . $this->request->get['filter_category_id'];
+				}
+				
+				$url .= '&product_id=' . $new_product_id;
+				
+				$this->redirect($this->url->link('product/product_grouped', $url));
+			} else {
+				$this->language->load('product/product_grouped'); //for related products (in prices.xml)
+			}
+		}
+		]]></add>
+	</operation>
+</file>
+
+<file name="catalog/controller/common/seo_url.php">
+	<operation>
+		<search position="after"><![CDATA[$this->request->get['route'] = 'product/product';]]></search>		
+		<add><![CDATA[
+			$query = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product_grouped_type WHERE product_id = '" . (int)$this->request->get['product_id'] . "' LIMIT 1");
+			if ($query->num_rows) { $this->request->get['route'] = 'product/product_grouped'; }
+		]]></add>
+	</operation>
+	<operation>
+		<search position="after"><![CDATA[
+			($data['route'] == 'product/product' && $key == 'product_id') || 
+		]]></search>
+		<add><![CDATA[
+			($data['route'] == 'product/product_grouped' && $key == 'product_id') || 
+		]]></add>
+	</operation>
+</file>
+
+<file name="catalog/controller/checkout/cart.php">
+	<operation><!-- public function add() { -->
+		<search position="after"><![CDATA[$product_info = $this->model_catalog_product->getProduct($product_id);]]></search>
+		<add><![CDATA[
+			if ($product_info['model'] == 'grouped') {
+				$json['redirect'] = str_replace('&amp;', '&', $this->url->link('product/product_grouped', 'product_id=' . $this->request->post['product_id']));
+			}
+		]]></add>
+	</operation>
+</file>
+
+<!-- ADMIN references -->
+<file name="admin/controller/catalog/product.php">
+	
+	<operation>
+		<search position="after"><![CDATA['filter_status'   => $filter_status,]]></search>
+		<add><![CDATA[                    'filter_grouped'  => 'filter_grouped',]]></add>
+	</operation>
+</file>
+
+<file name="admin/model/catalog/product.php">
+	<operation><!-- deleteProduct -->
+		<search position="after"><![CDATA[
+			public function deleteProduct($product_id) {
+		]]></search>
+		<add><![CDATA[$this->db->query("DELETE FROM " . DB_PREFIX . "product_grouped WHERE grouped_id = '" . (int)$product_id . "'");]]></add>
+	</operation>
+	<operation><!-- getProductDescriptions -->
+		<search position="before"><![CDATA['meta_keyword'     => $result['meta_keyword'],]]></search>
+		<add><![CDATA['tag_title'     => $result['tag_title'],]]></add>
+	</operation>
+	<operation><!-- getProducts - getTotalProducts -->
+		<search position="after"><![CDATA[$sql .= " WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "'";]]></search>
+		<add><![CDATA[if (!empty($data['filter_grouped'])) { $sql .= " AND p.model != 'grouped'"; }]]></add>
+	</operation>
+</file>
+
+<file name="admin/view/template/common/header.tpl">
+	<operation>
+		<search position="after"><![CDATA[<li><a href="<?php echo $product; ?>"><?php echo $text_product; ?></a></li>]]></search>		
+		<add><![CDATA[<li><a href="<?php echo $this->url->link('catalog/product_grouped', 'token=' . $this->session->data['token'], 'SSL'); ?>"><?php $this->load->language('catalog/product_grouped'); echo $this->language->get('text_grouped_products'); ?></a></li>]]></add>
+	</operation>
+	<operation>
+		<search position="after"><![CDATA[<li><a href="<?php echo $feed; ?>"><?php echo $text_feed; ?></a></li>]]></search>		
+		<add><![CDATA[<li><a href="<?php echo $this->url->link('extension/product_grouped', 'token=' . $this->session->data['token'], 'SSL'); ?>"><?php $this->load->language('extension/product_grouped'); echo $this->language->get('text_product_grouped'); ?></a></li>]]></add>
+	</operation>
+</file>
+
+<!-- START Grouped name in default product list -->
+<file name="admin/view/template/catalog/product_list.tpl">
+	<operation>
+		<search position="before" index="1"><![CDATA[<td width="1"]]></search>		
+		<add><![CDATA[
+			<td class="left"><?php $this->language->load('catalog/product_grouped'); echo $this->language->get('column_product_grouped'); ?></td>
+		]]></add>
+	</operation>
+	<operation>
+		<search position="before" index="1"><![CDATA[<td></td>]]></search>		
+		<add><![CDATA[<td style="background-color:#efefef"></td>]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[<td style="text-align: center;"><?php if ($product['selected']) { ?>]]></search>		
+		<add><![CDATA[
+			<td style="background-color:#efefef"><?php foreach ($product['grouped'] as $pg_id => $pg_name) { ?><a href="<?php echo $this->url->link('catalog/product_grouped/update', 'token=' . $this->session->data['token'] . '&product_id=' . $pg_id, 'SSL'); ?>" title="<?php echo $pg_name; ?>"><?php echo (strlen($pg_name) > 25) ? substr($pg_name,0,23) . '..' : $pg_name; ?></a><br /><?php } ?></td>
+		]]></add>
+	</operation>
+</file>
+<file name="admin/controller/catalog/product.php">
+	<operation>
+		<search position="before"><![CDATA[$this->data['products'][] = array(]]></search>		
+		<add><![CDATA[
+			$grouped = array(); $gp_query = $this->db->query("SELECT pg.product_id, pd.name FROM " . DB_PREFIX . "product_grouped pg LEFT JOIN " . DB_PREFIX . "product_description pd ON (pg.product_id = pd.product_id) WHERE pg.grouped_id = '" . $result['product_id'] . "' AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "'"); foreach ($gp_query->rows as $gp) { $grouped[$gp['product_id']] = $gp['name']; }
+		]]></add>
+	</operation>
+	<operation>
+		<search position="after"><![CDATA[$this->data['products'][] = array(]]></search>
+		<add><![CDATA['grouped' => $grouped,]]></add>
+	</operation>
+</file>
+<!-- END Grouped name in default product list -->
+</modification>

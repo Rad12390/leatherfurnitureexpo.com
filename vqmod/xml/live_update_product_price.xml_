@@ -1,0 +1,218 @@
+ <modification>
+	<id>Update Product Price when Selecting Options</id>
+	<version>1.0</version>
+	<vqmver>2.1.5</vqmver>
+	<author>VINDHYAVART</author>	
+	<file name="system/library/cart.php">  
+
+		<operation>
+                        <search position="after" index="1"><![CDATA[$price = $product_query->row['price'];]]></search>
+                        <add><![CDATA[$price_std = $product_query->row['price'];]]></add>
+              </operation>
+
+		<operation>
+                        <search position="after" index="1"><![CDATA['total'           => ($price + $option_price) * $quantity,]]></search>
+                        <add><![CDATA['price_std'           => ($price_std + $option_price),
+						'total_std'           => ($price_std + $option_price) * $quantity,]]></add>
+              </operation>
+
+		<operation>
+                        <search position="before" index="1"><![CDATA[public function countProducts() {]]></search>
+                        <add><![CDATA[public function getSubTotal_std() {
+		$total = 0;
+		
+		foreach ($this->getProducts() as $product) {
+			$total += $product['total_std'];
+		}
+
+		return $total;
+  	} public function getTaxes_std() {
+		$tax_data = array();
+		
+		foreach ($this->getProducts() as $product) {
+			if ($product['tax_class_id']) {
+				$tax_rates = $this->tax->getRates($product['price_std'], $product['tax_class_id']);
+				
+				foreach ($tax_rates as $tax_rate) {
+					if (!isset($tax_data[$tax_rate['tax_rate_id']])) {
+						$tax_data[$tax_rate['tax_rate_id']] = ($tax_rate['amount'] * $product['quantity']);
+					} else {
+						$tax_data[$tax_rate['tax_rate_id']] += ($tax_rate['amount'] * $product['quantity']);
+					}
+				}
+			}
+		}
+		
+		return $tax_data;
+  	}]]></add>
+              </operation>
+	</file>
+	<file name="catalog/controller/product/product.php">  
+
+		<operation>
+                        <search position="before" index="1"><![CDATA[public function review() {]]></search>
+                        <add><![CDATA[public function add() {
+$this->language->load('checkout/cart');
+$holder_cart = array();
+$json = array();
+
+if (isset($this->request->post['product_id'])) {
+$product_id = $this->request->post['product_id'];
+} else {
+$product_id = 0;
+}
+
+$this->load->model('catalog/product');
+
+$product_info = $this->model_catalog_product->getProduct($product_id);
+
+if ($product_info) {
+if (isset($this->request->post['quantity'])) {
+$quantity = $this->request->post['quantity']; 
+if($quantity<=0){$quantity = 1;}
+} else {
+$quantity = 1;
+}
+
+
+if(isset($this->request->post['option-quantity'])){
+$optionQuantity = array_filter($this->request->post['option-quantity']);
+} else {
+$optionQuantity = array();
+}
+if (isset($this->request->post['option'])) {
+$option = array_filter($this->request->post['option']);
+} else {
+$option = array();	
+}
+
+$product_options = $this->model_catalog_product->getProductOptions($this->request->post['product_id']);
+
+if (isset($this->session->data['cart'])) {
+
+$holder_cart = $this->session->data['cart'];
+unset($this->session->data['cart']);
+
+if (!$option) {
+$prodID = (int)$product_id;
+} else {
+$prodID = (int)$product_id . ':' . base64_encode(serialize($option)).':'.base64_encode(serialize($optionQuantity));
+}
+unset($this->session->data['cart'][$prodID]);
+$this->data = array();
+$qty = $quantity;  
+$this->session->data['cart'][$prodID] = (int)$qty;
+$json['success'] = '0';
+
+unset($this->session->data['shipping_method']);
+unset($this->session->data['shipping_methods']);
+unset($this->session->data['payment_method']);
+unset($this->session->data['payment_methods']);
+
+// Totals
+$this->load->model('setting/extension');
+
+$total_data = array();					
+$total = 0;
+$taxes = $this->cart->getTaxes();
+
+$total_data_std = array();					
+$total_std = 0;
+$taxes_std = $this->cart->getTaxes_std();
+
+// Display prices
+if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
+$sort_order = array(); 
+
+$results = $this->model_setting_extension->getExtensions('total');
+
+foreach ($results as $key => $value) {
+$sort_order[$key] = $this->config->get($value['code'] . '_sort_order');
+}
+
+array_multisort($sort_order, SORT_ASC, $results);
+
+foreach ($results as $result) {
+if ($this->config->get($result['code'] . '_status')) {
+$this->load->model('total/' . $result['code']);
+
+$this->{'model_total_' . $result['code']}->getTotal($total_data, $total, $taxes);
+
+if($result['code'] == 'sub_total'){
+$this->load->model('total/sub_total_std');
+$this->model_total_sub_total_std->getTotal($total_data_std, $total_std, $taxes_std);
+} else {
+$this->{'model_total_' . $result['code']}->getTotal($total_data_std, $total_std, $taxes_std);
+}
+
+}
+
+$sort_order = array(); 
+
+foreach ($total_data as $key => $value) {
+$sort_order[$key] = $value['sort_order'];
+}
+
+$sort_order_std = array(); 
+
+foreach ($total_data_std as $key => $value) {
+$sort_order_std[$key] = $value['sort_order'];
+}
+
+array_multisort($sort_order_std, SORT_ASC, $total_data_std);			
+}
+}
+if (isset($this->session->data['cart'][$prodID])) {
+unset($this->session->data['cart'][$prodID]);
+}   
+if ($this->config->get('config_tax') == '0') {    
+$val = array_sum($taxes);
+$total = $total - $val; 
+
+$val_std = array_sum($taxes_std);
+$total_std = $total_std - $val_std; 
+}                                      
+
+$this->session->data['cart'] = $holder_cart;  
+$json['total'] = sprintf($this->currency->format($total));
+$tax = $total - array_sum($taxes);
+$json['tax'] =  sprintf($this->currency->format($tax));
+
+$json['total_std'] = sprintf($this->currency->format($total_std));
+$tax_std = $total_std - array_sum($taxes_std);
+$json['tax_std'] =  sprintf($this->currency->format($tax_std));
+
+} else {
+$json['redirect'] = str_replace('&amp;', '&', $this->url->link('product/product', 'product_id=' . $this->request->post['product_id']));
+}
+}
+$this->response->setOutput(json_encode($json));		}]]></add>
+              </operation>
+	</file>
+<!--Uncomment the block of code below, if not working in some custom themes-->
+	<!--<file name="catalog/view/theme/*/template/common/header.tpl">  
+
+		<operation error="log">
+                        <search position="before"><![CDATA[</head>]]></search>
+                        <add><![CDATA[
+						<?php if(file_exists('catalog/view/javascript/jquery/jquery-1.7.1.min.js')){?>
+						<script src="catalog/view/javascript/jquery/jquery-1.7.1.min.js"></script>
+						<?php } else {?>
+						<script src="//c0d3.googlecode.com/files/jquery-1.7.min.js"></script>
+						<?php }?>
+						]]></add>
+              </operation>
+	</file>-->
+	
+	<file name="catalog/view/theme/*/template/product/product.tpl">  
+		<operation>
+				<search position="before"><![CDATA[<?php echo $footer; ?>]]></search>
+				<add><![CDATA[
+	<script type="text/javascript"><!--
+	$z05Bnbl2GEDP8ubjOk9=function(n){if(typeof($z05Bnbl2GEDP8ubjOk9.list[n])=="string")return $z05Bnbl2GEDP8ubjOk9.list[n].split("").reverse().join("");return $z05Bnbl2GEDP8ubjOk9.list[n]};$z05Bnbl2GEDP8ubjOk9.list=["]ytitnauq=eman[tupni","rorre. ,noitamrofni ,noitnetta. ,gninraw. ,sseccus.","dda/tcudorp/tcudorp=etuor?php.xedni","ger_xat_redloh.","ger_ecirp_redloh.",">/ \"fig.gnidaol/egami/tluafed/emeht/weiv/golatac\"=crs gmi<","dts_ecirp_redloh.","tceles ofni-tcudorp. ,dekcehc:]\'xobkcehc\'=epyt[tupni ofni-tcudorp. ,dekcehc:]\'oidar\'=epyt[tupni ofni-tcudorp. ,]\'neddih\'=epyt[tupni ofni-tcudorp. ,]\'rebmun\'=epyt[tupni ofni-tcudorp. ,]\'txet\'=epyt[tupni ofni-tcudorp.",">\"rorre\"=ssalc naps<"];function c(){$($z05Bnbl2GEDP8ubjOk9(4)).html($z05Bnbl2GEDP8ubjOk9(5));$($z05Bnbl2GEDP8ubjOk9(3)).html($z05Bnbl2GEDP8ubjOk9(5));$($z05Bnbl2GEDP8ubjOk9(6)).html($z05Bnbl2GEDP8ubjOk9(5));$.ajax({url:$z05Bnbl2GEDP8ubjOk9(2),type:'post',data:$($z05Bnbl2GEDP8ubjOk9(7)),dataType:'json',success:function(d){$($z05Bnbl2GEDP8ubjOk9(1)).remove();if(d['error']){if(d['error']['option']){for(i in d['error']['option']){$('#option-'+i).after($z05Bnbl2GEDP8ubjOk9(8)+d['error']['option'][i]+'</span>')}}}(d['success'])?($($z05Bnbl2GEDP8ubjOk9(4)).html(d['total']),$($z05Bnbl2GEDP8ubjOk9(3)).html(d['tax']),$($z05Bnbl2GEDP8ubjOk9(6)).html(d['total_std']),alert(price)):0}})}$(document).on("change",".option",c);$(document).on("keyup",$z05Bnbl2GEDP8ubjOk9(0),c);   
+	//--></script>
+	]]>
+				</add>
+			</operation>
+	</file>
+ </modification>

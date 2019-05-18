@@ -1,0 +1,84 @@
+@font-face {
+    font-family: 'MyriadProRegular';
+    src: url('myriadpro-regular.eot?#iefix');
+    src: url('../fonts/myriadpro-regular.eot') format('embedded-opentype'),
+         url('../fonts/myriadpro-regular.woff') format('woff'),
+         url('../fonts/myriadpro-regular.ttf') format('truetype'),
+         url('../fonts/myriadpro-regular.svg#MyriadProRegular') format('svg');
+}
+
+
+@font-face {
+  font-family: 'FuturaBT-Medium';
+  src: url('../fonts/FuturaBT-Medium.eot?#iefix');
+  src: url('../fonts/FuturaBT-Medium.eot') format('embedded-opentype'),
+  	   url('../fonts/FuturaBT-Medium.ttf')  format('truetype'),
+	   url('../fonts/FuturaBT-Medium.svg#FuturaBT-Medium') format('svg');
+	   font-weight: normal;
+	   font-style: normal;
+}
+
+@font-face {
+    font-family: 'FuturaStdBook';
+    src: url('../fonts/FuturaStdBook.eot');
+    src: url('../fonts/FuturaStdBook.eot') format('embedded-opentype'),
+         url('../fonts/FuturaStdBook.woff2') format('woff2'),
+         url('../fonts/FuturaStdBook.woff') format('woff'),
+         url('../fonts/FuturaStdBook.ttf') format('truetype'),
+         url('../fonts/FuturaStdBook.svg#FuturaStdBook') format('svg');
+}
+
+@font-face {
+	font-family: 'FelixTitlingMT';
+	src: url('../fonts/FelixTitlingMT.eot');
+	src: url('../fonts/FelixTitlingMT.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/FelixTitlingMT.woff') format('woff'),
+		url('../fonts/FelixTitlingMT.ttf')  format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'MyriadPro';
+	src: url('../fonts/MyriadPro-Bold.eot');
+	src: url('../fonts/MyriadPro-Bold.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/MyriadPro-Bold.woff') format('woff'),
+		url('../fonts/MyriadPro-Bold.ttf')  format('truetype');
+	font-weight: bold;
+	font-style: normal;
+}
+@font-face {
+    font-family: 'latobold';
+    src: url('../fonts/lato-bold.eot');
+    src: url('../fonts/lato-bold.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/lato-bold.woff2') format('woff2'),
+         url('../fonts/lato-bold.woff') format('woff'),
+         url('../fonts/lato-bold.ttf') format('truetype'),
+         url('../fonts/lato-bold.svg#latobold') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'LatoBlack';
+    src: url('../fonts/LatoBlack.eot');
+    src: url('../fonts/LatoBlack.eot') format('embedded-opentype'),
+         url('../fonts/LatoBlack.woff2') format('woff2'),
+         url('../fonts/LatoBlack.woff') format('woff'),
+         url('../fonts/LatoBlack.ttf') format('truetype'),
+         url('../fonts/LatoBlack.svg#LatoBlack') format('svg');
+}
+
+@font-face {
+    font-family: 'LatoRegular';
+    src: url('../fonts/LatoRegular.eot');
+    src: url('../fonts/LatoRegular.eot') format('embedded-opentype'),
+         url('../fonts/LatoRegular.woff2') format('woff2'),
+         url('../fonts/LatoRegular.woff') format('woff'),
+         url('../fonts/LatoRegular.ttf') format('truetype'),
+         url('../fonts/LatoRegular.svg#LatoRegular') format('svg');
+}
+
+
+

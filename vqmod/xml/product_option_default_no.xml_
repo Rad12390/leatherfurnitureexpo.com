@@ -1,0 +1,26 @@
+<modification>         
+	<id>Product Option Default No</id>         
+    <version>1.0</version>         
+    <vqmver>1.0.8</vqmver>         
+    <author>Tarkanlar</author>         
+    <file name="admin/view/template/catalog/product_form.tpl">                 
+        <operation>                         
+            <search position="replace"><![CDATA[                        
+                html += '         <option value="0"><?php echo $text_no; ?></option>';                     
+            ]]></search>                         
+            <add><![CDATA[                         
+                html += '         <option value="0" selected="selected"><?php echo $text_no; ?></option>';                 
+            ]]></add>                 
+        </operation>                
+    </file> 
+    <file name="admin/view/template/catalog/product_grouped_form.tpl">                 
+        <operation>                         
+            <search position="replace"><![CDATA[                        
+                html += '         <option value="0"><?php echo $text_no; ?></option>';                     
+            ]]></search>                         
+            <add><![CDATA[                         
+                html += '         <option value="0" selected="selected"><?php echo $text_no; ?></option>';                 
+            ]]></add>                 
+        </operation>                
+    </file> 
+</modification>

@@ -1,0 +1,36 @@
+<modification>
+	<id>Admin login and Product Changes Logs</id>
+	<version>1.0.0</version>
+	<vqmver>2.3.0</vqmver>
+	<author>Intersoft</author>
+	<file name="admin/controller/common/header.php">
+		<operation error="abort">
+			<search position="before"><![CDATA[$this->data['text_error_log'] = $this->language->get('text_error_log');]]></search>
+			<add><![CDATA[	$this->data['text_admin_login_log'] = $this->language->get('text_admin_login_log');
+                                        $this->data['text_product_changes_log'] = $this->language->get('text_product_changes_log');
+                            ]]></add>
+		</operation>
+		<operation error="abort">
+			<search position="before"><![CDATA[$this->data['error_log'] = $this->url->link('tool/error_log', 'token=' . $this->session->data['token'], 'SSL');]]></search>
+			<add><![CDATA[$this->data['admin_login_log'] = $this->url->link('tool/admin_login_log', 'token=' . $this->session->data['token'], 'SSL');
+                                      $this->data['product_changes_log'] = $this->url->link('tool/product_changes_log', 'token=' . $this->session->data['token'], 'SSL');  
+                                ]]></add>
+		</operation>
+	</file>
+	<file name="admin/language/*/common/header.php">
+		<operation error="abort">
+			<search position="before"><![CDATA[$_['text_error_log']                   = 'Error Logs';]]></search>
+			<add><![CDATA[$_['text_admin_login_log'] = 'Admin Login Logs';
+                                      $_['text_product_changes_log'] = 'Product Changes Logs';      
+                            ]]></add>
+		</operation>
+	</file>
+	<file name="admin/view/template/common/header.tpl">
+		<operation error="abort">
+			<search position="after"><![CDATA[<li><a href="<?php echo $error_log; ?>"><?php echo $text_error_log; ?></a></li>]]></search>
+			<add><![CDATA[   <li><a href="<?php echo $admin_login_log; ?>"><?php echo $text_admin_login_log; ?></a></li>
+                                        <li><a href="<?php echo $product_changes_log; ?>"><?php echo $text_product_changes_log; ?></a></li>
+                            ]]></add>
+		</operation>
+	</file>
+</modification>      

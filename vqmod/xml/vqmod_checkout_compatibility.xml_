@@ -1,0 +1,18 @@
+<modification>
+  <id>QUICK CHECKOUT COMPATIBILITY BY DREAMVENTION</id>
+  <version>3.4</version>
+  <vqmver>2.1.1</vqmver>
+  <author>Dreamention.com</author>
+  <!-- checkout -->
+    <file name="system/library/url.php">
+    <operation>
+      <search position="before">
+        <![CDATA[$url .= 'index.php?route=' . $route;]]>
+      </search>
+      <add>
+        <![CDATA[$route = str_replace("checkout/", "quickcheckout/", $route);
+		$route = str_replace("quickcheckout/cart", "checkout/cart", $route);]]>
+      </add>
+    </operation>
+  </file>
+</modification>

@@ -1,0 +1,246 @@
+<modification>
+	<id>Validations</id>
+	<version>1.0</version>
+	<vqmver>2.3.0</vqmver>
+	<author>ISP Suraj</author>
+    <file name="catalog/model/account/newslettersubscribe.php">
+        <operation>
+            <search position="replace"><![CDATA[$this->db->query("INSERT INTO " . DB_PREFIX . "subscribe SET email_id='".$data['subscribe_email']."',name='".$data['subscribe_name']."',date='".date('m-d-Y')."',option1='".$this->db->escape(isset($data['option1'])?$data['option1']:'')."',option2='".$this->db->escape(isset($data['option2'])?$data['option2']:'')."',option3='".$this->db->escape(isset($data['option3'])?$data['option3']:'')."',option4='".$this->db->escape(isset($data['option4'])?$data['option4']:'')."',option5='".$this->db->escape(isset($data['option5'])?$data['option5']:'')."',option6='".$this->db->escape(isset($data['option6'])?$data['option6']:'')."'");]]></search>		
+            <add><![CDATA[$this->db->query("INSERT INTO " . DB_PREFIX . "subscribe SET email_id='".trim(strip_tags(html_entity_decode($data['subscribe_email'])))."',name='".$data['subscribe_name']."',date='".date('m-d-Y')."',option1='".$this->db->escape(isset($data['option1'])?$data['option1']:'')."',option2='".$this->db->escape(isset($data['option2'])?$data['option2']:'')."',option3='".$this->db->escape(isset($data['option3'])?$data['option3']:'')."',option4='".$this->db->escape(isset($data['option4'])?$data['option4']:'')."',option5='".$this->db->escape(isset($data['option5'])?$data['option5']:'')."',option6='".$this->db->escape(isset($data['option6'])?$data['option6']:'')."'");
+            ]]></add>
+        </operation>
+    </file>
+    <file name="catalog/controller/checkout/custom_validation.php">
+        <operation>
+            <search position="replace"><![CDATA[$card_no=$this->request->post['card_no']]]></search>		
+            <add><![CDATA[$card_no=trim(strip_tags(html_entity_decode($this->request->post['card_no'])))
+            ]]></add>
+        </operation>
+    </file>
+    <file name="catalog/controller/checkout/cart_custom_confirm.php">
+        <operation>
+            <search position="replace"><![CDATA[$this->session->data['comment'];]]></search>		
+            <add><![CDATA[trim(strip_tags(html_entity_decode($this->session->data['comment'])));
+            ]]></add>
+        </operation>
+    </file>
+
+
+<file name="catalog/controller/information/contact.php">
+        <operation>
+           <search position="replace"><![CDATA[$this->data['email'] = $this->request->post['email'];]]></search>
+            <add><![CDATA[$this->data['email'] = trim(strip_tags(html_entity_decode($this->request->post['email'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['name'] = $this->request->post['name'];]]></search>
+            <add><![CDATA[$this->data['name'] = trim(strip_tags(html_entity_decode($this->request->post['name'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['enquiry'] = $this->request->post['enquiry'];]]></search>
+            <add><![CDATA[$this->data['enquiry'] = trim(strip_tags(html_entity_decode($this->request->post['enquiry'])));]]></add>
+        </operation>
+</file>
+
+    <file name="catalog/controller/account/register.php">
+        <operation>
+           <search position="replace"><![CDATA[$this->data['firstname'] = $this->request->post['firstname'];]]></search>
+            <add><![CDATA[$this->data['firstname'] = trim(strip_tags(html_entity_decode($this->request->post['firstname'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['lastname'] = $this->request->post['lastname'];]]></search>
+            <add><![CDATA[$this->data['lastname'] = trim(strip_tags(html_entity_decode($this->request->post['lastname'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['email'] = $this->request->post['email'];]]></search>
+            <add><![CDATA[$this->data['email'] = trim(strip_tags(html_entity_decode($this->request->post['email'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['telephone'] = $this->request->post['telephone'];]]></search>
+            <add><![CDATA[$this->data['telephone'] = trim(strip_tags(html_entity_decode($this->request->post['telephone'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['fax'] = $this->request->post['fax'];]]></search>
+            <add><![CDATA[$this->data['fax'] = trim(strip_tags(html_entity_decode($this->request->post['fax'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['company'] = $this->request->post['company'];]]></search>
+            <add><![CDATA[$this->data['company'] = trim(strip_tags(html_entity_decode($this->request->post['company'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['company_id'] = $this->request->post['company_id'];]]></search>
+            <add><![CDATA[$this->data['company_id'] = trim(strip_tags(html_entity_decode($this->request->post['company_id'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['tax_id'] = $this->request->post['tax_id'];]]></search>
+            <add><![CDATA[$this->data['tax_id'] = trim(strip_tags(html_entity_decode($this->request->post['tax_id'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['address_1'] = $this->request->post['address_1'];]]></search>
+            <add><![CDATA[$this->data['address_1'] = trim(strip_tags(html_entity_decode($this->request->post['address_1'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['address_2'] = $this->request->post['address_2'];]]></search>
+            <add><![CDATA[$this->data['address_2'] = trim(strip_tags(html_entity_decode($this->request->post['address_2'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['postcode'] = $this->request->post['postcode'];]]></search>
+            <add><![CDATA[$this->data['postcode'] = trim(strip_tags(html_entity_decode($this->request->post['postcode'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['postcode'] = $this->session->data['shipping_postcode'];]]></search>
+            <add><![CDATA[$this->data['shipping_postcode'] = trim(strip_tags(html_entity_decode($this->request->post['shipping_postcode'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['city'] = $this->request->post['city'];]]></search>
+            <add><![CDATA[$this->data['city'] = trim(strip_tags(html_entity_decode($this->request->post['city'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['country_id'] = $this->request->post['country_id'];]]></search>
+            <add><![CDATA[$this->data['country_id'] = trim(strip_tags(html_entity_decode($this->request->post['country_id'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['country_id'] = $this->session->data['shipping_country_id'];]]></search>
+            <add><![CDATA[$this->data['country_id'] = trim(strip_tags(html_entity_decode($this->request->post['shipping_country_id'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['zone_id'] = $this->request->post['zone_id'];]]></search>
+            <add><![CDATA[$this->data['zone_id'] = trim(strip_tags(html_entity_decode($this->request->post['zone_id'])));]]></add>
+        </operation>
+    </file>
+    <file name="catalog/controller/account/edit.php">
+        <operation>
+           <search position="replace"><![CDATA[$this->data['firstname'] = $this->request->post['firstname'];]]></search>
+            <add><![CDATA[$this->data['firstname'] = trim(strip_tags(html_entity_decode($this->request->post['firstname'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['lastname'] = $this->request->post['lastname'];]]></search>
+            <add><![CDATA[$this->data['lastname'] = trim(strip_tags(html_entity_decode($this->request->post['lastname'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['email'] = $this->request->post['email'];]]></search>
+            <add><![CDATA[$this->data['email'] = trim(strip_tags(html_entity_decode($this->request->post['email'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['telephone'] = $this->request->post['telephone'];]]></search>
+            <add><![CDATA[$this->data['telephone'] = trim(strip_tags(html_entity_decode($this->request->post['telephone'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['fax'] = $this->request->post['fax'];]]></search>
+            <add><![CDATA[$this->data['fax'] = trim(strip_tags(html_entity_decode($this->request->post['fax'])));]]></add>
+        </operation>
+        
+    </file>
+    <file name="catalog/controller/account/address.php">
+        <operation>
+		<search position="replace"><![CDATA[if ((utf8_strlen($this->request->post['firstname']) < 1) || (utf8_strlen($this->request->post['firstname']) > 32)) {]]></search>		
+		<add><![CDATA[if ((utf8_strlen(trim(strip_tags(html_entity_decode($this->request->post['firstname'])))) < 1) || (utf8_strlen(trim(strip_tags(html_entity_decode($this->request->post['firstname'])))) > 32)) {
+                ]]></add>
+	</operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['firstname'] = $this->request->post['firstname'];]]></search>
+            <add><![CDATA[$this->data['firstname'] = trim(strip_tags(html_entity_decode($this->request->post['firstname'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['lastname'] = $this->request->post['lastname'];]]></search>
+            <add><![CDATA[$this->data['lastname'] = trim(strip_tags(html_entity_decode($this->request->post['lastname'])));]]></add>
+        </operation>
+         
+        
+        <operation>
+           <search position="replace"><![CDATA[$this->data['company'] = $this->request->post['company'];]]></search>
+            <add><![CDATA[$this->data['company'] = trim(strip_tags(html_entity_decode($this->request->post['company'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['company_id'] = $this->request->post['company_id'];]]></search>
+            <add><![CDATA[$this->data['company_id'] = trim(strip_tags(html_entity_decode($this->request->post['company_id'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['tax_id'] = $this->request->post['tax_id'];]]></search>
+            <add><![CDATA[$this->data['tax_id'] = trim(strip_tags(html_entity_decode($this->request->post['tax_id'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['address_1'] = $this->request->post['address_1'];]]></search>
+            <add><![CDATA[$this->data['address_1'] = trim(strip_tags(html_entity_decode($this->request->post['address_1'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['address_2'] = $this->request->post['address_2'];]]></search>
+            <add><![CDATA[$this->data['address_2'] = trim(strip_tags(html_entity_decode($this->request->post['address_2'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['postcode'] = $this->request->post['postcode'];]]></search>
+            <add><![CDATA[$this->data['postcode'] = trim(strip_tags(html_entity_decode($this->request->post['postcode'])));]]></add>
+        </operation>
+         
+        <operation>
+           <search position="replace"><![CDATA[$this->data['city'] = $this->request->post['city'];]]></search>
+            <add><![CDATA[$this->data['city'] = trim(strip_tags(html_entity_decode($this->request->post['city'])));]]></add>
+        </operation>
+        <operation>
+           <search position="replace"><![CDATA[$this->data['country_id'] = $this->request->post['country_id'];]]></search>
+            <add><![CDATA[$this->data['country_id'] = trim(strip_tags(html_entity_decode($this->request->post['country_id'])));]]></add>
+        </operation>
+         
+        <operation>
+           <search position="replace"><![CDATA[$this->data['zone_id'] = $this->request->post['zone_id'];]]></search>
+            <add><![CDATA[$this->data['zone_id'] = trim(strip_tags(html_entity_decode($this->request->post['zone_id'])));]]></add>
+        </operation>
+         
+    </file>
+    <file name="catalog/model/account/address.php">
+        <operation>
+		<search position="replace"><![CDATA[$this->db->query("INSERT INTO " . DB_PREFIX . "address SET customer_id = '" . (int)$this->customer->getId() . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', company = '" . $this->db->escape($data['company']) . "', company_id = '" . $this->db->escape(isset($data['company_id']) ? $data['company_id'] : '') . "', tax_id = '" . $this->db->escape(isset($data['tax_id']) ? $data['tax_id'] : '') . "', address_1 = '" . $this->db->escape($data['address_1']) . "', address_2 = '" . $this->db->escape($data['address_2']) . "', postcode = '" . $this->db->escape($data['postcode']) . "', city = '" . $this->db->escape($data['city']) . "', zone_id = '" . (int)$data['zone_id'] . "', country_id = '" . (int)$data['country_id'] . "'");]]></search>		
+		<add><![CDATA[$this->db->query("INSERT INTO " . DB_PREFIX . "address SET customer_id = '" . (int)$this->customer->getId() . "', firstname = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['firstname'])))) . "', lastname = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['lastname'])))) . "', company = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['company'])))) . "', company_id = '" . $this->db->escape(isset($data['company_id']) ? trim(strip_tags(html_entity_decode($data['company_id']))) : '') . "', tax_id = '" . $this->db->escape(isset($data['tax_id']) ? trim(strip_tags(html_entity_decode($data['tax_id']))) : '') . "', address_1 = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['address_1'])))) . "', address_2 = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['address_2'])))) . "', postcode = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['postcode'])))) . "', city = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['city'])))) . "', zone_id = '" . (int)$data['zone_id'] . "', country_id = '" . (int)$data['country_id'] . "'");
+                ]]></add>
+	</operation>
+        <operation>
+		<search position="replace"><![CDATA[$this->db->query("UPDATE " . DB_PREFIX . "address SET firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', company = '" . $this->db->escape($data['company']) . "', company_id = '" . $this->db->escape(isset($data['company_id']) ? $data['company_id'] : '') . "', tax_id = '" . $this->db->escape(isset($data['tax_id']) ? $data['tax_id'] : '') . "', address_1 = '" . $this->db->escape($data['address_1']) . "', address_2 = '" . $this->db->escape($data['address_2']) . "', postcode = '" . $this->db->escape($data['postcode']) . "', city = '" . $this->db->escape($data['city']) . "', zone_id = '" . (int)$data['zone_id'] . "', country_id = '" . (int)$data['country_id'] . "' WHERE address_id  = '" . (int)$address_id . "' AND customer_id = '" . (int)$this->customer->getId() . "'");]]></search>		
+		<add><![CDATA[$this->db->query("UPDATE " . DB_PREFIX . "address SET firstname = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['firstname'])))) . "', lastname = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['lastname'])))) . "', company = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['company'])))) . "', company_id = '" . $this->db->escape(isset($data['company_id']) ? trim(strip_tags(html_entity_decode($data['company_id']))) : '') . "', tax_id = '" . $this->db->escape(isset($data['tax_id']) ? trim(strip_tags(html_entity_decode($data['tax_id']))) : '') . "', address_1 = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['address_1'])))) . "', address_2 = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['address_2'])))) . "', postcode = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['postcode'])))) . "', city = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['city'])))) . "', zone_id = '" . (int)$data['zone_id'] . "', country_id = '" . (int)$data['country_id'] . "' WHERE address_id  = '" . (int)$address_id . "' AND customer_id = '" . (int)$this->customer->getId() . "'");
+                ]]></add>
+	</operation>   
+</file>
+    <file name="catalog/model/catalog/review.php">
+            <operation>
+                    <search position="replace"><![CDATA[$this->db->query("INSERT INTO " . DB_PREFIX . "review SET language_id = '" . (int)$this->config->get('config_language_id')."',author = '" . $this->db->escape($data['name']) . "', customer_id = '" . (int)$this->customer->getId() . "', product_id = '" . (int)$product_id . "',text = '" . $this->db->escape($data['text']) . "',rating = '" . (int)$data['rating'] . "', date_added = NOW()");]]></search>
+                    <add><![CDATA[$this->db->query("INSERT INTO " . DB_PREFIX . "review SET language_id = '" . (int)$this->config->get('config_language_id')."',author = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['name'])))) . "', customer_id = '" . (int)$this->customer->getId() . "', product_id = '" . (int)$product_id . "', text = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['text'])))) . "', rating = '" . (int)$data['rating'] . "', date_added = NOW()");
+                    ]]></add>
+            </operation>
+    </file>
+    <file name="catalog/model/account/customer.php">
+            <operation>
+                    <search position="replace"><![CDATA[$this->db->query("UPDATE " . DB_PREFIX . "customer SET firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape($data['fax']) . "' WHERE customer_id = '" . (int)$this->customer->getId() . "'");]]></search>		
+                    <add><![CDATA[$this->db->query("UPDATE " . DB_PREFIX . "customer SET firstname = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['firstname'])))) . "', lastname = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['lastname'])))) . "', email = '" . $this->db->escape(trim($data['email'])) . "', telephone = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['telephone'])))) . "', fax = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['fax'])))) . "' WHERE customer_id = '" . (int)$this->customer->getId() . "'");
+                    ]]></add>
+            </operation>
+            <operation>
+                    <search position="replace"><![CDATA[$this->db->query("INSERT INTO " . DB_PREFIX . "customer SET store_id = '" . (int)$this->config->get('config_store_id') . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape($data['fax']) . "', salt = '" . $this->db->escape($salt = substr(md5(uniqid(rand(), true)), 0, 9)) . "', password = '" . $this->db->escape(sha1($salt . sha1($salt . sha1($data['password'])))) . "', newsletter = '" . (isset($data['newsletter']) ? (int)$data['newsletter'] : 0) . "', customer_group_id = '" . (int)$customer_group_id . "', ip = '" . $this->db->escape($this->request->server['REMOTE_ADDR']) . "', status = '1', approved = '" . (int)!$customer_group_info['approval'] . "', date_added = NOW()");]]></search>		
+                    <add><![CDATA[$this->db->query("INSERT INTO " . DB_PREFIX . "customer SET store_id = '" . (int)$this->config->get('config_store_id') . "', firstname = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['firstname'])))) . "', lastname = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['lastname'])))) . "', email = '" . $this->db->escape(trim($data['email'])) . "', telephone = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['telephone'])))) . "', fax = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['fax'])))) . "', salt = '" . $this->db->escape($salt = substr(md5(uniqid(rand(), true)), 0, 9)) . "', password = '" . $this->db->escape(sha1($salt . sha1($salt . sha1($data['password'])))) . "', newsletter = '" . (isset($data['newsletter']) ? (int)$data['newsletter'] : 0) . "', customer_group_id = '" . (int)$customer_group_id . "', ip = '" . $this->db->escape($this->request->server['REMOTE_ADDR']) . "', status = '1', approved = '" . (int)!$customer_group_info['approval'] . "', date_added = NOW()");
+                    ]]></add>
+            </operation>
+            <operation>
+                    <search position="replace"><![CDATA[$this->db->query("INSERT INTO " . DB_PREFIX . "address SET customer_id = '" . (int)$customer_id . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', company = '" . $this->db->escape($data['company']) . "', company_id = '" . $this->db->escape($data['company_id']) . "', tax_id = '" . $this->db->escape($data['tax_id']) . "', address_1 = '" . $this->db->escape($data['address_1']) . "', address_2 = '" . $this->db->escape($data['address_2']) . "', city = '" . $this->db->escape($data['city']) . "', postcode = '" . $this->db->escape($data['postcode']) . "', country_id = '" . (int)$data['country_id'] . "', zone_id = '" . (int)$data['zone_id'] . "'");]]></search>		
+                    <add><![CDATA[$this->db->query("INSERT INTO " . DB_PREFIX . "address SET customer_id = '" . (int)$customer_id . "', firstname = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['firstname'])))) . "', lastname = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['lastname'])))) . "', company = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['company'])))) . "', company_id = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['company_id'])))) . "', tax_id = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['tax_id'])))) . "', address_1 = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['address_1'])))) . "', address_2 = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['address_2'])))) . "', city = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['city'])))) . "', postcode = '" . $this->db->escape(trim(strip_tags(html_entity_decode($data['postcode'])))) . "', country_id = '" . (int)$data['country_id'] . "', zone_id = '" . (int)$data['zone_id'] . "'");
+                    ]]></add>
+            </operation>
+    </file>
+    <file name="catalog/controller/product/search.php">
+            <operation>
+                    <search position="before"><![CDATA[$this->data['products'] = array();]]></search>		
+                    <add><![CDATA[if (isset($this->request->get['search'])) {
+                                        $search_data = strip_tags(html_entity_decode($this->request->get['search']));
+                                } else {
+                                        $search_data = '';
+                                } 
+                    ]]></add>
+            </operation>
+            <operation> 
+                    <search position="replace"><![CDATA['filter_name'         => $search,]]></search>		
+                    <add><![CDATA['filter_name'         => $search_data,
+                    ]]></add>
+            </operation>   
+            <operation>
+                    <search position="replace"><![CDATA[$tag = $this->request->get['search'];]]></search>		
+                    <add><![CDATA[$tag = strip_tags(html_entity_decode($this->request->get['search']));
+                    ]]></add>
+            </operation>   
+    </file>
+</modification>

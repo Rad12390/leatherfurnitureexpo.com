@@ -1,0 +1,45 @@
+<modification>
+	<id>Popup Image Convert to PNG</id>
+	<version>1.0</version>
+	<vqmver>2.3.0</vqmver>
+	<author>Intersoft Professional</author>
+
+<file name="catalog/controller/error/not_found.php">
+        <operation>
+		<search position="replace"><![CDATA[$this->response->addHeader($this->request->server['SERVER_PROTOCOL'] . '/1.1 404 Not Found');]]></search>		
+		<add><![CDATA[ 
+                    if($this->config->get('not_found_email_status')) 
+                    {
+                    $mail = new Mail();
+                    $mail->protocol = $this->config->get('config_mail_protocol');
+                    $mail->parameter = $this->config->get('config_mail_parameter');
+                    $mail->hostname = $this->config->get('config_smtp_host');
+                    $mail->username = $this->config->get('config_smtp_username');
+                    $mail->password = $this->config->get('config_smtp_password');
+                    $mail->port = $this->config->get('config_smtp_port');
+                    $mail->timeout = $this->config->get('config_smtp_timeout');				
+                    $mail->setTo($this->config->get('not_found_email_email'));
+                    $mail->setFrom($this->config->get('config_email'));
+                    
+                    if($this->config->get('not_found_email_subject')) {
+                        $subject = $this->config->get('not_found_email_subject');
+                    } else {
+                        $subject = 'Not Found';
+                    }
+                    
+                    $message = '';
+                    $message .= '<b>IP Address	</b><span style="margin-left:25px;">'.$_SERVER['REMOTE_ADDR'].'</span><br/>';
+                    $message .= '<b>404 Path	</b><span style="margin-left:38px;">'.$_SERVER['REQUEST_URI'].'</span><br/>';
+                    $message .= '<b>User Agent	</b><span style="margin-left:25px;">'.$_SERVER['HTTP_USER_AGENT'].'</span><br/>';
+
+                    $mail->setSender(strip_tags(trim(html_entity_decode($this->config->get('not_found_email_email'), ENT_QUOTES, 'UTF-8'))));
+                    $mail->setSubject(strip_tags(html_entity_decode(sprintf($subject), ENT_QUOTES, 'UTF-8')));
+                    $mail->setHTML($message, ENT_QUOTES, 'UTF-8');
+                    $mail->send();
+                    }
+                ]]></add>
+	</operation>
+         
+</file>    
+          
+</modification>

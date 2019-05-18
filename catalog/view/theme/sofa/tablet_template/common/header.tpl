@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html dir="<?php echo $direction; ?>" lang="<?php echo $lang; ?>">
+    <head>
+
+        <meta charset="UTF-8" />
+        <title><?php echo $title; ?></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <base href="<?php echo $base; ?>" />
+        <?php if ($description) { ?>
+        <meta name="description" content="<?php echo $description; ?>"/>
+        <?php } ?>
+        <?php if ($keywords) { ?>
+        <meta name="keywords" content="<?php echo $keywords; ?>" />
+        <?php } ?>
+        <?php if($product_id){ ?>
+        <meta property="og:title" content="<?php echo $product_name; ?>"/> 
+        <meta property="og:url" content="<?php echo $product_url; ?>"/> 
+        <meta property="og:image" content="<?php echo $product_thumb; ?>"/>
+        <meta property="og:site_name" content="Leather Furniture Expo"/>
+        <meta property="og:description" content="<?php echo $product_desc; ?>"/> 
+        <?php } ?>
+        <?php if ($icon) { ?>
+        <link href="<?php echo $icon; ?>" rel="shortcut icon" />
+        <?php } ?>
+        <?php foreach ($links as $link) { ?>
+        <link href="<?php echo $link['href']; ?>" rel="<?php echo $link['rel']; ?>" />
+        <?php } ?>
+        <link rel="stylesheet" type="text/css" href="catalog/view/theme/sofa/stylesheet/stylesheet.css" />
+        <link rel="stylesheet" type="text/css" href="catalog/view/theme/sofa/stylesheet/cart_custom.css" />
+        <link rel="stylesheet" type="text/css" href="catalog/view/theme/sofa/stylesheet/layout.css" />
+        <link rel="stylesheet" type="text/css" href="catalog/view/theme/sofa/stylesheet/fonts.css" />
+
+        <?php foreach ($styles as $style) { ?>
+        <link rel="<?php echo $style['rel']; ?>" type="text/css" href="<?php echo $style['href']; ?>" media="<?php echo $style['media']; ?>" />
+        <?php } ?>
+        <!-- <script src="//cdn.optimizely.com/js/2836200133.js"></script> -->
+        <script type="text/javascript" src="catalog/view/javascript/jquery/jquery-1.7.1.min.js"></script>
+        <script type="text/javascript" src="catalog/view/javascript/jquery/ui/jquery-ui-1.8.16.custom.min.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="catalog/view/javascript/jquery/ui/themes/ui-lightness/jquery-ui-1.8.16.custom.css" />
+        <script type="text/javascript" src="catalog/view/javascript/common.js"></script>
+        <?php foreach ($scripts as $script) { ?>
+        <script type="text/javascript" src="<?php echo $script; ?>"></script>
+        <?php } ?>
+        <!--[if IE 8]> 
+        <link rel="stylesheet" type="text/css" href="catalog/view/theme/sofa/stylesheet/ie8.css" />
+        <![endif]-->
+        <!--[if IE 7]> 
+        <link rel="stylesheet" type="text/css" href="catalog/view/theme/sofa/stylesheet/ie7.css" />
+        <![endif]-->
+        <!--[if lt IE 7]>
+        <link rel="stylesheet" type="text/css" href="catalog/view/theme/sofa/stylesheet/ie6.css" />
+        <script type="text/javascript" src="catalog/view/javascript/DD_belatedPNG_0.0.8a-min.js"></script>
+        <script type="text/javascript">
+        DD_belatedPNG.fix('#logo img');
+        </script>
+        <![endif]-->
+        <!--[if lt IE 9]>
+        <script src="catalog/view/javascript/html5.js"></script>
+        <![endif]-->
+        <?php if ($stores) { ?>
+        <script type="text/javascript">  <!--
+        $(document).ready(function () {
+            < ?php foreach ($stores as $store) { ? >
+            $('body').prepend('<iframe src="<?php echo $store; ?>" style="display: none;"></iframe>');
+                    < ?php } ? >
+                 
+            });
+                    //--></script>
+        <?php } ?>
+        <?php //echo $google_analytics; ?>
+
+        <script type="application/ld+json">
+            {
+            "@context": "http://schema.org",
+            "@type": "Organization",
+            "url": "<?php echo rtrim(HTTPS_SERVER, '/');?>",
+            "logo": "<?php echo $logo; ?>",
+            }
+        </script>
+    </head>
+    <body class="<?php echo $body_class; ?>">
+        <script type="text/javascript" src="catalog/view/javascript/jquery/wz_tooltip.js"></script>
+         <div id="container">
+            <div id="header">
+                <?php if ($logo) { ?>
+                <div id="logo"><a href="<?php echo $home; ?>"><img src="<?php echo $logo; ?>" title="<?php echo $name; ?>" alt="<?php echo $name; ?>" /></a></div>
+                <?php } ?>
+                
+                <div class="login-cont clearfix">
+                     <span class="links-block menu-open" data-menu="links"></span>
+                    <a href="tel:+1-800-737-7702" class="callus">1.800.737.7702</a>
+                    <div class="links res-menu dropdown" id="links">
+                        <div class="dropdown-content">
+                       <a href="tel:+1-800-737-7702" class="info_callus">1.800.737.7702</a>
+                        <?php   if (!$logged) { ?>
+                      <?php echo $text_welcome; ?>
+                        <?php } else { ?>
+                       <?php echo $text_logged; ?>
+                       <?php echo $text_order; ?>
+                      <?php } ?>
+                        <a title="<?php echo $text_shopping_cart; ?>" class="links-cart" href="<?php echo $shopping_cart; ?>"><?php echo $text_shopping_cart; ?></a>
+                    <?php echo $text_logout_pc; ?>
+                       </div> 
+                        </div> 
+                    <!-- This code is only for navigation structured data purpose. Its not showing on frontend -->
+                    <nav style="display:none" itemscope itemtype="http://schema.org/SiteNavigationElement">
+                        <ul>
+                            <li>
+                                <a href="https://www.leatherfurnitureexpo.com/leather-sofas/" itemprop="url">
+                                    <span itemprop="name">Leather Sofa & Sets</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.leatherfurnitureexpo.com/leather-sectionals/" itemprop="url">
+                                    <span itemprop="name">Leather Sectionals</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.leatherfurnitureexpo.com/reclining-sofas-and-sets/" itemprop="url">
+                                    <span itemprop="name">Reclining Sofas & Sets</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.leatherfurnitureexpo.com/reclining-sectionals/" itemprop="url">
+                                    <span itemprop="name">Reclining Sectionals</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.leatherfurnitureexpo.com/leather-sleeper-sofas/" itemprop="url">
+                                    <span itemprop="name">Leather Sleeper Sofas</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.leatherfurnitureexpo.com/luxury-leather-furniture/" itemprop="url">
+                                    <span itemprop="name">Luxury Leather Furniture</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.leatherfurnitureexpo.com/clearance-items/" itemprop="url">
+                                    <span itemprop="name">Clearance & Markdowns</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <!-- End -->
+                    <div class="search-block">
+                        <div id="search" class="clearfix ">
+                            <span>10am-9pm est mon-sat <br />12pm-8pm est sunday</span>
+                            <input type="text" name="search" placeholder="Search Keyword" value="<?php echo $search; ?>" />
+                            <div class="button-search"><?php echo $text_search; ?></div>
+                        </div>
+                    </div>
+                </div>
+                 </div>
+            
+            <?php if ($categories) { ?>
+                <div class="cat_menu">
+                <span class="cat_menu1 menu-open"  data-menu="cat-menu-box">CATEGORY MENU</span>
+                <div class="cat-menu-box res-menu main-nav" id="cat-menu-box">
+                    <?php 
+                    if(isset($custommenu)) {
+                    echo $custommenu;  
+                    } else {
+                    ?>
+                    <div id="cat_menu1">
+                        <div class="sofa"><a href="<?php echo HTTP_SERVER; ?>leather-sofas/">Leather Sofas & Sets</a></div>
+                        <div class="sectionals"><a href="<?php echo HTTP_SERVER; ?>leather-sectionals/">Sectionals</a></div>
+                        <div class="reclining-sofas-and-sets"><a href="<?php echo HTTP_SERVER; ?>reclining-sofas-and-sets/">Reclining Sofas & Sets</a></div>
+                        <div class="reclining-sectionals"><a href="<?php echo HTTP_SERVER; ?>reclining-sectionals/">Reclining Sectionals </a></div>
+                        <div class="ss"><a href="<?php echo HTTP_SERVER; ?>leather-sleeper-sofas/">Sofa beds</a></div>
+                        <div class="luxary"><a href="<?php echo HTTP_SERVER; ?>luxury-leather-furniture/" >Luxury</a></div>
+                        <div class="clearance"><a href="<?php echo HTTP_SERVER; ?>clearance-items/">Clearance</a> </div>
+                    </div>                
+                    <div id ="cat_menu2">
+                        <div class="fbrand" ><a href="<?php echo HTTP_SERVER; ?>featured-brands/">Featured Brands</a></div>
+                        <div class="fth"><a href="<?php echo HTTP_SERVER; ?>first-time-here/" >First Time Here</a></div>
+                        <div class="testimonial"><a href="<?php echo HTTP_SERVER; ?>index.php?route=product/product/testimonials" >Testimonials</a></div>
+                        <div class="faq"><a href="<?php echo HTTP_SERVER; ?>faq-s/"  >FAQ's</a></div>
+                        <div class="glossary"><a href="<?php echo HTTP_SERVER; ?>leather-glossary.html" >Leather Glossary</a></div>
+                        <div class="free_shipping"><a href="<?php echo HTTP_SERVER; ?>worry-free-shipping.html" >Worry Free Shipping</a></div>
+                        <div class="contact"><a href="<?php echo HTTP_SERVER; ?>contact.html" >Contact Us</a></div>
+                    </div>
+                    <?php } ?>
+                </div>		
+            </div>    
+            <?php } ?>
+            <?php if ($error) { ?>
+                <div class="warning"><?php echo $error ?><img src="catalog/view/theme/default/image/close.png" alt="" class="close" /></div>
+            <?php } ?>
+            <div id="notification"></div>
+            <div class="clear"></div>

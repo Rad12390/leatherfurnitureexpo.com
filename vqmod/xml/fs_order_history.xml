@@ -1,0 +1,51 @@
+<modification>
+	<id>Admin Edit Order</id>
+	<version>1.0</version>
+	<vqmver>2.3.0</vqmver>
+	<author>Intersoft Professional</author>
+
+<file name="catalog/controller/account/order.php">
+        
+       <operation>
+		<search position="after"><![CDATA[$order_info = $this->model_account_order->getOrder($order_id);]]></search>		
+		<add><![CDATA[ $this->load->model('account/customorder');
+                               $order_detail = $this->model_account_customorder->getOrder($order_id);
+                    if($this->config->get('addons_status')) { 
+                    $this->data['addons_model_name'] = $this->config->get('addons_model_name');
+                    $this->data['addons_price'] = $this->currency->format($this->config->get('addons_price'));
+                }
+                else {
+                    $this->data['addons_model_name'] = '';
+                    $this->data['addons_price'] = '';
+                }
+                if($this->config->get('warranty_offers_status')){
+                    $this->data['warranty_offer_status'] = $this->config->get('warranty_offers_status');
+                } else {
+                    $this->data['warranty_offer_status'] = '';   
+                }
+                
+                if($this->config->get('week_special_status')) { 
+                    $this->data['week_special_title'] = $this->config->get('week_special_title');
+                    $this->data['week_special_price'] = $this->currency->format($this->config->get('week_special_price'));
+                    $this->data['week_special_saving'] = $this->currency->format($this->config->get('week_special_saving'));
+                }
+                else {
+                    $this->data['week_special_title'] = '';
+                    $this->data['week_special_price'] = '';
+                    $this->data['week_special_saving'] = '';
+                }
+                
+                $this->load->model('total/warranty_offers');
+                $offers_info = $this->model_total_warranty_offers->getOffers();
+               
+               if(isset($offers_info))
+               {
+                   $this->data['offers_info'] = $offers_info;
+               } else {
+                   $this->data['offers_info'] = '';
+               }
+                               $this->data['order_detail'] = $order_detail;]]></add>
+	</operation>   
+</file>
+
+</modification>

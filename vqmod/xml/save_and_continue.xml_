@@ -1,0 +1,76 @@
+<modification>
+	<id>Save and Continue</id>
+	<version>1.5.3</version>
+	<vqmver>1.0</vqmver> 
+	<author>Balaphp</author>
+
+	<file name="admin/language/english/english.php">
+		
+		<operation error="log">
+			<search position="after" >
+			<![CDATA[$_['button_insert']                 = 'Insert';]]></search> 
+			<add><![CDATA[$_['button_save_continue']           = 'Save & Continue';]]></add>
+		</operation>
+		
+	</file>
+	
+	<file name="admin/controller/catalog/product.php">
+
+		<operation error="log">
+			<search position="after" >
+			<![CDATA[$this->data['button_save'] = $this->language->get('button_save');]]></search> 
+			<add><![CDATA[$this->data['button_save_continue'] = $this->language->get('button_save_continue');]]></add>
+		</operation>
+	
+		<operation error="log">
+			<search position="replace" >
+			<![CDATA[$this->model_catalog_product->addProduct($this->request->post);]]></search> 
+			<add><![CDATA[$product_id=$this->model_catalog_product->addProduct($this->request->post);]]></add>
+		</operation>
+		
+		<operation error="log">
+			<search position="before" >
+			<![CDATA[$this->model_catalog_product->editProduct($this->request->get['product_id'], $this->request->post);]]></search> 
+			<add><![CDATA[$product_id=$this->request->get['product_id'];]]></add>
+		</operation>
+				
+		<operation error="log">
+			<search position="replace" >
+			<![CDATA[$this->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search> 
+			<add><![CDATA[if(isset($this->request->post['save_continue']) and $this->request->post['save_continue'])
+			$this->redirect(HTTPS_SERVER . 'index.php?route=catalog/product/update&token=' . $this->session->data['token'].'&product_id='.$product_id);
+			else
+			$this->redirect(HTTPS_SERVER . 'index.php?route=catalog/product&token=' . $this->session->data['token'] . $url);]]></add>
+		</operation>
+		
+		
+		
+	</file>
+	
+	<file name="admin/model/catalog/product.php">
+	
+		<operation error="log">
+			<search position="after" >
+			<![CDATA[$this->cache->delete('product');]]></search> 
+			<add><![CDATA[return $product_id;]]></add>
+		</operation>
+		
+	</file>
+	
+	<file name="admin/view/template/catalog/product_form.tpl">
+	
+		<operation error="log">
+			<search position="replace" >
+			<![CDATA[<div class="buttons"><a onclick="$('#form').submit();" class="button"><?php echo $button_save; ?></a><a href="<?php echo $cancel; ?>" class="button"><?php echo $button_cancel; ?></a></div>]]></search> 
+			<add><![CDATA[<div class="buttons"><a onclick="$('#form').submit();" class="button"><?php echo $button_save; ?></a><a onclick="sav_con()" class="button"><span><?php echo $button_save_continue; ?></span></a><a onclick="location = '<?php echo $cancel; ?>';" class="button"><?php echo $button_cancel; ?></a></div><script language="javascript">
+    function sav_con(){
+        $('#form').append('<input type="hidden" id="save_continue" name="save_continue" value="1"  />');
+        $('#form').submit();
+   }
+    </script>]]></add>
+		</operation>
+		
+	</file>
+	
+	
+</modification>

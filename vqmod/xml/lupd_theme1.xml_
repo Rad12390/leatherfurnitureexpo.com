@@ -1,0 +1,26 @@
+<modification>
+	<id>Live Update Product Price - Theme (Default)</id>
+	<version>1.0</version>
+	<vqmver>2.1.5</vqmver>
+	<author>VINDHYAVART</author>	
+<!--Change your theme folder name here i.e. "catalog/view/theme/[PUT YOUR THEME FOLDER NAME HERE]/template/product/product.tpl" By default its set for Default theme-->
+	<file name="catalog/view/theme/default/template/product/product_bundle_right.tpl">
+		<operation error="skip">
+			<search position="replace" offset="1"><![CDATA[<?php if (!$special) { ?>]]></search>
+			<add><![CDATA[<?php if (!$special) { ?><span class="holder_price_reg"><?php echo $price; ?></span>]]>
+			</add>
+		</operation>
+
+		<operation error="skip">
+			<search position="replace"><![CDATA[<span class="price-old"><?php echo $price; ?></span> <span class="price-new"><?php echo $special; ?></span>]]></search>
+			<add><![CDATA[<span class="price-old holder_price_std"><?php echo $price; ?></span> <span class="price-new holder_price_reg"><?php echo $special; ?></span>]]>
+			</add>
+		</operation>
+
+		<operation error="skip">
+			<search position="replace"><![CDATA[<span class="price-tax"><?php echo $text_tax; ?> <?php echo $tax; ?></span><br />]]></search>
+			<add><![CDATA[<span class="price-tax"><?php echo $text_tax; ?> <span class="holder_tax_reg"><?php echo $tax; ?></span></span><br />]]>
+			</add>
+		</operation>
+	</file>
+</modification>

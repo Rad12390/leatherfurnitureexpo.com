@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<modification>
+    <id><![CDATA[Full width slider]]></id>
+    <version><![CDATA[1.5.6.4]]></version>
+    <vqmver><![CDATA[5.2.9.4]]></vqmver>
+    <author><![CDATA[Kavita]]></author>
+   <file name="admin/language/english/setting/setting.php" error="log">
+		<operation>
+			<search position="after"><![CDATA[$_['text_display_product_starting_price_on_category_page'] = 'Display Product Starting Price On Category Page:';]]></search>
+			<add><![CDATA[$_['text_full_width_slider'] = 'Display Full Width Slider On Home Page:';
+                              ]]></add>
+		</operation>
+                
+	</file>     
+   <file name="admin/view/template/setting/setting.tpl" error="log">
+		<operation>
+			<search position="before"><![CDATA[<td><?php echo $text_display_product_starting_price_on_category_page; ?></td>]]></search>
+			<add><![CDATA[<tr> 
+                                    <td><?php echo $text_full_width_slider; ?></td>            
+                                          <td><?php if ($config_full_width_slider ) { ?>
+                                    <input type="radio" name="config_full_width_slider" value="1" checked="checked" />
+                                    <?php echo $text_yes; ?>
+                                    <input type="radio" name="config_full_width_slider" value="0" />
+                                    <?php echo $text_no; ?>
+                                    <?php } else { ?>
+                                    <input type="radio" name="config_full_width_slider" value="1" />
+                                    <?php echo $text_yes; ?>
+                                    <input type="radio" name="config_full_width_slider" value="0" checked="checked" />
+                                    <?php echo $text_no; ?>
+                                    <?php } ?></td>
+                                </tr>      
+                              
+
+  ]]></add>
+		</operation>
+                
+	</file>   
+    <file name="admin/controller/setting/setting.php" error="log">
+		<operation>
+			<search position="before"><![CDATA[if (isset($this->request->post['config_display_product_starting_price_on_category_page'])) {]]></search>
+			<add><![CDATA[if (isset($this->request->post['config_full_width_slider'])) {
+			$this->data['config_full_width_slider'] = $this->request->post['config_full_width_slider'];
+		} else {
+			$this->data['config_full_width_slider'] = $this->config->get('config_full_width_slider');			
+		}
+]]></add>
+		</operation>
+                
+                <operation>
+			<search position="before"><![CDATA[$this->data['text_display_product_starting_price_on_category_page'] = $this->language->get('text_display_product_starting_price_on_category_page');]]></search>
+			<add><![CDATA[ $this->data['text_full_width_slider'] = $this->language->get('text_full_width_slider');
+                        ]]></add>
+		</operation>
+                
+	</file>      
+        
+                       <file name="admin/view/template/module/banner.tpl" error="log">           
+                <operation>
+			<search position="before"><![CDATA[<td class="left"><?php echo $entry_status; ?></td>]]></search>
+			<add><![CDATA[<td class="left"><?php echo $entry_full_width; ?></td>]]></add>
+		</operation>
+                
+		<operation>
+			<search position="before"><![CDATA[<td class="left"><select name="banner_module[<?php echo $module_row; ?>][status]">]]></search>
+			<add><![CDATA[ <td class="left">
+                        <?php  if ($module['full_width'] == 1  ) { ?>
+                                    <?php echo $text_yes; ?>
+                                    <input type="radio" name="banner_module[<?php echo $module_row; ?>][full_width]" value="1" checked="checked" />
+                                    <?php echo $text_no; ?>
+                                    <input type="radio" name="banner_module[<?php echo $module_row; ?>][full_width]" value="0" />  
+                                    <?php } else { ?>
+                                    <?php echo $text_yes; ?>
+                                    <input type="radio" name="banner_module[<?php echo $module_row; ?>][full_width]" value="1" />
+                                    <?php echo $text_no; ?>
+                                    <input type="radio" name="banner_module[<?php echo $module_row; ?>][full_width]" value="0" checked="checked" />
+                                    <?php } ?>
+                            </td>]]></add>
+		</operation>  
+                
+                <operation>
+			<search position="replace"><![CDATA[<td colspan="7"></td>]]></search>
+			<add><![CDATA[ <td colspan="8"></td>
+                        ]]></add>
+		</operation>
+                
+                <operation>
+			<search position="before"><![CDATA[html += '    <td class="left"><select name="banner_module[' + module_row + '][status]">';]]></search>
+			<add><![CDATA[ html += '       <td class="left"> <?php echo $text_yes ?>  <input type="radio" name="banner_module[' + module_row + '][full_width]" value="1" checked="checked" />\n\
+                                    <?php echo $text_no ?> <input type="radio" name="banner_module[' + module_row + '][full_width]" value="0" /></td>';]]></add>
+		</operation>
+                             
+	</file>    
+        
+                           <file name="admin/controller/module/banner.php" error="log">
+		<operation>
+			<search position="before"><![CDATA[$this->data['entry_status'] = $this->language->get('entry_status');]]></search>
+			<add><![CDATA[ $this->data['entry_full_width'] = $this->language->get('entry_full_width');]]></add>
+		</operation>  
+                             
+	</file>   
+        
+           <file name="admin/language/english/module/banner.php" error="log">
+		<operation>
+			<search position="before"><![CDATA[$_['entry_status']        = 'Status:';]]></search>
+			<add><![CDATA[$_['entry_full_width']        = 'Full Width:';]]></add>
+		</operation>  
+                             
+	</file>  
+        
+           <file name="catalog/controller/module/banner.php" error="log">
+		<operation>
+			<search position="after"><![CDATA[protected function index($setting) {]]></search>
+			<add><![CDATA[$this->data['setting']=$setting;]]></add>
+		</operation>  
+                             
+	</file>   
+          
+           <file name="catalog/view/theme/sofa/template/module/banner.tpl" error="log">
+               
+		<operation>
+			<search position="before"><![CDATA[<div class="banner_top" >]]></search>
+			<add><![CDATA[ </div>
+</div>]]></add>
+		</operation>  
+                
+                <operation>
+			<search position="after" offset="13"><![CDATA[<div id="banner<?php echo $module; ?>" class="banner">]]></search>
+			<add><![CDATA[ <div id="container">
+<div id="content" class="bundle_right">]]></add>
+		</operation>  
+                
+                 <operation>
+			<search position="before"><![CDATA[foreach ($banners as $banner) {]]></search>
+			<add><![CDATA[ if($this->config->get('config_full_width_slider') && $setting['full_width'] == 1){]]></add>
+		</operation>  
+                
+                 <operation>
+			<search position="after" offset="11"><![CDATA[<div id="banner<?php echo $module; ?>" class="banner">]]></search>
+			<add><![CDATA[ <?php }
+        else { 
+         foreach ($banners as $banner) {
+         if ($banner['link']) { ?>
+        <div><a href="<?php echo $banner['link']; ?>"><img src="<?php echo $banner['image']; ?>" alt="<?php echo $banner['title']; ?>" title="<?php echo $banner['title']; ?>" /></a></div>
+        <?php } else {  ?>
+        <div><img src="<?php echo $banner['image']; ?>" alt="<?php echo $banner['title']; ?>" title="<?php echo $banner['title']; ?>" /></div>
+        <?php } 
+        }   
+        } ?>]]></add>
+		</operation>  
+                
+                 <operation>
+			<search position="replace"><![CDATA[ <div class="banner_top" >]]></search>
+			<add><![CDATA[ <div class="banner_top" style="width:100%" >]]></add>
+		</operation>  
+
+                             
+	</file>     
+                                       
+</modification>

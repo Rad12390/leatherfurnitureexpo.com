@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+	<id>Better Category SEO Urls</id>
+	<version>1.0.0</version>
+	<vqmver>2.1.5</vqmver>
+	<author>Jay Gilford - jay@jaygilford.com</author>
+    
+	<file name="catalog/controller/common/seo_url.php">
+		<operation>
+			<search position="after"><![CDATA[WHERE keyword =]]></search>
+			<add><![CDATA[				
+				if($query->num_rows > 1 && !empty($this->request->get['path'])) {
+					$path_parts = explode('_', $this->request->get['path']);
+					$parent_id = (int) array_pop($path_parts);
+					
+					foreach($query->rows as $row) {
+						$query_parts = explode('=', $row['query']);
+						
+						if(count($query_parts) == 2 && $query_parts[0] == 'category_id') {
+							$category_id = (int) $query_parts[1];
+							$result = $this->db->query("SELECT category_id FROM `" . DB_PREFIX . "category` WHERE `category_id` = '$category_id' AND `parent_id` = '$parent_id'");
+							
+							if($result->num_rows) {
+								$query->row = $row;
+								break;
+							}
+						}
+					}
+				}]]></add>
+		</operation>
+	</file>
+    
+    <!-- TEMPLATE
+    
+	<file name="">
+		<operation>
+			<search position="before"><![CDATA[]]></search>
+			<add><![CDATA[]]></add>
+		</operation>
+	</file>
+    
+	<file name="">
+		<operation>
+			<search position="after"><![CDATA[]]></search>
+			<add><![CDATA[]]></add>
+		</operation>
+	</file>
+    
+    -->
+    
+</modification>

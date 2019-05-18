@@ -1,0 +1,38 @@
+<modification>
+	<id>Product Addon</id>
+	<version>1.0</version>
+	<vqmver>2.3.0</vqmver>
+	<author>Intersoft Professional</author>
+
+<file name="catalog/controller/checkout/cart.php">
+        <operation>
+		<search position="before"><![CDATA[if (isset($this->request->post['shipping_method'])) {]]></search>		
+		<add><![CDATA[ if($this->config->get('addons_status')) { 
+                    $this->data['addons_model_name'] = $this->config->get('addons_model_name');
+                    $this->data['addons_price'] = $this->currency->format($this->config->get('addons_price'));
+                }
+                else {
+                    $this->data['addons_model_name'] = '';
+                    $this->data['addons_price'] = '';
+                }]]></add>
+	</operation>   
+	<operation>
+		<search position="before"><![CDATA[if (isset($this->request->post['shipping_method'])) {]]></search>		
+		<add><![CDATA[ $this->data['addons'] = '';
+                         
+                        if (isset($this->request->post['next_addons']) && !isset($this->request->post['addons'])) {
+                                $this->data['addons'] = '';
+                                unset($this->session->data['addons']);		
+			}elseif(isset($this->request->post['next_addons']) && isset($this->request->post['addons'])) {
+				$this->data['addons'] = $this->request->post['addons'];	
+                                $this->session->data['addons'] = $this->request->post['addons'];
+			}elseif (isset($this->session->data['addons'])) {
+				$this->data['addons'] = $this->session->data['addons'];
+			} ]]></add>
+	</operation>   
+</file>
+
+
+
+                        
+</modification>

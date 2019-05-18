@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+	<id><![CDATA[Disable Affiliate]]></id>
+	<version><![CDATA[2.2]]></version>
+	<vqmver><![CDATA[2.1.x]]></vqmver>
+	<author><![CDATA[<a onClick="window.open('http://www.opencart.com/index.php?route=extension/extension&filter_username=jedipi');" title="View all OpenCart extension by Thy Consultants">Thy Consultants</a>]]></author>
+	
+	<file name="catalog/controller/affiliate/login.php">
+		<operation>
+			<search position="after"><![CDATA[public function index() {]]></search>
+			<add><![CDATA[$this->redirect($this->url->link('common/home', '', 'SSL'));]]></add>
+		</operation>
+	</file>
+        <file name="catalog/controller/affiliate/logout.php">
+		<operation>
+			<search position="after"><![CDATA[public function index() {]]></search>
+			<add><![CDATA[$this->redirect($this->url->link('common/home', '', 'SSL'));]]></add>
+		</operation>
+	</file>
+	<file name="catalog/controller/affiliate/register.php">
+		<operation>
+			<search position="after"><![CDATA[public function index() {]]></search>
+			<add><![CDATA[$this->redirect($this->url->link('common/home', '', 'SSL'));]]></add>
+		</operation>
+	</file>
+	<file name="catalog/controller/affiliate/forgotten.php">
+		<operation>
+			<search position="after"><![CDATA[public function index() {]]></search>
+			<add><![CDATA[$this->redirect($this->url->link('common/home', '', 'SSL'));]]></add>
+		</operation>
+	</file>
+</modification>

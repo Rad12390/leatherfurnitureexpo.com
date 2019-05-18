@@ -1,0 +1,29 @@
+<modification>
+	<id>Resize Image Option Thumbnails + Popup</id>
+	<version>1.1</version>
+	<vqmver>2.1.5</vqmver>
+	<author>Concept211</author>
+
+	<file name="catalog/controller/product/product.php">
+		<operation>
+			<search position="replace"><![CDATA[
+			'image'                   => $this->model_tool_image->resize($option_value['image'], 50, 50),
+			]]></search>
+			<add><![CDATA[
+			'image'                   => $this->model_tool_image->resize($option_value['image'], 150, 150),
+			'popup'                   => $this->model_tool_image->resize($option_value['image'], 500, 500),
+			]]></add>
+		</operation>
+	</file>
+
+	<file name="catalog/view/theme/default/template/product/product.tpl">
+		<operation>
+			<search position="replace"><![CDATA[
+			<img src="<?php echo $option_value['image']; ?>" alt="<?php echo $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" />
+			]]></search>
+			<add><![CDATA[
+			<a href="<?php echo $option_value['popup']; ?>" title="<?php echo $option['name'] . ': ' . $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" class="fancybox" rel="fancybox-option-<?php echo $option['product_option_id']; ?>"><img src="<?php echo $option_value['image']; ?>" alt="<?php echo $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" /></a>
+			]]></add>
+		</operation>
+	</file>
+</modification>

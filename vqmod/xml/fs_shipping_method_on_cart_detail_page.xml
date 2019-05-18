@@ -1,0 +1,64 @@
+<modification>
+	<id>Shipping Mehtod At Front End</id>
+	<version>1.0</version>
+	<vqmver>2.3.0</vqmver>
+	<author>Intersoft Professional</author>
+	
+
+<file name="catalog/controller/checkout/cart.php">
+        <operation>
+		<search position="before"><![CDATA[if (isset($this->request->post['shipping_method']) && $this->validateShipping()) {]]></search>		
+		<add><![CDATA[ $this->request->post['shipping_method'] = 'free.free';
+                $this->request->post['next'] = 'shipping';
+		// Shipping
+                        $shipping_address['country_id'] = $this->config->get('config_country_id');
+                        $shipping_address['zone_id'] = '';
+                    
+			$quote_data = array();
+			$this->load->model('setting/extension');
+			$results = $this->model_setting_extension->getExtensions('shipping');
+
+			foreach ($results as $result) {
+				if ($this->config->get($result['code'] . '_status')) { 
+                                    if($result['code'] == 'free') {
+					$this->load->model('shipping/' . $result['code']);
+
+					$quote = $this->{'model_shipping_' . $result['code']}->getQuote($shipping_address); 
+					if ($quote) {
+						$quote_data[$result['code']] = array( 
+							'title'      => $quote['title'],
+							'quote'      => $quote['quote'], 
+							'sort_order' => $quote['sort_order'],
+							'last_date' => $quote['last_date'],
+							'error'      => $quote['error']
+						);
+					}
+                                    }
+				}
+			}
+
+			$sort_order = array();
+			foreach ($quote_data as $key => $value) {
+				$sort_order[$key] = $value['sort_order'];
+			}
+
+			array_multisort($sort_order, SORT_ASC, $quote_data);
+			$this->session->data['shipping_methods'] = $quote_data;
+                        $this->data['shipping_methods'] = $quote_data;
+                        
+                        if (isset($this->session->data['shipping_methods'])) {
+			$this->data['shipping_methods'] = $this->session->data['shipping_methods']; 
+                        } else {
+			$this->data['shipping_methods'] = array();
+                        } ]]></add>
+	</operation>   
+</file> 
+<file name="catalog/model/shipping/free.php">
+        <operation>
+		<search position="before"><![CDATA['text'         => $this->currency->format(0.00)]]></search>		
+		<add><![CDATA[ 'last_date' => $this->config->get('free_last_date'), ]]></add>
+	</operation>   
+             
+	
+</file>                        
+</modification>

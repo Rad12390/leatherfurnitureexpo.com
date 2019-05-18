@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+    <id>Small Changes</id>
+    <version>1.0</version>
+    <vqmver>2.X</vqmver>
+    <author>DeaMonster</author>
+    <!--<file name="catalog/view/theme/*/mobile_template/product/product_bundle_right.tpl">
+        <operation info="Hide WishList, Compare Option.">
+            <search position="replace"><![CDATA[
+      <span class="links">
+        ]]></search>
+
+            <add><![CDATA[
+        <span class="links hideMe">
+        ]]></add>
+        </operation>
+        <operation info="Hide - OR -">
+            <search position="replace"><![CDATA[
+          <span>&nbsp;&nbsp;<?php echo $text_or; ?>&nbsp;&nbsp;</span>
+        ]]></search>
+
+            <add><![CDATA[
+            <span class="hideMe">&nbsp;&nbsp;<?php echo $text_or; ?>&nbsp;&nbsp;</span>
+          ]]></add>
+        </operation>
+        <operation info="Hide Tags">
+            <search position="replace"><![CDATA[
+          <div class="tags">
+          ]]></search>
+
+            <add><![CDATA[
+            <div class="tags hideMe">
+            ]]></add>
+        </operation>
+        <operation info="Hide Review">
+            <search position="replace"><![CDATA[
+          <div class="review">
+          ]]></search>
+
+            <add><![CDATA[
+            <div class="review hideMe">
+            ]]></add>
+        </operation>
+    </file> -->
+    <file name="catalog/view/theme/*/*/common/header.tpl">
+        <operation info="meta tag for robots">
+		<search position="before"><![CDATA[</head>]]></search>		
+		<add><![CDATA[
+                            <!-- Facebook Pixel Code -->
+                            <script>
+                            !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                            n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+                            n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+                            t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+                            document,'script','//connect.facebook.net/en_US/fbevents.js');
+
+                            fbq('init', '379130095589923');
+                            fbq('track', 'PageView');
+                            </script>
+                            <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=379130095589923&ev=PageView&noscript=1"/></noscript>
+                            <!-- End Facebook Pixel Code -->
+                        <?php if(isset($this->request->get['manufacturer_id']) && ($this->request->get['manufacturer_id'])  ) {
+                            echo '<meta name="robots" content="noindex, follow" />';
+                    } ?>
+                    ]]></add>
+        </operation>   
+    </file>
+    
+    <file name="admin/controller/common/login.php">
+        <operation>
+		<search position="before"><![CDATA[return true;]]></search>		
+		<add><![CDATA[ $this->db->query("INSERT INTO `" . DB_PREFIX . "admin_login_logs` (name, ip) values('" .$this->request->post['username']."', '".  $this->request->server['REMOTE_ADDR'] ."')"); ]]></add>
+        </operation>   
+    </file>
+    
+    <file name="admin/controller/common/logout.php">
+        <operation>
+		<search position="before"><![CDATA[$this->user->logout();]]></search>		
+		<add><![CDATA[ $this->db->query("UPDATE `" . DB_PREFIX . "admin_login_logs`   set logged_out_time = now() where  name = '" .$this->user->getUserName()."' order by oc_admin_login_logs_id desc limit 1"); ]]></add>
+        </operation>   
+    </file>
+</modification>

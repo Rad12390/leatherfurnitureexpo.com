@@ -1,0 +1,157 @@
+/* all nav */
+.stellarnav { position: relative; width: 100%; z-index: 9900; line-height: normal; }
+.stellarnav ul { margin: 0; padding: 0; background:url(../../image/menu-bg.png) left 26px repeat-x; }
+.stellarnav li { list-style: none; display: block; margin: 0; padding: 0; position: relative; line-height: normal; vertical-align: middle; }
+.stellarnav > ul > li{ padding:0 0 22px; }
+.stellarnav li a { padding:10px; display: block; text-decoration: none; color: #777; font-weight: normal; font-size: 13px; font-family: FuturaStdBook; box-sizing: border-box; -webkit-transition: all .3s ease-out; -moz-transition: all .3s ease-out; transition: all .3s ease-out; }
+@media (min-width:918px) and (max-width:938px) {
+   .stellarnav li a {
+    font-size:11px;
+   }
+}
+/* main level */
+.stellarnav > ul > li { display: inline-block;  }
+.stellarnav > ul > li.fixed-left{ float:left; clear:left; }
+.stellarnav > ul > li.fixed-right{ text-align:right;float:right; }
+.stellarnav > ul > li > a { padding: 0 12px 0px; } 
+.stellarnav > ul > li.fixed-left > a { padding-left:0; clear:left; } 
+.stellarnav > ul > li.fixed-right > a { padding-right:0; }
+.stellarnav > ul > li.blue-menu > a{ color:#4d80ae;} 
+
+/* first level dd */
+.stellarnav ul ul { top: 23px; width: 220px; position: absolute; z-index: 9; text-align: left; display: none; background:#d8d8d8; border:1px solid #6e6e6e; }
+/*FOR COLOR CHANGES*/
+.stellarnav ul ul { background:#ececec; border:1px solid #ccc; }
+/*FOR COLOR CHANGES*/
+.stellarnav li li { display: block; }
+
+/* second level dd */
+.stellarnav ul ul ul { top: -1px; /* dd animtion - change to auto to remove */ left: 220px; }
+.stellarnav > ul > li:hover > ul > li:hover > ul { opacity: 1; visibility: visible; top: -1px; }
+
+/* .drop-left */
+.stellarnav > ul > li.drop-left:hover > ul { right: 0; }
+.stellarnav li.drop-left ul ul { left: auto; right: 220px; }
+
+/* light theme */
+.stellarnav.light { background: rgba(255, 255, 255, 1); }
+.stellarnav.light ul ul { background: rgba(255, 255, 255, 1); }
+.stellarnav.light li a { color: #000; }
+.stellarnav.light .menu-toggle { color: rgba(0, 0, 0, 1); }
+
+/* dark theme */
+.stellarnav.dark { background: rgba(0, 0, 0, 1); }
+.stellarnav.dark ul ul { background: rgba(0, 0, 0, 1); }
+.stellarnav.dark li a { color: #FFF; }
+.stellarnav.dark .menu-toggle { color: rgba(255, 255, 255, 1); }
+/* sticky nav */ 
+.stellarnav.fixed { position: fixed; width: 100%; top: 0; left: 0; z-index: 9999; }
+
+.stellarnav li li{  padding:0 20px; }
+.stellarnav ul li ul li a{ padding:6px 15px; }
+
+/* only used when 'scrollbarFix' is set to true in the js. This fixes horizontal scrollbar caused by the dd menus that are very long.*/
+body.stellarnav-noscroll-x { overflow-x: hidden; }
+
+/* general styling */
+/*.stellarnav li.has-sub > a:after { content: '\f0d7'; font-family: 'FontAwesome'; margin-left: 10px; }
+.stellarnav li li.has-sub > a:after { content: '\f0da'; font-family: 'FontAwesome'; margin-left: 10px; }
+.stellarnav li.drop-left li.has-sub > a:after { float: left; content: '\f0d9'; font-family: 'FontAwesome'; margin-right: 10px; }*/
+.stellarnav.hide-arrows li.has-sub > a:after, .stellarnav.hide-arrows li li.has-sub > a:after, .stellarnav.hide-arrows li.drop-left li.has-sub > a:after { display: none; }
+.stellarnav .menu-toggle, .stellarnav .close-menu { display: none; text-transform: uppercase; text-decoration: none; }
+.stellarnav .call-btn-mobile { display: none; }
+.stellarnav .dd-toggle { display: none; position: absolute; top: 0; right: 0; padding: 0; width: 30px; height: 24px; line-height:24px; text-align: center; z-index: 9; border: 0; }
+.stellarnav .dd-toggle i { position: absolute; margin: auto; top: 21%; left: 0; right: 0; -webkit-transition: transform .3s ease-out; -moz-transition: transform .3s ease-out; transition: transform .3s ease-out; }
+.stellarnav.mobile > ul > li > a.dd-toggle { padding: 0; }
+.stellarnav li.call-btn-mobile,.stellarnav li.call-btn-location { display: none; }
+.stellarnav li.open > a.dd-toggle i { -webkit-transform: rotate(135deg); -ms-transform: rotate(135deg); -o-transform: rotate(135deg); transform: rotate(135deg); }
+
+/* Fallback for slow javascript */
+@media only screen and (max-width : 767px) {
+    .stellarnav { overflow: hidden; display: block; }
+    .stellarnav ul { position: relative; display: none; }
+    .stellarnav.mobile.active > ul { background-color: rgb(92, 145, 190); }
+    .stellarnav.mobile ul li a { color: #fff; }
+}
+
+/* mobile nav */
+.stellarnav .menu-toggle { color: #777; float:left; margin-left:11px; font-weight: bold; }
+.stellarnav.mobile { position: static; }
+.stellarnav.mobile.fixed { position: static; }
+.stellarnav.mobile ul { position: relative; display: none; width:100%; }
+.stellarnav.mobile.active { padding-bottom: 0; }
+.stellarnav.mobile.active > ul { display: block; }
+.stellarnav.mobile ul { text-align: left; }
+.stellarnav.mobile > ul > li { display: block; }
+.stellarnav.mobile > ul > li > a { padding: 15px; }
+.stellarnav.mobile ul { background: #fff; }
+.stellarnav.mobile ul ul { position: relative; opacity: 1; visibility: visible; width: auto; display: none; -moz-transition: none; -webkit-transition: none; -o-transition: color 0 ease-in; transition: none; }
+.stellarnav.mobile ul ul ul { left: auto; top: auto; }
+.cat-menu-box ul li ul li{ padding:0; }
+.cat-menu-box ul li ul li:hover{ background-color:transparent; }
+.stellarnav.mobile li.drop-left ul ul { right: auto; }
+.stellarnav.mobile li a { border-bottom: 1px solid rgba(0, 0, 0, .15); }
+.stellarnav.mobile.light li a { border-bottom: 1px solid rgba(0, 0, 0, .15); }
+.stellarnav.mobile li a.dd-toggle { border: 0; } 
+.stellarnav.mobile.light li a.dd-toggle { border: 0; }
+.stellarnav.mobile .menu-toggle, .stellarnav.mobile .dd-toggle, .stellarnav.mobile .close-menu  { display: block; }
+.stellarnav.mobile li.call-btn-mobile { border-right: 1px solid rgba(255, 255, 255, .1); box-sizing: border-box; }
+.stellarnav.mobile li.call-btn-mobile, .stellarnav.mobile li.call-btn-location { display: inline-block; width: 50%; text-transform: uppercase; text-align: center; }
+.stellarnav.mobile li.call-btn-mobile.full, .stellarnav.mobile li.call-btn-location.full { display: block; width: 100%; text-transform: uppercase; border-right: 0; text-align: left; }
+.stellarnav.mobile li.call-btn-mobile i, .stellarnav.mobile li.call-btn-location i { margin-right: 5px; }
+.stellarnav.mobile.light ul { background: rgba(255, 255, 255, 1); }
+.stellarnav.mobile ul { background: rgba(255, 255, 255, 1); }
+.stellarnav.mobile ul ul { background: rgba(0, 0, 0, .06); }
+.stellarnav.mobile.light li.call-btn-mobile { border-right: 1px solid rgba(0, 0, 0, .1); }
+.stellarnav.mobile.top { position: absolute; width: 100%; top: 0; left: 0; z-index: 9999; }
+.stellarnav.mobile li.has-sub > a:after, .stellarnav.mobile li li.has-sub > a:after, .stellarnav.mobile li.drop-left li.has-sub > a:after { display: none; }
+/* mobile nav */
+
+
+
+@media (max-width:767px){  
+    #main-nav.stellarnav.mobile { margin-bottom: 0px; }
+    #main-nav.stellarnav.mobile .menu-toggle { float: left; padding: 0; margin: 20px 18px 0 10px; }
+    #main-nav.stellarnav.mobile .menu-toggle .icon-bar { display: block; width: 20px; height: 3px; background-color: #fff;margin-top: 4px; transition: all 0.4s ease-in 0s; }
+    #main-nav.stellarnav.mobile .menu-toggle .icon-bar.one { margin: 0; }
+    #main-nav.stellarnav.mobile.active .menu-toggle .icon-bar.second { display: none; }
+    #main-nav.stellarnav.mobile.active .menu-toggle .icon-bar.one { transform: rotate(45deg); margin-top: 6px; }
+    #main-nav.stellarnav.mobile.active .menu-toggle .icon-bar.third { transform: rotate(-45deg); margin-top: -3px; }
+
+
+    /*STELLARNAV*/
+    #main-nav.stellarnav > ul { margin-bottom: 15px;}
+    .stellarnav.mobile > ul > li, .stellarnav > ul > li.fixed-left{ float:none; padding:0; text-align:left; }
+    .stellarnav.mobile ul li a{ padding:5px 15px; font-size:10px; text-transform:uppercase; }
+    .stellarnav.mobile ul ul{ top:-1px; padding:0; border:0; }
+    .stellarnav ul li ul li a{ font-size:10px; }
+    /*STELLARNAV*/
+
+
+}
+
+
+/*  custom code */
+@media (min-width:1024px) and (max-width: 1049px) {
+	.stellarnav > ul > li > a {
+		padding: 0 5px 0px;
+	}
+}
+@media (min-width:767px) and (max-width: 800px) {
+    .stellarnav > ul > li > a {padding: 0 6px 0 ;font-size: 9px; } 
+}
+@media (min-width:801px) and (max-width: 840px) {
+    .stellarnav > ul > li > a {padding: 0 6px 0; font-size: 10px;} 
+}
+/*  custom code */
+@media (min-width:840px) and (max-width: 1000px) {
+    .stellarnav > ul > li > a { padding-right:0; } 
+}
+
+/*  custom code */
+@media (min-width:1004px) and (max-width: 1024px) {
+    .stellarnav > ul > li > a {  padding: 0 6px 0 ; } 
+}
+@media (min-width:840px) and (max-width: 1004px) {
+	.stellarnav li a{ font-size:11px;}
+}

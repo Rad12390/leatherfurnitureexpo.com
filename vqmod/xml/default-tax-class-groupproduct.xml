@@ -1,0 +1,12 @@
+<modification>
+	<id>Default Tax Class</id>
+	<version>1.0.0</version>
+	<vqmver>1.0.0</vqmver>
+	<author>Fabius - http://opencartit.altervista.org</author>
+	<file name="admin/controller/catalog/product_grouped.php">
+		<operation>
+			<search position="replace"><![CDATA[$this->data['tax_class_id'] = 0;]]></search>
+			<add><![CDATA[$this->data['tax_class_id'] = ($this->config->has('aes_default_product_tax_class_id') ? $this->config->get('aes_default_product_tax_class_id') : 0);]]></add>
+		</operation>
+        </file>
+</modification>

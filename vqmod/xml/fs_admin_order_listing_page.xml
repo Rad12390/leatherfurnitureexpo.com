@@ -1,0 +1,282 @@
+<modification>
+	<id>Change Edit View Links</id>
+	<version>1.0</version>
+	<vqmver>2.3.0</vqmver>
+	<author>Intersoft Professional</author>	
+<file name="admin/controller/sale/order.php,admin/controller/sale/customorder.php">
+        <operation>
+		<search position="replace"><![CDATA[
+			'href' => $this->url->link('sale/order/info', 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+                    ]]></search>		
+		<add><![CDATA[ 'href' => $this->url->link('sale/customorder/info', 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL') ]]></add>
+	</operation> 
+        
+        <operation>
+		<search position="replace"><![CDATA[
+			'href' => $this->url->link('sale/order/update', 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+                    ]]></search>		
+		<add><![CDATA[ 'href' => $this->url->link('sale/customorder/update', 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL') ]]></add>
+	</operation>
+        
+        <operation>
+		<search position="replace"><![CDATA[$this->data['insert'] = $this->url->link('sale/order/insert', 'token=' . $this->session->data['token'], 'SSL');]]></search>		
+		<add><![CDATA[ $this->data['insert'] = $this->url->link('sale/customorder/insert', 'token=' . $this->session->data['token'], 'SSL');]]></add>
+	</operation>
+        
+        <operation>
+		<search position="before"><![CDATA[$this->data['invoice'] = $this->url->link('sale/order/invoice', 'token=' . $this->session->data['token'], 'SSL');]]></search>		
+		<add><![CDATA[$this->data['report_invoice'] = $this->url->link('sale/customorder/reportinvoice', 'token=' . $this->session->data['token'], 'SSL'); 
+                              $this->data['csv_invoice'] = $this->url->link('sale/customorder/ordercsv', 'token=' . $this->session->data['token'], 'SSL');
+                              $this->data['furniture_shipped_csv_invoice'] = $this->url->link('sale/customorder/shipped_ordercsv', 'token=' . $this->session->data['token'], 'SSL');
+                        ]]></add>
+	</operation>
+
+        
+        <operation>
+		<search position="replace"><![CDATA[$this->data['invoice'] = $this->url->link('sale/order/invoice', 'token=' . $this->session->data['token'], 'SSL');]]></search>		
+		<add><![CDATA[$this->data['invoice'] = $this->url->link('sale/customorder/invoice', 'token=' . $this->session->data['token'], 'SSL');]]></add>
+	</operation>
+        
+        <operation>
+		<search position="replace"><![CDATA[$this->data['invoice'] = $this->url->link('sale/order/invoice', 'token=' . $this->session->data['token'] . '&order_id=' . (int)$this->request->get['order_id'], 'SSL');]]></search>		
+		<add><![CDATA[$this->data['invoice'] = $this->url->link('sale/customorder/invoice', 'token=' . $this->session->data['token'] . '&order_id=' . (int)$this->request->get['order_id'], 'SSL');]]></add>
+	</operation>
+        
+         <operation>
+		<search position="after"><![CDATA[$this->data['entry_company'] = $this->language->get('entry_company');]]></search>		
+		<add><![CDATA[ $this->data['entry_order_id'] = 'Order ID';]]></add>
+	</operation>  
+        <operation>
+		<search position="after"><![CDATA[$this->data['text_name'] = $this->language->get('text_name');]]></search>		
+		<add><![CDATA[ $this->data['text_order_id'] = 'Order ID';]]></add>
+	</operation>  
+               	
+</file>               
+<file name="admin/controller/common/home.php">
+        <operation>
+		<search position="replace"><![CDATA[
+			'href' => $this->url->link('sale/order/info', 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'], 'SSL')
+                    ]]></search>		
+		<add><![CDATA[ 'href' => $this->url->link('sale/customorder/info', 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'], 'SSL') ]]></add>
+	</operation> 
+</file>
+<file name="admin/view/template/sale/order_list.tpl">
+        <operation>
+		<search position="replace"><![CDATA[<div class="buttons"><a onclick="$('#form').attr('action', '<?php echo $invoice; ?>'); $('#form').attr('target', '_blank'); $('#form').submit();" class="button"><?php echo $button_invoice; ?></a><a href="<?php echo $insert; ?>" class="button"><?php echo $button_insert; ?></a><a onclick="$('#form').attr('action', '<?php echo $delete; ?>'); $('#form').attr('target', '_self'); $('#form').submit();" class="button"><?php echo $button_delete; ?></a></div>]]></search>		
+		<add><![CDATA[ 
+<div class="buttons"><a href="javascript:void(0);" onclick="validate_csv('<?php echo $furniture_shipped_csv_invoice; ?>')" class="button"><?php echo $furniture_shipped_csv_report; ?></a><a href="javascript:void(0);" onclick="validate_csv('<?php echo $csv_invoice; ?>')" class="button"><?php echo $scv_report; ?></a> <a href="javascript:void(0);" onclick="validate_report('<?php echo $report_invoice; ?>')" class="button"><?php echo $button_report; ?></a> <a href="javascript:void(0);" onclick="validate_invoice('<?php echo $invoice; ?>')" class="button"><?php echo $button_invoice; ?></a><a href="<?php echo $insert; ?>" class="button"><?php echo $button_insert; ?></a> <a onclick="$('#form').attr('action', '<?php echo $delete; ?>'); $('#form').attr('target', '_self'); $('#form').submit();" class="button"><?php echo $button_delete; ?></a></div><input type="text" id="filter_common" class="filter_common" name="filter_common" value="<?php echo $filter_common; ?>" /> ]]></add>
+	</operation> 
+         <operation>
+		<search position="replace"><![CDATA[<td><input type="text" name="filter_date_added" value="<?php echo $filter_date_added; ?>" size="12" class="date" /></td>]]></search>		
+		<add><![CDATA[<td><input class="date" type="text" name="filter_from_date" value="<?php echo $filter_from_date; ?>" size="6" style="text-align: right;font-size:11px;" /> To 
+              <input class="date" type="text" name="filter_to_date" value="<?php echo $filter_to_date; ?>" size="6" style="text-align: right;font-size:11px;" /></td>]]></add>
+	</operation> 
+        <operation>
+		<search position="before"><![CDATA[<td class="left"><?php if ($sort == 'customer') { ?>]]></search>		
+		<add><![CDATA[<td>Order Items </td>]]></add>
+	</operation> 
+        <operation>
+		<search position="before"><![CDATA[<td><input type="text" name="filter_customer" value="<?php echo $filter_customer; ?>" /></td>]]></search>		
+		<add><![CDATA[<td><input type="text" style="width:97%;" name="filter_order_item" value="<?php echo $filter_order_item; ?>" /></td>]]></add>
+	</operation>
+        <operation>
+		<search position="before"><![CDATA[var filter_total = $('input[name=\'filter_total\']').attr('value');]]></search>		
+		<add><![CDATA[var filter_order_item = $('input[name=\'filter_order_item\']').attr('value');
+                    var filter_order_item = $('input[name=\'filter_order_item\']').attr('value');
+                    if (filter_order_item) {
+                    url += '&filter_order_item=' + encodeURIComponent(filter_order_item)+'&filter_order_item='+encodeURIComponent(filter_order_item); 	
+                } ]]></add>
+	</operation> 
+        <operation>
+		<search position="before"><![CDATA[var filter_total = $('input[name=\'filter_total\']').attr('value');]]></search>		
+		<add><![CDATA[var filter_from_date = $('input[name=\'filter_from_date\']').attr('value');
+	var filter_to_date = $('input[name=\'filter_to_date\']').attr('value');
+        if(filter_from_date != '' && filter_to_date == ''){
+            alert("Please select both dates");
+            return false;
+        } 
+        if(filter_from_date == '' && filter_to_date != ''){
+            alert("Please select both dates");
+            return false;
+        } 
+        if(filter_from_date > filter_to_date)
+        {
+            alert("Start date must be less than End date");
+            return false;
+        }
+	if (filter_from_date && filter_to_date) {
+		url += '&filter_from_date=' + encodeURIComponent(filter_from_date)+'&filter_to_date='+encodeURIComponent(filter_to_date);
+	}]]></add>
+	</operation> 
+         
+</file>                       
+<file name="admin/controller/sale/customorder.php">
+        <operation>
+		<search position="after"><![CDATA[$this->data['button_filter'] = $this->language->get('button_filter');]]></search>		
+		<add><![CDATA[ $this->data['button_report'] = $this->language->get('button_report');]]></add>
+	</operation> 
+</file>                       
+<file name="admin/controller/sale/order.php">
+        <operation>
+		<search position="after"><![CDATA[protected function getList() {]]></search>		
+		<add><![CDATA[ if (isset($this->request->get['filter_from_date']) && isset($this->request->get['filter_to_date'])) {                       $filter_from_date   = $this->request->get['filter_from_date'];
+			$filter_to_date       = $this->request->get['filter_to_date'];
+		} else {
+			$filter_from_date   = null;
+			$filter_to_date = null;
+		}]]></add>
+	</operation> 
+        <operation>
+		<search position="after"><![CDATA[protected function getList() {]]></search>		
+		<add><![CDATA[ if (isset($this->request->get['filter_order_item'])) {
+			$filter_order_item = $this->request->get['filter_order_item'];
+		} else {
+			$filter_order_item = null;
+		}]]></add>
+	</operation> 
+        <operation>
+		<search position="before"><![CDATA[if (strtotime($result['date_added']) > strtotime('-' . (int)$this->config->get('config_order_edit') . ' day')) {]]></search>		
+		<add><![CDATA[ /*group product name*/
+					$my_array = '';
+					$this->load->model('sale/customorder');
+					$this->data['products'] = array();
+					$products = $this->model_sale_customorder->get_main_product_name($result['order_id']);
+					 
+					 foreach($products as $prodct){
+						 foreach($prodct as  $p)
+						 {
+							 $my_array .= $p['main_product_name'].'<br>';
+						 }
+					 }
+				/*group product name*/]]></add>
+	</operation> 
+        <operation>
+		<search position="after"><![CDATA['customer'      => $result['customer'],]]></search>		
+		<add><![CDATA['ordered_products'=> $my_array,]]></add>
+	</operation> 
+        <operation>
+		<search position="after"><![CDATA['filter_order_status_id' => $filter_order_status_id,]]></search>		
+		<add><![CDATA[ 'filter_from_date'       => $filter_from_date,
+			'filter_to_date'         => $filter_to_date,]]></add>
+	</operation> 
+        <operation>
+		<search position="after"><![CDATA[$this->data['filter_order_status_id'] = $filter_order_status_id;]]></search>		
+		<add><![CDATA[ $this->data['filter_from_date'] = $filter_from_date;
+		$this->data['filter_to_date'] = $filter_to_date;]]></add>
+	</operation> 
+        <operation>
+		<search position="after"><![CDATA[$this->data['filter_order_status_id'] = $filter_order_status_id;]]></search>		
+		<add><![CDATA[ $this->data['filter_order_item'] = $filter_order_item;]]></add>
+	</operation> 
+        <operation>
+		<search position="after"><![CDATA[protected function getList() {]]></search>		
+		<add><![CDATA[ if (isset($this->request->get['filter_order_item'])) {
+			$filter_order_item = $this->request->get['filter_order_item'];
+		} else {
+			$filter_order_item = null;
+		}]]></add>
+	</operation> 
+        <operation>
+		<search position="after"><![CDATA['filter_order_id'        => $filter_order_id,]]></search>		
+		<add><![CDATA['filter_order_item'        => $filter_order_item,]]></add>
+	</operation> 
+</file>                       
+<file name="admin/model/sale/order.php">
+        <!--<operation>
+		<search position="before"><![CDATA[$sort_data = array(]]></search>		
+		<add><![CDATA[if (!empty($data['filter_common'])) {
+                         if (is_numeric($data['filter_common'])) {
+                 echo   $sql .= " AND CONCAT(o.firstname, ' ', o.lastname) LIKE '%" . $this->db->escape($data['filter_common']) . "%' OR email LIKE '%" . $this->db->escape($data['filter_common']) . "%'  OR o.order_id LIKE '%" . (int)$data['filter_common'] . "%' OR o.telephone LIKE '%" . (int)$data['filter_common'] . "%'" ;
+                            } else {
+                            $sql .= " AND CONCAT(o.firstname, ' ', o.lastname) LIKE '%" . $this->db->escape($data['filter_common']) . "%' OR email LIKE '%" . $this->db->escape($data['filter_common']) . "%'" ;
+                            }
+			
+		}
+		]]></add>
+	</operation> -->
+        <operation>
+		<search position="before"><![CDATA[if (!empty($data['filter_total'])) {]]></search>		
+		<add><![CDATA[if (!empty($data['filter_common'])) {
+                    if (is_numeric($data['filter_common'])) {
+                    //$sql .= "AND (CONCAT(firstname, ' ', lastname) LIKE '%" . $this->db->escape($data['filter_common']) . "%' OR email LIKE '%" . $this->db->escape($data['filter_common']) . "%'  OR order_id LIKE '%" . (int)$data['filter_common'] . "%' OR telephone LIKE '%" . (int)$data['filter_common'] . "%' )" ;
+                    $sql .= "AND (CONCAT(firstname, ' ', lastname) LIKE '%" . $this->db->escape($data['filter_common']) . "%' OR email LIKE '%" . $this->db->escape($data['filter_common']) . "%'  OR order_id LIKE '%" . (int)$data['filter_common'] . "%' OR ( replace(replace(replace(replace(replace (telephone, '-', ''), '(', '' ), '.', '' ), ')', ''), ' ', '') LIKE '%" . (int)$data['filter_common'] . "%') )" ;
+                    } else {
+                        $sql .= " AND (CONCAT(firstname, ' ', lastname) LIKE '%" . $this->db->escape($data['filter_common']) . "%' OR email LIKE '%" . $this->db->escape($data['filter_common']) . "%' OR ( telephone  LIKE '%" . $data['filter_common'] . "%' ) ) " ;
+                    }
+			
+		}
+		]]></add>
+	</operation> 
+        <operation>
+		<search position="after"><![CDATA[$sql .= " WHERE o.order_status_id = '" . (int)$data['filter_order_status_id'] . "'";]]></search>		
+		<add><![CDATA[if (!empty($data['filter_from_date']) && !empty($data['filter_to_date'])) {
+                    
+			$sql .= " AND DATE(o.date_added) >= DATE('" . $this->db->escape($data['filter_from_date']) . "') and DATE(o.date_added) <= DATE('" . $this->db->escape($data['filter_to_date']) . "')";
+		}]]></add>
+	</operation> 
+        <operation>
+		<search position="after"><![CDATA[$sql .= " WHERE o.order_status_id >= '0'";]]></search>		
+		<add><![CDATA[if (!empty($data['filter_from_date']) && !empty($data['filter_to_date'])) {
+                    
+			$sql .= " AND DATE(o.date_added) >= DATE('" . $this->db->escape($data['filter_from_date']) . "') and DATE(o.date_added) <= DATE('" . $this->db->escape($data['filter_to_date']) . "')";
+		}]]></add>
+	</operation> 
+        <operation>
+		<search position="before" index="1"><![CDATA[if (!empty($data['filter_total'])) {]]></search>		
+		<add><![CDATA[if (!empty($data['filter_order_item'])) {
+                    $sql2 = "select  DISTINCT (opp.order_id) from ".DB_PREFIX."order_product_parent as opp where opp.name LIKE '%". $this->db->escape($data['filter_order_item'])."%'";
+                    $query2 = $this->db->query($sql2);
+                    $order_id = array();
+                    if(count($query2->rows) > 0) {
+                        foreach ($query2->rows as $rows){
+                            $order_id[] = $rows['order_id'];
+                        }
+                        $sql .= " AND o.order_id IN(" . implode(',',$order_id) . ")";
+                    }
+                    else
+                    {
+                        $sql .= " AND o.order_id IN('')";
+                    }
+                }]]></add>
+	</operation> 
+        <operation>
+		<search position="before" index="2"><![CDATA[if (!empty($data['filter_total'])) {]]></search>		
+		<add><![CDATA[if (!empty($data['filter_order_item'])) {
+                    $sql2 = "select  DISTINCT (opp.order_id) from ".DB_PREFIX."order_product_parent as opp where opp.name LIKE '%". $this->db->escape($data['filter_order_item'])."%'";
+                    $query2 = $this->db->query($sql2);
+                    $order_id = array();
+                    if(count($query2->rows) > 0) {
+                        foreach ($query2->rows as $rows){
+                            $order_id[] = $rows['order_id'];
+                        }
+                        $sql .= " AND order_id IN(" . implode(',',$order_id) . ")";
+                    }
+                    else
+                    {
+                        $sql .= " AND order_id IN('')";
+                    }
+                }]]></add>
+	</operation>  
+        <operation>
+		<search position="after"><![CDATA[$sql .= " WHERE order_status_id = '" . (int)$data['filter_order_status_id'] . "'";]]></search>		
+		<add><![CDATA[if (!empty($data['filter_from_date']) && !empty($data['filter_to_date'])) {
+                        $sql .= " AND DATE(date_added) >= DATE('" . $this->db->escape($data['filter_from_date']) . "') and DATE(date_added) <= DATE('" . $this->db->escape($data['filter_to_date']) . "')";
+		}]]></add>
+	</operation> 
+        <operation>
+		<search position="after"><![CDATA[$sql .= " WHERE order_status_id > '0'";]]></search>		
+		<add><![CDATA[if (!empty($data['filter_from_date']) && !empty($data['filter_to_date'])) {
+                        $sql .= " AND DATE(date_added) >= DATE('" . $this->db->escape($data['filter_from_date']) . "') and DATE(date_added) <= DATE('" . $this->db->escape($data['filter_to_date']) . "')";
+		}]]></add>
+	</operation> 
+</file>                       
+                        
+
+<file name="admin/language/english/sale/order.php">
+        <operation>
+		<search position="after"><![CDATA[$_['entry_reward']                            = 'Reward:';]]></search>		<add><![CDATA[ $_['button_report']                            = 'Order Report'; $_['scv_report']                            = 'Order CSV'; $_['furniture_shipped_csv_report']                            = 'Furniture Shipped Order CSV';]]></add>
+	</operation> 
+</file>       
+
+                
+</modification>

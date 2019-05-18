@@ -1,0 +1,13 @@
+<modification>
+	<id>Canonical Category Link</id>
+	<version>1.0</version>
+	<vqmver>1.2.3</vqmver>
+	<author>uksb</author>
+	<file name="catalog/controller/product/category.php">
+		<operation>
+			<search position="replace"><![CDATA[         $this->document->setKeywords($category_info['meta_keyword']);]]></search>
+			<add><![CDATA[         $this->document->setKeywords($category_info['meta_keyword']);
+         $this->document->addLink($this->url->link('product/category', 'path=' . $category_id), 'canonical');]]></add>
+		</operation>
+	</file>
+</modification>

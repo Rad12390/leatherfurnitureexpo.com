@@ -1,0 +1,32 @@
+<modification>
+	<id>Week Specials</id>
+	<version>1.0</version>
+	<vqmver>2.3.0</vqmver>
+	<author>Intersoft Professional</author>	
+<file name="catalog/controller/checkout/cart.php">
+        <operation>
+		<search position="before"><![CDATA[if (isset($this->request->post['shipping_method'])) {]]></search>		
+		<add><![CDATA[ if($this->config->get('week_special_status')) { 
+                    $this->data['week_special_title'] = $this->config->get('week_special_title');
+                    $this->data['week_special_price'] = $this->currency->format($this->config->get('week_special_price'));
+                    $this->data['week_special_saving'] = $this->currency->format($this->config->get('week_special_saving'));
+                }
+                else {
+                    $this->data['week_special_title'] = '';
+                    $this->data['week_special_price'] = '';
+                    $this->data['week_special_saving'] = '';
+                }
+                        $this->data['week_special'] = '';
+                        if (isset($this->request->post['next_week_special']) && !isset($this->request->post['week_special'])) {
+                                $this->data['week_special'] = '';
+                                unset($this->session->data['week_special']);
+					
+			}elseif(isset($this->request->post['next_week_special']) && isset($this->request->post['week_special'])) {
+				$this->data['week_special'] = $this->request->post['week_special'];	
+                                $this->session->data['week_special'] = $this->request->post['week_special'];
+			}elseif (isset($this->session->data['week_special'])) { 
+				$this->data['week_special'] = $this->session->data['week_special'];
+			} ]]></add>
+	</operation>   	
+</file>               
+</modification>

@@ -1,0 +1,503 @@
+<modification>
+    <id>Product Attach File</id>
+    <version>5.1</version>
+    <vqmver>2.4.1</vqmver>
+    <author>www.MMOSolution.com</author>
+    <file name="admin/view/template/catalog/product_grouped_form.tpl">
+        <operation>
+            <search position="replace"><![CDATA[<a href="#tab-grouped"><?php echo $tab_grouped; ?></a>]]></search>
+      
+            <add><![CDATA[ 
+			<a href="#tab-grouped"><?php echo $tab_grouped; ?></a><a href="#tab-product-notes" class="tab-product-notes"><?php echo "Product Notes"; ?></a>
+                        <a href="#tab-product_attach"><?php echo $tab_attach_file_product; ?></a>
+              ]]></add>
+        </operation> 
+        <operation>
+            <search position="before"><![CDATA[<div id="tab-data">]]></search>
+      
+            <add><![CDATA[<div id="tab-product_attach">
+               
+                <a class="button" style="float: right; background-color:#ffb400;" href="./index.php?route=module/attachmanager&token=<?php echo $token;?>" target="_blank"><?php echo $text_attachments_setting ;?></a>
+                <div id="subtabs" class="htabs"><a href="#tab-internal"><?php echo $tab_attach_internal; ?></a><a href="#tab-external"><?php echo $tab_attach_external; ?></a></div>
+                <div id="tab-internal">
+            <table id="downloads" class="list">
+          <thead>
+            <tr>
+              <td class="left" style="width:100px; vertical-align: middle; "><?php echo $text_attach_file_product_icon; ?></td>
+              <td class="left" style="vertical-align: middle; "><?php echo $text_attach_file_product_name; ?></td>
+              <td style="display:none"  class="center" style="width:30px; vertical-align: middle; "><?php echo $text_attach_file_product_login; ?></td>
+              <td class="center" style="width:30px; vertical-align: middle; "><?php echo $text_attach_file_product_count; ?></td>
+              <td class="center" style="width:100px; vertical-align: middle; "><?php echo $text_attach_file_product_action; ?></td>
+            </tr>
+          </thead>
+          <?php $attach_row = 0; ?>
+          <?php foreach ($product_attachs as $product_attach) { ?>
+          <tbody id="attach_row<?php echo $attach_row; ?>">
+            <tr>
+              <td class="center">
+                <input type="hidden" name="product_attach[<?php echo $attach_row; ?>][filename]" value="<?php echo $product_attach['filename']; ?>" id="download<?php echo $attach_row; ?>"  />
+                <input type="hidden" name="product_attach[<?php echo $attach_row; ?>][product_attach_file_id]" value="<?php echo $product_attach['product_attach_file_id']; ?>" id="download<?php echo $attach_row; ?>"  />
+                <input type="hidden" name="product_attach[<?php echo $attach_row; ?>][download]" value="<?php echo $product_attach['download']; ?>" id="download<?php echo $attach_row; ?>"  />
+                <img src="<?php echo $product_attach['preview']; ?>" alt="" id="preview<?php echo $attach_row; ?>" class="image" onclick="download_upload('download<?php echo $attach_row; ?>', 'preview<?php echo $attach_row; ?>');" />
+              </td>
+              <td class="left" style="vertical-align: middle; ">
+              <input type="text" size="100" name="product_attach[<?php echo $attach_row; ?>][file]" value="<?php echo $product_attach['file']; ?>" id="mask-download<?php echo $attach_row; ?>"  /><span id="mask-ext-download<?php echo $attach_row; ?>">.<?php echo $product_attach['file_extention']; ?></span></td>
+              <td style="display:none" class="center" style="vertical-align: middle; "><input type="checkbox" name="product_attach[<?php echo $attach_row; ?>][login_required]" value="1" <?php  if($product_attach['login_required'] ==1) echo 'checked'; ?>> </td>
+              <td class="center" style="vertical-align: middle; "><?php echo $product_attach['download']; ?></td>
+              <td class="right"><a onclick="$('#attach_row<?php echo $attach_row; ?>').remove();" class="button"><span><?php echo $button_remove; ?></span></a></td>
+            </tr>
+          </tbody>
+          <?php $attach_row++; ?>
+          <?php } ?>
+          <tfoot>
+            <tr>
+              <td colspan="5" class="center"><a onclick="addattachfile();" class="button"><span><?php echo $button_add_attach_file_product; ?></span></a></td>
+            </tr>
+          </tfoot>
+        </table></div>
+                <?php if($this->config->get('extendlink') == '1'){ ?>
+                <div id="tab-external">
+                <table class="list" id="extendlink">
+           <thead>
+            <tr>
+              <td class="left" style="vertical-align: middle; "><?php echo $text_attach_extend_link_name; ?></td>
+              <td class="left" style="vertical-align: middle; "><?php echo $text_attach_extend_link_download; ?></td>
+              <td class="center" style="width:30px; vertical-align: middle; "><?php echo $text_attach_file_product_login; ?></td>
+              <td class="center" style="width:100px; vertical-align: middle; "><?php echo $text_attach_file_product_action; ?></td>
+            </tr>
+          </thead>
+           <?php $attach_exten_link = 0; ?>
+           <?php foreach ($exten_links as $exten_link) { ?>
+          <tbody id="attach_exten_link<?php echo $attach_exten_link; ?>">
+            <tr> 
+              <td class="left" style="vertical-align: middle;"><input type="text" name="exten_link[<?php echo $attach_exten_link; ?>][name]" style="width: 90%;" value="<?php echo isset($exten_link['link_name']) ? $exten_link['link_name'] : ''; ?>" /> <span class="required">*</span></td>
+              <td class="left" style="vertical-align: middle;"><input type="text" name="exten_link[<?php echo $attach_exten_link; ?>][download]" style="width: 90%;" value="<?php echo isset($exten_link['link_download']) ? $exten_link['link_download'] : ''; ?>" /> <span class="required">*</span></td>
+              <td class="center" style="vertical-align: middle; "><input type="checkbox" name="exten_link[<?php echo $attach_exten_link; ?>][login]" value="1" <?php  if(isset($exten_link['login']) && $exten_link['login'] ==1) echo 'checked'; ?>> </td>
+              <td class="right"><a onclick="$('#attach_exten_link<?php echo $attach_exten_link; ?>').remove();" class="button"><span><?php echo $button_remove; ?></span></a></td>
+            </tr>
+          </tbody>
+          <?php $attach_exten_link++; ?>
+          <?php } ?>
+          <tfoot>
+            <tr>
+              <td colspan="5" class="center"><a onclick="addattachlink();" class="button"><span><?php echo $button_add_attach_exten_link; ?></span></a></td>
+            </tr>
+          </tfoot>
+            </table></div>
+                <?php } ?>
+     </div>]]></add>
+        </operation>
+        <operation>
+            <search position="before"><![CDATA[<script type="text/javascript" src="view/javascript/jquery/ui/jquery-ui-timepicker-addon.js"></script>]]></search>
+      
+            <add><![CDATA[
+                <?php include "view/template/catalog/attachmanager.tpl"; ?>      
+      ]]></add>
+        </operation>
+        <operation>
+            <search position="after"><![CDATA[$('#tabs a').tabs(); ]]></search>
+      
+            <add><![CDATA[
+               $('#subtabs a').tabs();      
+      ]]></add>
+        </operation>
+    </file>
+    <file name="admin/controller/catalog/product_grouped.php">
+        <operation>
+            <search position="before"><![CDATA[
+      $this->data['heading_title'] = 'Grouped Product';
+                
+			]]></search>
+      
+            <add><![CDATA[ 
+                    $this->load->language('module/attachmanager');
+                    $this->data['tab_attach_file_product'] = $this->language->get('tab_attach_file_product');
+                    $this->data['text_attach_file_product_icon'] = $this->language->get('text_attach_file_product_icon');
+                    $this->data['text_attach_file_product_name'] = $this->language->get('text_attach_file_product_name');
+                    $this->data['text_attach_file_product_count'] = $this->language->get('text_attach_file_product_count');
+                    $this->data['text_attach_file_product_login'] = $this->language->get('text_attach_file_product_login');
+                    $this->data['text_attach_file_product_action'] = $this->language->get('text_attach_file_product_action');
+                    $this->data['button_add_attach_file_product'] = $this->language->get('button_add_attach_file_product');
+                    $this->data['button_add_attach_exten_link'] = $this->language->get('button_add_attach_exten_link');
+                    $this->data['text_download_manager'] = $this->language->get('text_download_manager');
+                    $this->data['tab_attach_internal'] = $this->language->get('tab_attach_internal');
+                    $this->data['tab_attach_external'] = $this->language->get('tab_attach_external');
+                    $this->data['text_attach_extend_link_name'] = $this->language->get('text_attach_extend_link_name');
+                    $this->data['text_attach_extend_link_download'] = $this->language->get('text_attach_extend_link_download');
+                    $this->data['text_attachments_setting'] = $this->language->get('text_attachments_setting');
+                    $this->load->model('setting/setting');
+                    $this->load->model('tool/image');
+                    $attachmanager = $this->model_setting_setting->getSetting('attachmanager');
+                    $attached_allowed = explode(',', $attachmanager['filetype']);
+
+
+                    $this->data['product_attachs'] = array();
+                    
+               
+                    if (isset($this->request->get['product_id'])) {
+                        
+                    $results = $this->model_catalog_product_grouped->getProductattachmanager($this->request->get['product_id']); 
+                    $this->data['exten_links'] = $this->model_catalog_product_grouped->getLinkdownload($this->request->get['product_id']);
+                         $attachmanager = $this->model_setting_setting->getSetting('attachmanager');
+                         $attached_allowed = explode(",", $attachmanager['filetype']);
+
+                        foreach ($results as $result) {
+                            if (file_exists(DIR_DOWNLOAD . '' . $result['filename'])) {
+                                $exten = strtolower(substr($result['filename'], strrpos($result['filename'], '.') + 1));
+                                if (in_array($exten, $attached_allowed)) {
+                                    if (!($this->model_tool_image->resize('attached_icon/' . $exten . '.png', 100, 100))) {
+                                        $preview = $this->model_tool_image->resize('attached_icon/default.png', 100, 100);
+                                    } else {
+                                        $preview = $this->model_tool_image->resize('attached_icon/' . $exten . '.png', 100, 100);
+                                    }
+                                    
+                                    $file = str_replace('.'.$exten,'',$result['mask']);
+                
+                                    $this->data['product_attachs'][] = array(
+                                        'preview' => $preview,
+                                        'file' => $file,
+                                        'file_extention' => $exten,
+                                        'filename' => $result['filename'],
+                                        'product_attach_file_id' => $result['product_attach_file_id'],
+                                        'login_required' => $result['login_required'],
+                                        'download' => $result['download']
+                                    );
+                                }
+                            }
+                        }		
+                    } 
+		  ]]></add>
+        </operation>
+    </file>
+    
+    <file name="admin/model/catalog/product_grouped.php">
+        <operation>
+            <search position="after"><![CDATA[
+       $product_id = $this->db->getLastId();
+			]]></search>
+      
+            <add><![CDATA[ 
+                //add when submit product_attach
+    if (isset($data['product_attach'])) {
+			foreach ($data['product_attach'] as $download) {
+                        if($download['filename'] !="" && is_file(DIR_DOWNLOAD.''.$download['filename'])){
+			    $login_required = isset($download['login_required']) ? 1 : 0;
+                            if ($download['file'] == "") {
+                                $filename = trim($this->db->escape($download['filename']));
+                                $exten = strtolower(substr($filename, strrpos($filename, '.') + 1));
+                                $newname = str_replace(array('data/','.'.$exten),'',$filename);
+                                $mask = trim($this->db->escape($newname.'.'.$exten));
+                                $download = 0;
+                            } else {
+                                $filename = $this->db->escape($download['filename']);
+                                $exten = strtolower(substr($filename, strrpos($filename, '.') + 1));
+                                $newname = str_replace('.'.$exten,'',$download['file']);
+                                $mask = trim($this->db->escape($newname).'.'.$exten);
+                                $download = 0;
+                            }	  
+			    $this->db->query("INSERT INTO " . DB_PREFIX . "product_attach_file SET product_id = '" . (int)$product_id . "', filename = '" . $filename . "', mask = '" . $mask . "', login_required = '" . $login_required . "' ,download = '0'");
+			}
+                   }
+		}      
+      
+    if (isset($data['exten_link'])) {
+                foreach ($data['exten_link'] as $link) {
+                if($link['download']){
+                            $name = trim($this->db->escape($link['name']));
+			    $download = trim($this->db->escape($link['download']));
+			    $login_required = isset($link['login']) ?  1 : 0 ;
+			    $this->db->query("INSERT INTO " . DB_PREFIX . "product_attach_extendlink SET product_id = '" . (int)$product_id . "',link_name = '" . $name . "',link_download = '" . $download . "', login = '" . $login_required . "'");
+			}
+                }
+            }
+  
+      ]]></add>
+        </operation>
+    
+        <operation>
+            <search position="before"><![CDATA[public function getProductStores($product_id) {]]></search>    
+            <add><![CDATA[ 
+      
+      public function getProductattachmanager($product_id) {
+                    $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_attach_file WHERE product_id = '" . (int)$product_id . "'");
+		   return $query->rows;
+		    
+      }
+      public function getProductattachmanager_copy($product_id) {
+		    $query = $this->db->query("SELECT * ,`mask` as file  FROM " . DB_PREFIX . "product_attach_file WHERE product_id = '" . (int)$product_id . "'");
+		    return $query->rows;
+      }
+      public function getLinkdownload($product_id) {
+		    $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_attach_extendlink WHERE product_id = '" . (int)$product_id . "'");
+		    return $query->rows;
+      }
+      public function getLinkdownload_copy($product_id) {
+		    $query = $this->db->query("SELECT product_id, link_name as name,login,link_download as download FROM " . DB_PREFIX . "product_attach_extendlink WHERE product_id = '" . (int)$product_id . "'");
+		    return $query->rows;
+      }
+      
+			]]></add>
+        </operation>
+        <operation>
+            <search position="before"><![CDATA[if (!empty($data['product_attribute'])) {]]></search>
+
+            <add><![CDATA[ 
+                //delete data rows when deleted product
+                    $this->db->query("DELETE FROM " . DB_PREFIX . "product_attach_extendlink WHERE product_id = '" . (int) $product_id . "'");
+                    $this->db->query("DELETE FROM " . DB_PREFIX . "product_attach_file WHERE product_id = '" . (int) $product_id . "'");
+                    if (isset($data['product_attach'])) {               
+                        foreach ($data['product_attach'] as $download) {
+                            if ($download['filename'] != "" && is_file(DIR_DOWNLOAD . '' . $download['filename'])) {
+                                $login_required = isset($download['login_required']) ? 1 : 0;
+                                if ($download['file'] == "") {
+                                    $filename = trim($this->db->escape($download['filename']));
+                                    $exten = strtolower(substr($filename, strrpos($filename, '.') + 1));
+                                    $newname = str_replace(array('data/','.'.$exten),'',$filename);
+                                    $mask = trim($this->db->escape($newname.'.'.$exten));
+                                    $download = isset($download['download']) ? (int) $download['download'] : 0;
+                                } else {
+                                    $filename = $this->db->escape($download['filename']);
+                                    $exten = strtolower(substr($filename, strrpos($filename, '.') + 1));
+                                    $mask = trim($this->db->escape($download['file']).'.'.$exten);
+                                    $download = isset($download['download']) ? (int) $download['download'] : 0;
+                                }
+                                $product_attach_file_id = isset($download['product_attach_file_id']) ? (int) $download['product_attach_file_id'] : 0;
+                                $this->db->query("INSERT INTO " . DB_PREFIX . "product_attach_file SET product_attach_file_id = " . $product_attach_file_id . " , product_id = '" . (int) $product_id . "', filename = '" . $filename . "', mask = '" . $mask . "', login_required = '" . $login_required . "' , download = '" . $download . "'");
+                            }
+                        }
+                    }
+                if (isset($data['exten_link'])) {
+                    foreach ($data['exten_link'] as $link) {
+                        if($link['download']){
+                            $name = trim($this->db->escape($link['name']));
+			    $download = trim($this->db->escape($link['download']));
+			    $login_required = isset($link['login']) ?  1 : 0 ;
+			    $this->db->query("INSERT INTO " . DB_PREFIX . "product_attach_extendlink SET product_id = '" . (int)$product_id . "',link_name = '" . $name . "',link_download = '" . $download . "', login = '" . $login_required . "'");
+			}
+                    }
+                }
+          
+      ]]></add>
+        </operation>
+        <operation>
+            <search position="before"><![CDATA[$this->db->query("DELETE FROM " . DB_PREFIX . "review WHERE product_id = '" . (int) $product_id . "'");]]></search>
+
+            <add><![CDATA[ 
+                $this->db->query("DELETE FROM " . DB_PREFIX . "product_attach_extendlink WHERE product_id = '" . (int) $product_id . "'");
+                $this->db->query("DELETE FROM " . DB_PREFIX . "product_attach_file WHERE product_id = '" . (int) $product_id . "'");   
+      ]]></add>
+        </operation>
+        <operation info="copy product">
+            <search position="before"><![CDATA[$this->copy_addProduct($data);]]></search>
+      
+            <add><![CDATA[ 
+            //var_dump($this->getProductattachmanager_copy($product_id));
+            $data = array_merge($data, array('product_attach' => $this->getProductattachmanager_copy($product_id)));
+            $data = array_merge($data, array('exten_link' => $this->getLinkdownload_copy($product_id)));
+                
+      ]]></add>
+        </operation>
+    </file>
+    
+    <file name="admin/model/tool/image.php">
+        <operation>
+            <search position="after" offset="2"><![CDATA[
+			return HTTP_CATALOG . 'image/' . $new_image;
+			]]></search>
+      
+            <add><![CDATA[ 
+
+	function thumbs($filename, $width, $height) {
+		if (!file_exists(DIR_DOWNLOAD . $filename) || !is_file(DIR_DOWNLOAD . $filename) ) {
+			return;
+		} 
+		
+		$info = pathinfo($filename);
+		$extension = $info['extension'];
+		
+		$old_image = $filename;
+		$new_image = 'cache/' . substr($filename, 0, strrpos($filename, '.')) . '-' . $width . 'x' . $height . '.' . $extension;
+		
+		if (!file_exists(DIR_IMAGE . $new_image) || (filemtime(DIR_DOWNLOAD . $old_image) > filemtime(DIR_IMAGE . $new_image))) {
+			$path = '';
+			
+			$directories = explode('/', dirname(str_replace('../', '', $new_image)));
+			
+			foreach ($directories as $directory) {
+				$path = $path . '/' . $directory;
+				
+				if (!file_exists(DIR_IMAGE . $path)) {
+					@mkdir(DIR_IMAGE . $path, 0777);
+				}		
+			}
+			
+			$image = new Image(DIR_DOWNLOAD . $old_image);
+			$image->resize($width, $height);
+			$image->save(DIR_IMAGE . $new_image);
+		}
+	
+		if (isset($this->request->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1'))) {
+			return HTTPS_CATALOG . 'image/' . $new_image;
+		} else {
+			return HTTPS_CATALOG . 'image/' . $new_image;
+		}	
+	}
+
+			]]></add>
+        </operation>
+    </file>
+    
+    <file name="catalog/model/catalog/product_grouped.php">
+        <operation>
+            <search position="before"><![CDATA[
+        public function getProductGroupedType($product_id) {
+			]]></search>
+      
+            <add><![CDATA[ 
+    
+  public function getProductattachmanager($product_id) {
+                 
+                $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_attach_file WHERE product_id = '" . (int)$product_id . "'");
+
+		return $query->rows;
+                
+	}
+  public function getExtenlinkdownload($product_id) {
+		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_attach_extendlink WHERE product_id = '" . (int)$product_id . "'");
+		
+		return $query->rows;
+	}
+      ]]></add>
+        </operation>
+       
+    </file>
+    
+    <file name="catalog/controller/product/product_grouped.php">
+        <operation>
+            <search position="before"><![CDATA[
+        $this->data['tab_attribute'] = $this->language->get('tab_attribute');
+			]]></search>
+      
+            <add><![CDATA[ 
+      $this->data['tab_attachs'] = $this->language->get('tab_attachs');
+      ]]></add>
+        </operation>
+    
+        
+    
+        <operation>
+            <search position="before"><![CDATA[
+        $this->data['button_cart'] = $this->language->get('button_cart');
+			]]></search>
+      
+            <add><![CDATA[ 
+                $this->load->language('module/attachmanager');
+                
+                 $this->data['attach_button_download'] = $this->language->get('attach_button_download');
+                 $this->data['attach_error_login'] = $this->language->get('attach_error_login');
+                 $this->data['attach_thumb'] = $this->language->get('attach_thumb');
+                 $this->data['attach_filename'] = $this->language->get('attach_filename');
+                 $this->data['attach_downloaded'] = $this->language->get('attach_downloaded');
+                 $this->data['attach_filesize'] = $this->language->get('attach_filesize');
+                 $this->data['attach_action'] = $this->language->get('attach_action');
+                 $this->data['attach_error_login'] = $this->language->get('attach_error_login');
+                 $this->load->model('setting/setting');
+                 $attachmanager = $this->model_setting_setting->getSetting('attachmanager');
+				 $this->data['attach_tab_attachs'] = $attachmanager['name_tab_document'][$this->config->get('config_language_id')];
+                 $attached_allowed = explode(',', $attachmanager['filetype']);
+     	
+		$this->data['product_attachss'] = array();
+		$this->data['exten_links'] = array();
+                		if (isset($this->request->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1'))) {
+                            $http_protocol = HTTPS_SERVER;
+                            }else { $http_protocol = HTTP_SERVER;  }
+		
+		if (isset($product_info)) {
+                        $this->load->model('catalog/product_grouped');
+			$results = $this->model_catalog_product_grouped->getProductattachmanager($this->request->get['product_id']);
+                        $resultlinks = $this->model_catalog_product_grouped->getExtenlinkdownload($this->request->get['product_id']);
+                        foreach ($results as $result) {
+                
+                
+				if ($result['mask'] && file_exists(DIR_DOWNLOAD .''. $result['filename'])) {
+				  $size = filesize(DIR_DOWNLOAD . ''. $result['filename']);
+
+					$i = 0;
+
+					$suffix = array(
+						'B',
+						'KB',
+						'MB',
+						'GB',
+						'TB',
+						'PB',
+						'EB',
+						'ZB',
+						'YB'
+					);
+
+					while (($size / 1024) > 1) {
+						$size = $size / 1024;
+						$i++;
+					}
+				
+				  $this->load->model('tool/image'); 
+				  $exten = strtolower(substr($result['filename'],strrpos($result['filename'],'.') + 1));
+
+                    if(in_array($exten, $attached_allowed))
+                    {
+                       if (!($this->model_tool_image->resize('attached_icon/' . $exten . '.png', 50, 50))) {
+                            $preview  = $this->model_tool_image->resize('attached_icon/default.png', 50, 50);
+                        } else {
+                            $preview  = $this->model_tool_image->resize('attached_icon/' . $exten . '.png', 50, 50);
+                        }
+                    } else{ // not in list icon
+                    
+                        
+                    }
+                if($result['login_required']){
+                   $url_get_file = $this->customer->isLogged() ?  $http_protocol . 'index.php?route=product/attachmanager/getfile&product_attach_file_id=' . $result['product_attach_file_id'] : "";
+                    
+                    } else {
+                        
+                    $url_get_file = $http_protocol . 'index.php?route=product/attachmanager/getfile&product_attach_file_id=' . $result['product_attach_file_id'];
+
+                        }
+				  $this->data['product_attachss'][] = array(
+				  'file'        => $result['mask'],
+				  'thumb'     => $preview,
+				  'size'        => round(substr($size, 0, strpos($size, '.') + 4), 2) . $suffix[$i],
+				  'download'        => $result['download'],
+				  'download_id' => $result['product_attach_file_id'],
+				  'href'        => $url_get_file
+
+					);
+				}
+			}
+	                         
+		foreach ($resultlinks as $resultlink){
+                            if($resultlink['link_download']){
+                                $this->load->model('tool/image');
+                                $preview_link  = $this->model_tool_image->resize('attached_icon/link.png', 50, 50);
+                                if($resultlink['login']){
+                                    $link_url = $this->customer->isLogged() ? $resultlink['link_download'] : '' ;
+                                } else {
+                                    $link_url = $resultlink['link_download'];
+                                }
+                
+                                $this->data['exten_links'][] = array (
+                                    'name' => $resultlink['link_name'],
+                                    'thumb' => $preview_link,
+                                    'href' => $link_url
+                                );
+                             }
+                            
+                        }	    
+		}      
+    
+    ]]></add>
+        </operation>
+       
+    </file>      
+    
+</modification>

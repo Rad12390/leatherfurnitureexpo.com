@@ -1,0 +1,26 @@
+<modification>
+	<id>CSV Product Export ver.3.2 - OpenCart 1.5.1.x-1.5.6.x core file modifications</id>
+	<version>3.2.9</version>
+	<vqmver>2.1.7</vqmver>
+	<author>karapuz</author>
+	<file name="admin/controller/common/header.php">
+		<operation>
+			<search position="after" index="1"><![CDATA[up'] = $this->url->link('tool/backup', 'token]]></search>
+			<add><![CDATA[			//karapuz
+			$this->data['text_ka_export'] = $this->language->get('text_ka_export');
+			$this->load->model('tool/ka_export');
+			$this->data['is_ka_export_installed'] = $this->model_tool_ka_export->isInstalled();
+			$this->data['ka_export'] = $this->url->link('tool/ka_export', 'token=' . $this->session->data['token'], 'SSL');
+			///karapuz]]></add>
+		</operation>
+	</file>
+	<file name="admin/view/template/common/header.tpl">
+		<operation>
+			<search position="after" index="1"><![CDATA[echo $backup; ?>"><?php echo $text_backup]]></search>
+			<add><![CDATA[          <?php /* //karapuz */?>          <?php if (!empty($is_ka_export_installed)) { ?>
+          <li><a href="<?php echo $ka_export; ?>"><?php echo $this->language->get('CSV Product Export'); ?></a></li>
+          <?php } ?>
+          <?php ///karapuz ?>]]></add>
+		</operation>
+	</file>
+</modification>

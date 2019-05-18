@@ -1,0 +1,87 @@
+<modification>
+	<id>Grouped Product</id>
+	<version>4.0</version>
+	<vqmver>2.3.0</vqmver>
+	<author>Intersoft professional</author>
+	
+
+<!-- BUNDLE Product -->
+<file name="system/library/cart.php">
+	<operation>
+		<search position="replace"><![CDATA[
+			$price = $product_query->row['price'];
+		]]></search>
+		<add><![CDATA[
+                        $extra_option_price = 0;
+			foreach ($options as $product_optn_id => $option_val) {
+                        $product_grouped_price_query = $this->db->query("SELECT option_value_id FROM " . DB_PREFIX . "product_option_value WHERE product_option_value_id = '" . (int) $option_val . "'");
+                        //break;
+                        
+                    
+                         if ($product_grouped_price_query->num_rows && $product[3]) {
+                    
+                        $product_grouped_price_query = $this->db->query("SELECT grade_price FROM " . DB_PREFIX . "grade_price_product WHERE grade_option_value_id = '" . (int) $product_grouped_price_query->row['option_value_id'] . "' AND product_id= '" . (int) $product[3] . "' AND grouped_product_id = '" . (int) $product_id . "'");
+
+                        if ($product_grouped_price_query->num_rows) {
+                            $extra_option_price += $product_grouped_price_query->row['grade_price'];
+                        } 
+                        }
+                    }
+                    
+                    if ($extra_option_price) {
+                      $price =  $extra_option_price;
+                      
+                    } elseif(!$product_grouped_price_query->num_rows && ($product[3] && $product[0])) {
+                        $queryofprice = "SELECT product_price FROM " . DB_PREFIX . "product_grouped WHERE grouped_id = '" . (int) $product[0] . "' AND product_id= '" . (int) $product[3] . "'";
+                            $product_group_price_without_option = $this->db->query($queryofprice);
+
+                            if ($product_group_price_without_option->num_rows) {
+                                $price = $product_group_price_without_option->row['product_price'];
+                            }
+                    }
+                    else {
+                        $price = $product_query->row['price'];
+                    }
+                    
+                    if (isset($product[3]) && !empty($product[3])) {
+                        $main_prduct_name_query = $this->db->query("SELECT name FROM " . DB_PREFIX . "product_description Where product_id = " . $product[3]);
+                        if ($main_prduct_name_query->num_rows) {
+                            $main_prduct_name = $main_prduct_name_query->row['name'];
+                        }
+                    } else {
+                        $main_prduct_name = '';
+                    }
+                    
+                    if (isset($product[3]) && !empty($product[3])) {
+                            $grouped_prduct_image_query = $this->db->query("SELECT image FROM " . DB_PREFIX . "product Where product_id = " . $product[3]);
+                            if ($grouped_prduct_image_query->num_rows) {
+                                $grouped_prduct_image = $grouped_prduct_image_query->row['image'];
+                            }
+                    } else {
+                        $grouped_prduct_image = $product_query->row['image'];
+                    }
+                    //exit;
+		]]></add>
+	</operation>
+</file>
+<file name="system/library/cart.php">
+	<operation>
+		<search position="after"><![CDATA[
+			'name' => $product_query->row['name'],
+		]]></search>
+		<add><![CDATA[
+			  'main_product_name' => $main_prduct_name,
+		]]></add>
+	</operation>
+        <operation>
+		<search position="replace"><![CDATA[
+			'image' => $product_query->row['image'],
+		]]></search>
+		<add><![CDATA[
+			  'image' => $grouped_prduct_image,
+		]]></add>
+	</operation>
+        
+</file>
+
+</modification>

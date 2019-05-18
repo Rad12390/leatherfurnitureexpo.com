@@ -1,0 +1,34 @@
+<modification>
+
+    <id>Custom Chekout Process</id>
+    <version>1.0.0</version>
+    <vqmver>2.1.5</vqmver>
+    <author>Intersoft</author>
+	
+		
+   	
+    
+    <file name="catalog/controller/checkout/checkout.php">
+        <operation>
+            <search position="after"><![CDATA[$products = $this->cart->getProducts();]]></search>
+            <add><![CDATA[  
+               $settings = $this->config->get('customcheckout');
+                if(isset($settings['status']) && $settings['status']==1){
+                
+                if(isset($this->request->request['route']) && $this->request->request['route']=='checkout/checkout'){
+                      $this->redirect($this->url->link('checkout/cart_custom_two'));
+                }
+                }
+			]]></add>
+        </operation>	
+         
+        
+     
+	
+    </file>	
+   		
+                		
+  
+
+</modification>
+

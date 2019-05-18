@@ -1,0 +1,19 @@
+<modification>
+	<id>Category Banner</id>
+	<version>1.0</version>
+	<vqmver>2.3.0</vqmver>
+	<author>Intersoft Professional</author>	
+<file name="catalog/controller/module/banner.php">
+        <operation>
+		<search position="after"><![CDATA[protected function index($setting) { ]]></search>		
+		<add><![CDATA[global $skip_banner_module;
+        
+        if(isset($skip_banner_module)  && $skip_banner_module){
+                   $skip_banner_module = false; 
+            return;
+        }]]>
+</add> 
+	</operation>   	
+</file>               
+
+             </modification>

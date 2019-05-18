@@ -1,0 +1,265 @@
+<modification>
+    <id>Bulk Update product to category</id>
+    <version>1.0.0</version>
+    <vqmver>1.0.8</vqmver>
+    <author>Kamen Sharlandjiev</author>
+    <file name="admin/controller/catalog/product_grouped.php">
+        <operation>
+            <search position="after">
+<![CDATA[ $this->data['delete'] ]]>
+            </search>
+            <add>
+<![CDATA[
+$this->data['bulk'] = HTTPS_SERVER . 'index.php?route=catalog/product_grouped/bulk&token=' . $this->session->data['token'] . $url; $this->data['bulkInsert'] = HTTPS_SERVER . 'index.php?route=catalog/product_grouped/bulk&insert=1&token=' . $this->session->data['token'] . $url; $this->data['bulkDelete'] = HTTPS_SERVER . 'index.php?route=catalog/product_grouped/bulk&delete=1&token=' . $this->session->data['token'] . $url;
+]]>
+            </add>
+        </operation>
+        <operation>
+            <search position="before" offset="1">
+<![CDATA[ &filter_name= ]]>
+            </search>
+            <add>
+<![CDATA[
+if (isset($this->request->get['filter_category']) && $this->request->get['filter_category']!=0) { 
+
+
+$url .= '&filter_category=' . $this->request->get['filter_category']; }
+]]>
+            </add>
+        </operation>
+        <operation>
+            <search position="before">
+<![CDATA[ $this->data['filter_name'] ]]>
+            </search>
+            <add>
+<![CDATA[ $this->data['filter_category'] = $filter_category; ]]>
+            </add>
+        </operation>
+        <operation>
+            <search position="after">
+<![CDATA[ function getList() { ]]>
+            </search>
+            <add>
+<![CDATA[
+$filter_category = ""; if (isset($this->request->get['filter_category'])) {
+
+  $filter_category = $this->request->get['filter_category'];} else { $filter_category = NULL; }
+]]>
+            </add>
+        </operation>
+        <operation>
+            <search position="after">
+<![CDATA[ => $order, ]]>
+            </search>
+            <add>
+<![CDATA[ 'filter_category'	=> $filter_category, ]]>
+            </add>
+        </operation>
+        <operation>
+            <search position="after">
+<![CDATA[ $this->data['products'][] = array( ]]>
+            </search>
+            <add>
+<![CDATA[ 'category_name' => $result['category_name'], ]]>
+            </add>
+        </operation>
+        <operation>
+            <search position="after">
+<![CDATA[ protected function validateDelete() { ]]>
+            </search>
+            <add>
+<![CDATA[
+if (!isset($this->request->post['selected'])) { $this->error['warning'] = "Please select the products"; }
+]]>
+            </add>
+        </operation>
+        <operation>
+            <search position="before">
+<![CDATA[ public function copy() { ]]>
+            </search>
+            <add>
+<![CDATA[
+public function bulk() { 
+
+$this->language->load('catalog/product'); $this->load->model('catalog/product'); 
+if (isset($this->request->post['selected']) && $this->validateDelete()) { 
+        foreach ($this->request->post['selected'] as $product_id) {
+        
+        
+            $sqlcategory = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_to_category WHERE product_id = '" . (int) $product_id . "'");
+
+            foreach ($sqlcategory->rows as $sqlcategories) {
+                $product_to_category_sort[$sqlcategories['category_id']] = $sqlcategories['category_product_sort'];
+            } 
+            
+            if (isset($this->request->get['insert']) && $this->request->get['insert']==1) { 
+                    $this->db->query("DELETE FROM " . DB_PREFIX . "product_to_category WHERE product_id='".(int)$product_id."'"); }
+            if (isset($this->request->get['delete']) && $this->request->get['delete']==1) {
+                    $this->db->query("DELETE FROM " . DB_PREFIX . "product_to_category WHERE product_id='".(int)$product_id."' AND category_id='".(int)$this->request->post['bulk_category']."'");
+            } 
+            else { 
+                 $this->db->query("REPLACE INTO " . DB_PREFIX . "product_to_category SET product_id='".(int)$product_id."', category_id='".(int)$this->request->post['bulk_category']."', category_product_sort = '" . ( ((int) $product_to_category_sort[$this->request->post['bulk_category']]) ?  ((int) $product_to_category_sort[$this->request->post['bulk_category']])  : 99 ) . "'" ); 
+                } 
+                
+        }
+        $this->session->data['success'] = $this->language->get('text_success'); $url = '';
+        if (isset($this->request->get['filter_category']) && $this->request->get['filter_category']!=0) { 
+            $url .= '&filter_category=' . $this->request->get['filter_category']; 
+        }
+        if (isset($this->request->get['filter_name'])) { 
+            $url .= '&filter_name=' . $this->request->get['filter_name'];
+        }
+        if (isset($this->request->get['filter_model'])) { 
+            $url .= '&filter_model=' . $this->request->get['filter_model']; 
+         } 
+        if (isset($this->request->get['filter_quantity'])) { 
+             $url .= '&filter_quantity=' . $this->request->get['filter_quantity'];
+        }
+        if (isset($this->request->get['filter_status'])) {
+              $url .= '&filter_status=' . $this->request->get['filter_status'];
+        } 
+        if (isset($this->request->get['page'])) {
+              $url .= '&page=' . $this->request->get['page'];
+        }
+        if (isset($this->request->get['sort'])) { 
+             $url .= '&sort=' . $this->request->get['sort'];
+        } 
+        if (isset($this->request->get['order'])) { 
+            $url .= '&order=' . $this->request->get['order']; 
+        } 
+        
+        $this->redirect(HTTPS_SERVER . 'index.php?route=catalog/product_grouped&token=' . $this->session->data['token'] . $url); 
+        } 
+        $this->getList();
+ }
+
+]]>
+            </add>
+        </operation>
+        <operation>
+            <search position="before">
+<![CDATA[ $this->data['products'] = array(); ]]>
+            </search>
+            <add>
+<![CDATA[
+$this->data['categories'][] = array( 'category_id' => -1, 'name' => 'NULL' ); $this->load->model('catalog/category'); $results = $this->model_catalog_category->getCategories(0); foreach ($results as $result) { $this->data['categories'][] = array( 'category_id' => $result['category_id'], 'name' => $result['name'], ); }
+]]>
+            </add>
+        </operation>
+    </file>
+   
+   
+   
+   
+    <file name="admin/model/catalog/product_grouped.php">
+        
+    </file>
+   
+   
+   
+   
+   
+   <file name="admin/view/template/catalog/product_grouped_list.tpl">
+       
+        <operation>
+            <search position="after">
+<![CDATA[ 
+<form action="<?php echo $delete; ?>" method="post" enctype="multipart/form-data" id="form">
+]]>
+            </search>
+            <add>
+<![CDATA[ 
+<table class="list"><tr><td align="right" width="90%"><select name="bulk_category" id="bulk_category"><option value="0">-- Choose category -- </option> <?php foreach($categories as $category) {?> <?php if ($category['category_id']<0) {continue;}?> <option value="<?php echo $category['category_id']; ?>" ><?php echo $category['name']; ?></option> <?php } ?> </select></td> <td align="right"> <div> <select name="bulk_actions" id="bulk_actions" onchange="Bulk(this.value);"> <option value="0"> -- Choose action --</option> <option value="1"> Bulk insert </option> <option value="2"> Bulk update (delete existing) </option> <option value="3"> Bulk delete (delete selected) </option> </select></td><td><select id="bulk_status_update" name="bulk_status_update" onchange="update_bulk_status();"><option value="">Change Bulk Status</option><option value="1">Enable</option><option value="2">Disable</option></select></div></td></tr></table>
+]]>
+            </add>
+        </operation>
+        
+        
+        <operation>
+            <search position="before">
+<![CDATA[ <td class="left" colspan="2"><?php if ($sort == 'p.price') { ?> ]]>
+            </search>
+            <add>
+<![CDATA[ <td class="left">Category</td> ]]>
+            </add>
+        </operation>
+        
+        
+        <operation>
+            <search position="before">
+<![CDATA[ <td ><input type="text" name="filter_price" value="<?php echo $filter_price; ?>" size="8"/ style="display:none;"></td> ]]>
+            </search>
+            <add><![CDATA[
+                       <td class="left"><select name="filter_category">
+                        <option value="0"></option>
+                          <?php foreach($categories as $category) {?>
+                              <option value="<?php echo $category['category_id']; ?>" <?php if (isset($filter_category) && $filter_category==$category['category_id']) {echo " selected";}?>><?php echo $category['name']; ?></option>
+                          <?php } ?>                        
+                       </select></td>
+                    ]]></add>
+        </operation>
+        
+        
+        <operation>
+            <search position="before">
+               <![CDATA[<?php if ($product['type'] == 'config') { ?>]]>
+            </search>
+            <add>
+                    <![CDATA[
+                       <td class="left"><?php echo $product['category_name'];?></td>
+                    ]]>
+            </add>
+        </operation> 
+        
+        
+        
+        <operation>
+            <search position="before">
+<![CDATA[ var filter_name ]]>
+            </search>
+            <add>
+<![CDATA[
+var filter_category = $('select[name=\'filter_category\']').attr('value'); if (filter_category && filter_category!=0) { url += '&filter_category=' + encodeURIComponent(filter_category); }
+]]>
+            </add>
+        </operation>
+        
+        
+          <operation>
+            <search position="before">
+<![CDATA[ <?php echo $footer; ?> ]]>
+            </search>
+            <add>
+<![CDATA[
+<script type="text/javascript"> function Bulk(id) {
+
+ var cat = $('#bulk_category option:selected').val(); 
+ 
+ if (cat<=0)
+ { alert('Choose category first.'); 
+        $('#bulk_actions').val('0'); return; }
+    
+    if(!($('input[name="selected[]"]:checked').length))
+    { alert('Choose Products.'); 
+        $('#bulk_actions').val('0'); return; }
+    
+    switch (id) { 
+         case '1':  $('#form').attr('action', '<?php echo $bulk; ?>'); $('#form').submit(); break;
+    
+               case '2':   $('#form').attr('action', '<?php echo $bulkInsert; ?>'); $('#form').submit(); break; 
+                case '3': $('#form').attr('action', '<?php echo $bulkDelete; ?>'); $('#form').submit(); break; default: return false; break;
+                     } 
+         } </script>
+]]>
+            </add>
+        </operation>
+        
+        
+        
+        
+    </file>
+   
+   
+   
+    
+</modification>

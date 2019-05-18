@@ -1,0 +1,9 @@
+.box .box-content-html-ev {
+	-webkit-border-radius: 7px;
+	-moz-border-radius:  7px;
+	-khtml-border-radius: 7px;
+	border-radius: 7px;
+	border: 1px solid #DBDEE1;
+	background: #FFFFFF;
+	padding: 10px;
+}

@@ -1,0 +1,649 @@
+<modification>
+    <id>chain</id>
+    <version>1.7BETA</version>
+    <vqmver>1.0</vqmver>
+    <author>AJAY</author>
+    <file name="admin/model/catalog/option.php">
+        <operation>                 
+            <search position="before"><![CDATA[public function getTotalOptions()]]>  </search>
+            <add><![CDATA[        public function getOpsValues($option_id) {
+		$option_value_data  = array();
+		$option_value_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "option` o LEFT JOIN `" . DB_PREFIX . "option_value_description` ovd ON (o.option_id = ovd.option_id) WHERE o.option_id = '" . (int)$option_id . "'AND ovd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
+				
+		return $option_value_query->rows;
+	}
+         public function getOpValues() {
+		$option_value_data  = array();
+		$option_value_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "option` o LEFT JOIN `" . DB_PREFIX . "option_value_description` ovd ON (o.option_id = ovd.option_id) WHERE ovd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
+				
+		return $option_value_query->rows;
+	}
+                     
+        public function getOps() {
+		$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "option_description` od LEFT JOIN `" . DB_PREFIX . "option` o ON (o.option_id = od.option_id) WHERE o.type = 'select' AND od.language_id = '" . (int)$this->config->get('config_language_id') . "'");
+		
+		return $query->rows;
+	}
+	]]></add>
+        </operation>
+    </file>
+    <file name="admin/model/catalog/product.php">
+        <operation>                 
+            <search position="after" ><![CDATA[$product_option_value_data[] = array]]>  </search>
+            <add><![CDATA[                                        'o_copa'                   => $product_option_value['o_copa'],
+                                        'o_copb'                   => $product_option_value['o_copb'],]]>
+            </add>
+        </operation>
+        <operation>                 
+            <search position="replace" ><![CDATA[['weight_prefix']) . "'");]]>  </search>
+            <add><![CDATA[['weight_prefix']) . "', no_ser = '" . $no_ser . "',  no_serb = '" . $no_serb . "',  o_copa = '" . $this->db->escape(json_encode($product_option_value['o_copa'])) . "', o_copb = '" . $this->db->escape(json_encode($product_option_value['o_copb'])) . "'");]]></add>
+        </operation>
+        <operation>                 
+            <search position="before" index="1,4" ><![CDATA[option_id = '" . (int)$product_option['option_id'] . "',]]>  </search>
+            <add><![CDATA[           if ($product_option['type'] != 'select') { 
+                                    $product_option['o_cata'] = array();
+                                    $product_option['o_catb'] = array(); 
+                                             } ]]>
+            </add>
+        </operation>
+        <operation>                 
+            <search position="replace" index="1,4" ><![CDATA[option_id = '" . (int)$product_option['option_id'] . "',]]>  </search>
+            <add><![CDATA[option_id = '" . (int)$product_option['option_id'] . "', o_cata = '" . $product_option['o_cata'] . "', o_catb = '" . $product_option['o_catb'] . "',]]></add>
+        </operation>
+        <operation>                 
+            <search position="after" index="1"><![CDATA[foreach ($product_option['product_option_value'] as $product_option_value) {]]>  </search>
+            <add><![CDATA[                                               $resu = $this->db->query("SHOW TABLE STATUS LIKE \"" . DB_PREFIX . "product_option_value\"");                        
+                                                             if ($resu->num_rows) {
+			                                                $data_ai = array();
+			                                                $data_ai = $resu->row;
+                                                                                   }
+                                               if ($product_option_value['product_option_value_id'] == ''){
+                                                 $ni = $data_ai['Auto_increment'];
+                                               } else {
+                                                   $ni = $product_option_value['product_option_value_id'];
+                                               } 
+                                                        $no_ser = '';
+                                               if ($product_option['type'] != 'select' || !is_array($product_option_value['o_copa']) || !is_array($product_option_value['o_copb'])|| is_null($product_option_value['o_copa'])) {
+                                                         $product_option_value['o_copa'] = array();
+                                                         $product_option_value['o_copb'] = array();
+                                                }
+                                                    foreach ($product_option_value['o_copa'] as $key => $value) {
+                                                        if (strpos($value,'zzz') !== false) {
+      $product_option_value['o_copa'][$key] = str_replace('zzz', $ni, $value);
+                                                        }
+                                                         $no_ser .= str_replace($ni, "-", $product_option_value['o_copa'][$key]);
+                                                     }
+                                                        $no_ser .= '-';
+                                                        $no_serb = '';
+              foreach ($product_option_value['o_copb'] as $key => $value) {
+                                                        if (strpos($value,'zzz') !== false) {
+      $product_option_value['o_copb'][$key] = str_replace('zzz', $ni, $value);
+                                                        }
+                                                         $no_serb .= str_replace($ni, "-", $product_option_value['o_copb'][$key]);
+                                                     }
+                                                         $no_serb .= '-';]]></add>
+        </operation>
+        <operation>                 
+            <search position="after" index="2"><![CDATA[foreach ($product_option['product_option_value'] as $product_option_value) {]]>  </search>
+            <add><![CDATA[                                               $resu = $this->db->query("SHOW TABLE STATUS LIKE \"" . DB_PREFIX . "product_option_value\"");                        
+                                                             if ($resu->num_rows) {
+			                                                $data_ai = array();
+			                                                $data_ai = $resu->row;
+                                                                                   }
+                                               if ($product_option_value['product_option_value_id'] == ''){
+                                                 $ni = $data_ai['Auto_increment'];
+                                               } else {
+                                                   $ni = $product_option_value['product_option_value_id'];
+                                               } 
+                                                        $no_ser = '';
+                                               if ($product_option['type'] != 'select' || !isset($product_option_value['o_copa']) || !isset($product_option_value['o_copb']))    {
+                                                         $product_option_value['o_copa'] = array();
+                                                         $product_option_value['o_copb'] = array();
+                                               }
+                
+                foreach ($product_option_value['o_copa'] as $key => $value) {
+                                                        if (strpos($value,'zzz') !== false) {
+                         $product_option_value['o_copa'][$key] = str_replace('zzz', $ni, $value);
+                                               }
+                                                         $no_ser .= str_replace($ni, "-", $product_option_value['o_copa'][$key]);
+                                               }
+                                                        $no_ser .= '-';
+                                                        $no_serb = '';
+                 
+                foreach ($product_option_value['o_copb'] as $key => $value) {
+                                                        if (strpos($value,'zzz') !== false) {
+                         $product_option_value['o_copb'][$key] = str_replace('zzz', $ni, $value);
+                                                        }
+                                                       $no_serb .= str_replace($ni, "-", $product_option_value['o_copb'][$key]);
+                                               }
+                                                       $no_serb .= '-';]]></add>
+        </operation>
+        <operation>                 
+            <search position="after"><![CDATA['option_value'         => $product_option['option_value'],]]>  </search>
+            <add><![CDATA[                            'o_cata'                 => $product_option['o_cata'],
+                            'o_catb'                 => $product_option['o_catb'],]]>
+            </add>
+        </operation>
+        <operation>                 
+            <search position="before" ><![CDATA[public function getTotalProductsByLayoutId($layout_id)]]>  </search>
+            <add><![CDATA[        public function getEv($product_id) {
+        $query = $this->db->query("SELECT o_copa,o_copb FROM " . DB_PREFIX . "product_option_value  WHERE product_id = '" . (int)$product_id . "'");
+                        $o_ev[] = '';
+		foreach ($query->rows as $result) {
+			$o_ev[] = $result['o_copa'];
+		}
+                foreach ($query->rows as $result) {
+			$o_ev[] = $result['o_copb'];
+		}
+		return $o_ev;
+        }]]></add>
+        </operation>
+    </file>
+    <file name="admin/view/template/catalog/product_form.tpl">  
+        <operation>                 
+            <search position="before" ><![CDATA[$product_option['type'] == 'text')]]>  </search>
+            <add><![CDATA[               <?php if ($product_option['type'] == 'select') {
+                  ?>
+             <?php
+             
+          $q = ''; $e = '';
+            if ($product_option['o_cata'] != '')
+             list($q, $w) = explode(",", $product_option['o_cata']);
+              if ($product_option['o_catb'] != '')
+             list($e, $w) = explode(",", $product_option['o_catb']); ?>
+              <tr>
+                <td><?php echo 'Parent A:' ?></td>
+                <td><select class="qqq" id="op-<?php echo $option_row; ?>" name="product_option[<?php echo $option_row; ?>][o_cata]">
+                        <option value="0,<?php   echo $option_row; ?>">--none--</option>
+                  <?php foreach ($ops as $op) { 
+                   ?>
+                      <?php if ($q == $op['option_id']) {
+                       ?>
+                         <option selected="selected" value="<?php echo $op['option_id'] ?>,<?php echo $option_row;  ?>"><?php echo $op['name'] ?></option>
+                         <?php } else { ?>
+                    <option value="<?php echo $op['option_id'] ?>,<?php echo $option_row; ?>"><?php echo $op['name'] ?></option>
+                   <?php } }?>
+                  </select></td>
+             <td>Parent B: <select class="qqw" id="opb-<?php echo $option_row; ?>" name="product_option[<?php echo $option_row; ?>][o_catb]">
+                        <option value="0,<?php echo $option_row; ?>">--none--</option>
+                  <?php foreach ($ops as $op) { ?>
+                      <?php if ($e == $op['option_id']) { ?>
+                         <option selected="selected" value="<?php echo $op['option_id'] ?>,<?php echo $option_row;  ?>"><?php echo $op['name'] ?></option>
+                         <?php } else { ?>
+                    <option value="<?php echo $op['option_id'] ?>,<?php echo $option_row; ?>"><?php echo $op['name'] ?></option>
+                   <?php } }?>
+                  </select></td>
+              </tr> <?php } ?>]]></add>
+        </operation>
+        <operation>                 
+            <search position="after" index="1"><![CDATA[<td class="left"><?php echo $entry_option_value; ?></td>]]>  </search>
+            <add><![CDATA[                  <?php if ($product_option['type'] == 'select') { ?> 
+                 <td class="left">Option Parent A</td>
+                 <td class="left">Option Parent B</td>
+         <?php } ?>]]>
+            </add>
+        </operation>
+        <operation>                 
+            <search position="replace"><![CDATA[<a onclick="addOptionValue('<?php echo $option_row; ?>');"]]>  </search>
+            <add><![CDATA[<a onclick="addOptionValue('<?php echo $option_row ?>','<?php echo $product_option['type']; ?>');"]]></add>
+        </operation>
+        <operation>                 
+            <search position="replace"><![CDATA[function addOptionValue(option_row)]]>  </search>
+            <add><![CDATA[function addOptionValue(option_row,type)]]></add>
+        </operation>
+        <operation>                 
+            <search position="replace"><![CDATA[<a onclick="addOptionValue(' + option_row + ');"]]>  </search>
+            <add><![CDATA[<a onclick="addOptionValue(\'' + option_row + '\', \'' + ui.item.type + '\');"]]></add>
+        </operation>
+        <operation>                 
+            <search position="before" index="1" ><![CDATA[<td class="right"><input type="text" name="product_option]]>  </search>
+            <add><![CDATA[ 
+                         <?php
+                     if ($product_option['type'] != 'select') {$q ='';$e = '';}
+                     if ($product_option['type'] == 'select') {
+                        $uov = array();
+                        $dov = array();
+                         $i = 0; $m = 0;
+                          foreach ($qwert as $value){
+                          if ($value['option_id'] == $q) {
+                              $uov[$i] = $value;
+                           $i++;   
+                          } }
+                           foreach ($qwert as $value){
+                          if ($value['option_id'] == $e) {
+                              $dov[$m] = $value;
+                           $m++;   
+                          }
+                          }
+                         $ev=array();
+                        foreach ($evx as $fff) {
+                            if(!empty($fff)) $ev[] = json_decode($fff);
+                        }  ?> 
+                     
+                  <td class="ddd-<?php echo $option_value_row; ?><?php echo $option_row; ?>">
+                      <select id="" name="product_option[<?php echo $option_row; ?>][product_option_value][<?php echo $option_value_row; ?>][o_copa][]" multiple="multiple">
+<?php if (empty($uov)) { ?> <option value="<?php echo $product_option_value['product_option_value_id']; ?>0" selected="selected"></option>   <?php } ; ?>                    
+<?php  foreach ($uov as $ov) {
+                               $cv = $product_option_value['product_option_value_id'];
+                               $cv .= $ov['option_value_id'];   
+ $inc = in_array_r($cv, $ev) ;
+    if($inc) { ?>
+        <option value="<?php echo $product_option_value['product_option_value_id']; ?><?php echo $ov['option_value_id']; ?>" selected="selected"><?php echo $ov['name']; ?></option>
+   <?php }
+    else { ?>
+       <option value="<?php echo $product_option_value['product_option_value_id']; ?><?php echo $ov['option_value_id']; ?>"><?php echo $ov['name']; ?></option>
+   <?php } }?>
+                    </select>
+             </td>
+              <td class="dde-<?php echo $option_value_row; ?><?php echo $option_row; ?>">
+<select id="" name="product_option[<?php echo $option_row; ?>][product_option_value][<?php echo $option_value_row; ?>][o_copb][]" multiple="multiple">
+<?php if (empty($dov)) { ?> <option value="<?php echo $product_option_value['product_option_value_id']; ?>0" selected="selected"></option>   <?php } ; ?>                    
+<?php  foreach ($dov as $ov) {
+                               $cv = $product_option_value['product_option_value_id'];
+                               $cv .= $ov['option_value_id'];   
+ $inc = in_array_r($cv, $ev) ;
+    if($inc) { ?>
+        <option value="<?php echo $product_option_value['product_option_value_id']; ?><?php echo $ov['option_value_id']; ?>" selected="selected"><?php echo $ov['name']; ?></option>
+   <?php }
+    else { ?>
+       <option value="<?php echo $product_option_value['product_option_value_id']; ?><?php echo $ov['option_value_id']; ?>"><?php echo $ov['name']; ?></option>
+   <?php } }?>
+                    </select>
+
+</td>   <?php } ?>
+                    ]]></add>
+        </operation>
+        <operation>                 
+            <search position="replace" index="1" ><![CDATA[<td colspan="6"></td>]]>  </search>
+            <add><![CDATA[                  <?php  if ($product_option['type'] == 'select') { ?>
+<td colspan="8"></td> <?php } else { ?> <td colspan="6"></td> <?php } ?>]]>
+            </add>
+        </operation>
+        <operation>                 
+            <search position="before" ><![CDATA[if (ui.item.type == 'text') {]]>  </search>
+            <add><![CDATA[                if (ui.item.type == 'select') {
+                html += '	  <tr>';
+		html += '		<td>Parent</td>';
+		html += '    <td class="left"><select class="qqq" id="op-' + option_row + '" name="product_option[' + option_row + '][o_cata]">';
+	        html += '     <option value="0,0">--none--</option>';
+                html += '          <?php foreach ($ops as $op) { ?>';
+                html += '           <option value="<?php echo $op['option_id'] ?>,' + option_row +'"><?php echo $op['name'] ?></option>';
+                html += '        <?php } ?>';
+	        html += '    </select></td>';
+             html += '    <td class="left"><select class="qqw" id="opb-' + option_row + '" name="product_option[' + option_row + '][o_catb]">';
+	        html += '     <option value="0,0">--none--</option>';
+                html += '          <?php foreach ($ops as $op) { ?>';
+                html += '           <option value="<?php echo $op['option_id'] ?>,' + option_row +'"><?php echo $op['name'] ?></option>';
+                html += '        <?php } ?>';
+	        html += '    </select></td>';             
+		html += '     </tr>';
+                }]]></add>
+        </operation>
+        <operation>                 
+            <search position="after" ><![CDATA[html += '        <td class="left"><?php echo $entry_option_value; ?></td>';]]>  </search>
+            <add><![CDATA[                        if (ui.item.type == 'select') {
+                        html += '        <td class="left">Option Parent A</td>';
+                        html += '        <td class="left">Option Parent B</td>';
+                        }]]></add>
+        </operation>
+        <operation>                 
+            <search position="replace" ><![CDATA[html += '        <td colspan="6"></td>';]]>  </search>
+            <add><![CDATA[if (ui.item.type == 'select') {
+			html += '        <td colspan="8"></td>';
+                        } else {
+                        html += '        <td colspan="6"></td>';
+                        }]]></add>
+        </operation>
+        <operation>                 
+            <search position="before" ><![CDATA[[product_option_value][' + option_value_row + '][quantity]"]]>  </search>
+            <add><![CDATA[if (type == "select"){
+       	html += '    <td class="ddd-' + option_value_row + option_row +'">';
+       	html += '    </td>';
+        html += '    <td class="dde-' + option_value_row + option_row +'">';
+       	html += '    </td>';
+        }]]></add>
+        </operation>
+        <operation>                 
+            <search position="before" ><![CDATA[$('#option-value' + option_row + ' tfoot').before(html);]]>  </search>
+            <add><![CDATA[         var oid = $('#op-' + option_row).val();
+                                var oidb = $('#opb-' + option_row).val();
+          bb(option_value_row ,option_row, oid, oidb);]]></add>
+        </operation>
+        <operation>                 
+            <search position="before" ><![CDATA[<?php echo $footer;]]>  </search>
+            <add><![CDATA[<script type="text/javascript">
+      $(document).on('change', '.qqq', function(event) {
+      $.ajax({ 
+          url: 'index.php?route=catalog/product/chi&token=<?php echo $token; ?>&product_id=<?php echo $product_id; ?>',
+         data: 'id=' + $(this).val(),
+         type: 'post',
+     dataType: 'json',
+      success: function(json)
+          {   
+              for(var i = 0;i<+option_value_row;i++){
+              $('.ddd-' + i + json['row']).empty();
+               var html = '';	
+               html += '<select name="product_option[' + json['row'] + '][product_option_value][' + i + '][o_copa][]" multiple="multiple">';
+              $.each(json, function(ei, en){ 
+                   if( typeof en['o_id'] != 'undefined' ) {
+                        html += '<option selected="selected" value="zzz' + en['o_id'] + '">' + en['name'] + '</option></td>';
+                   }
+              })
+             
+              $('.ddd-' + i + json['row']).append(html);
+              }
+          }
+             })
+          })
+//--></script> 
+             <script type="text/javascript">
+      $(document).on('change', '.qqw', function(event) {
+      $.ajax({ 
+          url: 'index.php?route=catalog/product/chi&token=<?php echo $token; ?>&product_id=<?php echo $product_id; ?>',
+         data: 'idb=' + $(this).val(),
+         type: 'post',
+     dataType: 'json',
+      success: function(json)
+          {   
+              for(var i = 0;i<+option_value_row;i++){
+              $('.dde-' + i + json['row']).empty();
+               var htm = '';	
+               htm += '<select name="product_option[' + json['row'] + '][product_option_value][' + i + '][o_copb][]" multiple="multiple">';
+              $.each(json, function(ei, en){ 
+                   if( typeof en['o_idb'] != 'undefined' ) {
+                        htm += '<option selected="selected" value="zzz' + en['o_idb'] + '">' + en['nameb'] + '</option></td>';
+                   }
+              })
+             
+              $('.dde-' + i + json['row']).append(htm);
+              }
+          }
+             })
+          })
+//--></script> 
+<script type="text/javascript">
+  function bb(cc,dd,oid, oidb){
+      $.ajax({ 
+          url: 'index.php?route=catalog/product/chi&token=<?php echo $token; ?>&product_id=<?php echo $product_id; ?>',
+        // data: 'id=' + oid,{ code: code, userid: userid}
+             data: {id: oid, idb: oidb, ro: dd},
+         type: 'post',
+     dataType: 'json',
+      success: function(json)
+          { 
+             var html = '';
+             var ovr = option_value_row - 1;
+               html += '<select name="product_option[' + json['row'] + '][product_option_value][' + ovr + '][o_copa][]" multiple="multiple">'
+              $.each(json, function(ei, en){ 
+                   if( typeof en['o_id'] != 'undefined' ) {
+                        html += '<option selected="selected" value="zzz' + en['o_id'] + '">' + en['name'] + '</option></td>';
+                   }
+              })
+               html += '</select>'
+              $('.ddd-'+ cc + dd).append(html);
+             var htm = '';
+              htm += '<select name="product_option[' + json['row'] + '][product_option_value][' + ovr + '][o_copb][]" multiple="multiple">'  
+              $.each(json, function(ei, en){ 
+                   if( typeof en['o_idb'] != 'undefined' ) {
+                        htm += '<option selected="selected" value="zzz' + en['o_idb'] + '">' + en['nameb'] + '</option></td>';
+                   }
+              })
+               htm += '</select>'
+             $('.dde-'+ cc + dd).append(htm);
+              }
+            })
+  }
+//--></script> 
+<?php function in_array_r($ne, $ha, $strict = false) {
+    foreach ($ha as $item) {
+        if (($strict ? $item === $ne : $item == $ne) || (is_array($item) && in_array_r($ne, $item, $strict))) {
+       $ha = '';return true; }
+    }
+ $ha = ''; return false;
+} ?>]]></add>
+        </operation>
+    </file>
+    <file name="admin/controller/catalog/product.php">
+        <operation>                 
+            <search position="after" ><![CDATA[$product_option_value_data[] = array]]>  </search>
+            <add><![CDATA[                                                 'o_copa'                   => $product_option_value['o_copa'],
+                                                 'o_copb'                   => $product_option_value['o_copb'],]]>
+            </add>
+        </operation>
+        <operation>                 
+            <search position="after" index="1"><![CDATA[$this->load->model('catalog/option');]]>  </search>
+            <add><![CDATA[                  $this->data['ops'] = $this->model_catalog_option->getOps();
+                $this->data['qwert'] = $this->model_catalog_option->getOpValues();
+                if (isset($product_info['product_id'])) {
+                $this->data['evx'] = $this->model_catalog_product->getEv($product_info['product_id']); 
+             } else {
+              $this->data['evx'] = array();
+             }  ]]></add>
+        </operation>
+        <operation>                 
+            <search position="after"><![CDATA[$product_option['type'],]]>  </search>
+            <add><![CDATA[                                        'o_cata'                => $product_option['o_cata'],
+                                        'o_catb'                => $product_option['o_catb'],]]>
+            </add>
+        </operation>
+        <operation>                 
+            <search position="before" index="2" ><![CDATA[$this->response->setOutput($this->render());]]>  </search>
+            <add><![CDATA[		if (isset($product_info['product_id'])) {
+$this->data['product_id'] = $product_info['product_id'];
+} else {
+$this->data['product_id'] = '0';
+} ]]></add>
+        </operation>
+        <operation>                 
+            <search position="after" offset="1" ><![CDATA[$this->response->setOutput(json_encode($json));]]>  </search>
+            <add><![CDATA[        public function chi() {
+            $json = array();
+            if (isset($this->request->post['id'])) {
+             $e = $this->request->post['id'];             
+             list($id, $row) = explode(",", $e);
+             }
+            if (isset($this->request->post['idb'])) {
+              $f = $this->request->post['idb'];
+              list($idb, $row) = explode(",", $f);
+             }
+                    
+            $this->load->model('catalog/option');
+            
+            if (isset($this->request->post['ro'])) $row = $this->request->post['ro'];
+                
+            $json['row'] = $row;
+         
+                $uov = array();
+                if (isset($e)) {
+                $uov = $this->model_catalog_option->getOpsValues($id);
+                
+                if (empty($uov)) {
+                    $json[] = array(
+					'name' => '',
+                                        'o_id' => 0
+                        );
+                } else {
+                foreach ($uov as $n ) {
+                    $json[] = array(
+					'name' => $n['name'],
+                                        'o_id' => $n['option_value_id']
+   
+		);		 
+                }}}
+             
+             $bov = array();
+                if (isset($f)) {
+                $bov = $this->model_catalog_option->getOpsValues($idb);
+                if (empty($bov)) {
+                    $json[] = array(
+					'nameb' => '',
+                                        'o_idb' => 0
+                        );
+                } else {
+                foreach ($bov as $b ) {
+                    $json[] = array(
+					'nameb' => $b['name'],
+                                        'o_idb' => $b['option_value_id']
+   
+		);		 
+                }}}
+                $this->response->setOutput(json_encode($json));
+        }]]></add>
+        </operation>
+    </file>
+
+    <file name="catalog/controller/product/product.php"> 
+        <operation>                 
+            <search position="after" ><![CDATA[ => $option_value['name'],]]>  </search>
+            <add><![CDATA[                                                                'o_copa'                  => $option_value['o_copa'],
+                                                                'o_copb'                  => $option_value['o_copb'],]]>
+            </add>
+        </operation>
+        <operation>                 
+            <search position="after" index="1"><![CDATA['product_option_id' => $option['product_option_id'],]]>  </search>
+            <add><![CDATA[                                                'o_cata'             => $option['o_cata'],
+                                                'o_catb'             => $option['o_catb'],]]>
+            </add>
+        </operation>
+        <operation>                 
+            <search position="before" ><![CDATA[public function upload() {]]>  </search>
+            <add><![CDATA[        public function chi() {
+				
+		 $this->load->model('catalog/product');
+                   $idq = $this->request->post['id'];
+                $pro_id = $this->request->post['pro_id'];
+		   $cov = $this->model_catalog_product->getcOpsValues($idq,$pro_id);
+                   $tax = $this->model_catalog_product->getTaxId($pro_id);
+                  $json = array();
+		   foreach ($cov as $n ) {
+                       $json[] = array(
+                                      'price'      => $n['price'],
+		                     'pricet'      => $this->currency->format($this->tax->calculate($n['price'], $tax['0']['tax_class_id'] , $this->config->get('config_tax') ? 'P' : false)),
+                               'price_prefix'      => $n['price_prefix'],
+                                        'qty'      => $n['quantity'],
+                                       'name'      => $n['name'],
+                                        'ovd'      => $n['option_value_id'],
+                                      'value'      => $n['product_option_value_id'],
+                                       'serb'      => $n['no_serb']
+	                        	);		 
+                }
+		$this->response->setOutput(json_encode($json));
+	}]]></add>
+        </operation>
+    </file>
+    <file name="catalog/model/catalog/product.php"> 
+        <operation>                 
+            <search position="after" ><![CDATA[$product_option_value['weight'],]]>  </search>
+            <add><![CDATA[                                                'o_copa'                  => $product_option_value['o_copa'],
+                                                'o_copb'                  => $product_option_value['o_copb'],]]>
+            </add>
+        </operation>
+        <operation>                 
+            <search position="after" index="1"><![CDATA[ => $product_option['type'],]]>  </search>
+            <add><![CDATA[                                        'o_cata'             => $product_option['o_cata'],
+                                        'o_catb'             => $product_option['o_catb'],]]>
+            </add>
+        </operation>
+        <operation>                 
+            <search position="before" ><![CDATA[public function getTotalProductSpecials()]]>  </search>
+            <add><![CDATA[           public function getcOpsValues($option_id,$product_id) {
+                
+                $option_value_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_option_value pov LEFT JOIN " . DB_PREFIX . "option_value_description ovd ON (pov.option_value_id = ovd.option_value_id) LEFT JOIN `" . DB_PREFIX . "option_value` ov ON (pov.option_value_id = ov.option_value_id) WHERE pov.product_id = '" . (int)$product_id . "' AND no_ser LIKE '%-" . (int)$option_id . "-%' AND ovd.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY ov.sort_order ASC");		
+				
+		return $option_value_query->rows;
+	}
+              public function getTaxId($product_id) {
+             $query = $this->db->query("SELECT tax_class_id FROM " . DB_PREFIX . "product WHERE product_id = '" . (int)$product_id . "'");
+             return $query->rows;
+	}
+	
+
+]]>
+            </add>
+        </operation>
+    </file>
+    <file name="catalog/view/theme/*/template/product/product.tpl">  
+        <operation>                 
+            <search position="replace" index="1"><![CDATA[<div id="option-<?php echo $option['product_option_id']; ?>" class="option">]]>  </search>
+            <add><![CDATA[        <div value="<?php echo $option['product_option_id']; ?>" class="option">]]></add>
+        </operation>
+        <operation>                 
+            <search position="replace" ><![CDATA[<select name="option[<?php echo $option['product_option_id']; ?>]">]]>  </search>
+            <add><![CDATA[               <?php 
+               $hh ='';
+               if(substr($option['o_cata'], 0, 1) == '0') { ;  
+                      $qq = '1'; ?>
+              <select id="ddd"  value="<?php echo $option['product_option_id']; ?>" name="option[<?php echo $option['product_option_id']; ?>]">]]></add>
+        </operation>
+        <operation>                 
+            <search position="replace" offset="5"><![CDATA[<option value="<?php echo $option_value['product_option_value_id']; ?>"><?php echo $option_value['name']; ?>]]>  </search>
+            <add><![CDATA[ <option data-id="<?php echo $option_value['option_value_id'] ?>" value="<?php echo $option_value['product_option_value_id']; ?>"><?php echo $option_value['name']; ?>
+            <?php if ($option_value['price']) { ?>
+            (<?php echo $option_value['price_prefix']; ?><?php echo $option_value['price']; ?>)
+            <?php } ?>
+            </option>
+            <?php  } } else { ?> 
+            <select id="ddd-<?php echo $qq?>"  value="<?php echo $option['product_option_id']; ?>" name="option[<?php echo $option['product_option_id']; ?>]">
+            <option value=""><?php echo $text_select; ?></option>
+            <?php $qq ++; } ?>]]></add>
+        </operation>
+        <operation>                 
+            <search position="after"><![CDATA[$('#option-' + i).after]]>  </search>
+            <add><![CDATA[                                                $('select[name="option[' + i + ']"]').after('<span class="error">' + json['error']['option'][i] + '</span>');]]></add>
+        </operation>
+        <operation>                 
+            <search position="before" ><![CDATA[<?php echo $footer; ?>]]>  </search>
+            <add><![CDATA[<script type="text/javascript">
+     function a() {
+            var html     = '';
+            var ttt      =  $("[id^='ddd-']").filter(':last').attr('id');
+            var tt       = ttt.split("-").pop();
+            var en       = parseInt(tt) + 1;
+            var postData = {};
+            postData     = {
+                    id: $(this).find(':selected').data('id'),
+                    pro_id: '<?php echo $product_id ?>'
+                          };
+           
+            var zzz      = this.id;
+            var no       = zzz.split("-").pop();
+            var nos      = parseInt(no) + 1;
+              if (zzz === 'ddd'){
+                        nos = 1;
+                                 };
+              if (postData['id'] === undefined) {
+                 for ( var i = nos; i < en; i++ ) {
+                   $('#ddd-' + i).children('option:not(:first)').remove();
+                 }
+            return false;
+             };
+      $.ajax({ 
+          url: 'index.php?route=product/product/chi&product_id=<?php echo $product_id; ?>',
+         data: postData,
+         type: 'post', 
+     dataType: 'json',
+      success: function(json)
+          {     
+                for ( var i = nos; i < en; i++ ) {
+          $('#ddd-' + i).children('option:not(:first)').remove();
+            } 
+         $.each(json, function(e,item){ 
+             var ff = $( "#ddd option:selected" ).data('id');
+             if (item['serb'] == '-0-'||item['serb'].indexOf(ff) >= 0){
+                    html += '<option data-id="' + item['ovd'] + '" value="' + item['value'] + '">' + item['name'];
+                if (item['price'] > 0) {
+                    html += '(' +  item['price_prefix'] + item['pricet'] + ')';
+                }}
+                    html += '</option>';
+              })
+             $('#ddd-' + nos).append(html);
+           }
+              })
+   return false;
+  }
+   $(document).on('change', '[id^=ddd]', a);
+//--></script> ]]></add>
+        </operation>
+ 
+    </file>
+</modification>

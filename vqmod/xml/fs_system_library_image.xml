@@ -1,0 +1,15 @@
+<modification>
+	<file name="system/library/image.php">
+                <operation>
+			<search position="after"><![CDATA[ $this->image = imagecreatetruecolor($width, $height); ]]></search>
+			<add><![CDATA[  /*************Line added to create Progressive Image************/
+                                            if ( $this->info['mime'] == 'image/jpeg' ||  $this->info['mime'] == 'image/jpg') 
+                                            {
+                                                imageinterlace($this->image,true);
+                                            }
+                                        /*******************************End****************************/    
+			]]></add>
+		</operation>
+		
+	</file>
+</modification>

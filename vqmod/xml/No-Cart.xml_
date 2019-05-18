@@ -1,0 +1,77 @@
+<!-- *********************************************************************************** -->
+<!-- *** Part of OpenShop project: http://OpenShop.org.ua (c) MaxD                   *** -->
+<!-- *********************************************************************************** -->
+<!-- Redistribution in any form without written permission is prohibited.                -->
+
+<modification>
+    <id><![CDATA[Removes cart and transforms "Add to cart" buttons into "Buy" buttons that lead directly to checkout.]]></id>
+    <version><![CDATA[1.6]]></version>
+    <vqmver><![CDATA[]]></vqmver>
+    <author><![CDATA[MaxD http://OpenShop.org.ua]]></author>
+
+              <!-- <file name="catalog/view/theme/default/template/product/product.tpl"> -->
+              <file name="catalog/view/theme/default/template/product/product_bundle_right.tpl">
+
+        <!-- Remove quantity selection start -->
+
+        <!-- <operation error="skip">
+            <search position="replace"><![CDATA[<?php echo $text_qty; ?>]]></search>
+            <add><![CDATA[]]></add>
+        </operation>
+        <operation error="skip">
+            <search position="replace"><![CDATA[name="quantity"]]></search>
+            <add><![CDATA[name="quantity" style="display:none;"]]></add>
+        </operation> -->
+
+        <!-- Remove quantity selection end -->
+
+        <operation error="skip">
+            <search position="replace" offset="6"><![CDATA[$('#notification').html]]></search>
+            <add><![CDATA[location='index.php?route=checkout/checkout';]]></add>
+        </operation>
+
+    </file>
+
+
+    <!-- Make the magic -->
+    <file name="catalog/controller/checkout/cart.php">
+        <operation error="skip">
+            <search position="before"><![CDATA[$this->cart->add($this->request->post['product_id'], $quantity, $option);]]></search>
+            <add><![CDATA[$this->cart->clear();]]></add>
+        </operation>
+        <operation error="skip">
+            <search position="after"><![CDATA[$json['total'] = sprintf]]></search>
+            <add><![CDATA[$json['redirect'] = $this->url->link('checkout/checkout', '', 'SSL');]]></add>
+        </operation>
+    </file>
+
+
+    <!-- Change "Add to cart" button to "Buy" button in all languages: start -->
+
+    <file name="catalog/language/*/*.php">
+        <operation error="skip">
+            <search position="replace"><![CDATA[$_['button_cart']]]></search>
+            <add><![CDATA[global $os; if (empty($os['buy_button'])) $os['buy_button'] = 'Buy Now'; $_['button_cart'] = $os['buy_button'];//]]></add>
+        </operation>
+    </file>
+
+    <!-- Change "Add to cart" button to "Buy" button in all languages: end -->
+
+    <file name="catalog/view/theme/*/template/common/header.tpl">
+        <operation error="skip">
+            <search position="replace"><![CDATA[<?php echo $cart; ?>]]></search>
+            <add><![CDATA[]]></add>
+        </operation>
+        <operation error="skip">
+            <search position="replace"><![CDATA[<a href="<?php echo $shopping_cart; ?>"><?php echo $text_shopping_cart; ?></a>]]></search>
+            <add><![CDATA[]]></add>
+        </operation>
+        <operation error="skip">
+            <search position="replace"><![CDATA[<a href="<?php echo $checkout; ?>"><?php echo $text_checkout; ?></a>]]></search>
+            <add><![CDATA[]]></add>
+        </operation>
+
+    </file>
+
+
+</modification>

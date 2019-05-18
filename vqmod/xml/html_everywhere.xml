@@ -1,0 +1,264 @@
+<modification>
+	<id>Html Everywhere</id>
+	<version>1.5</version>
+	<vqmver>2.1.7</vqmver>
+	<author>Tamás Késmárki - opencartgeek.com</author>
+
+	<file name="catalog/view/theme/*/*/common/header.tpl">
+		<operation>
+			<search position="after"><![CDATA[<div id="container">]]></search>
+			<add>
+			<![CDATA[
+				<?php if (!empty($modules['header_top']))  {?>
+				<div id="header-top-modules">
+					<?php foreach ($modules['header_top'] as $module) { ?>
+					<?php echo $module; ?>
+					<?php } ?>
+				</div>
+				<?php } ?>
+			]]>
+			</add>
+		</operation>
+		<operation>
+			<search position="bottom"><![CDATA[]]></search>
+			<add>
+			<![CDATA[
+			<?php if (!empty($modules['header_bottom'])) {?>
+				<div id="header-bottom-modules">
+					<?php foreach ($modules['header_bottom'] as $module) { ?>
+					<?php echo $module; ?>
+					<?php } ?>
+				</div>
+			<?php }?>
+			]]>
+			</add>
+		</operation>
+	</file>
+	
+	<file name="catalog/view/theme/*/template/common/footer.tpl">
+		<operation>
+			<search position="top"><![CDATA[]]></search>
+			<add>
+			<![CDATA[
+				<?php if (!empty($modules['footer_top']))  {?>
+				<div id="footer-top-modules">
+					<?php foreach ($modules['footer_top'] as $module) { ?>
+					<?php echo $module; ?>
+					<?php } ?>
+				</div>
+				<?php } ?>
+			]]>
+			</add>
+		</operation>
+		<operation>
+			<search position="before" offset="1"><![CDATA[</body>]]></search>
+			<add>
+			<![CDATA[
+				<?php if (!empty($modules['footer_bottom'])) {?>
+				<div id="footer-bottom-modules">
+					<?php foreach ($modules['footer_bottom'] as $module) { ?>
+					<?php echo $module; ?>
+					<?php } ?>
+				</div>
+				<?php }?>
+			]]>
+			</add>
+		</operation>
+	</file>
+	
+	<file name="catalog/controller/common/header.php">
+		<operation>
+			<search position="before"><![CDATA[if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/header.tpl')) {]]></search>
+			<add>
+			<![CDATA[
+				$this->load->model('design/layout');
+				$this->load->model('catalog/category');
+				$this->load->model('catalog/product');
+				$this->load->model('catalog/information');
+				
+				if (isset($this->request->get['route'])) {
+					$route = (string)$this->request->get['route'];
+				} else {
+					$route = 'common/home';
+				}
+				
+				$layout_id = 0;
+				
+				if ($route == 'product/category' && isset($this->request->get['path'])) {
+					$path = explode('_', (string)$this->request->get['path']);
+				
+					$layout_id = $this->model_catalog_category->getCategoryLayoutId(end($path));
+				}
+				
+				if ($route == 'product/product' && isset($this->request->get['product_id'])) {
+					$layout_id = $this->model_catalog_product->getProductLayoutId($this->request->get['product_id']);
+				}
+				
+				if ($route == 'information/information' && isset($this->request->get['information_id'])) {
+					$layout_id = $this->model_catalog_information->getInformationLayoutId($this->request->get['information_id']);
+				}
+				
+				if (!$layout_id) {
+					$layout_id = $this->model_design_layout->getLayout($route);
+				}
+				
+				if (!$layout_id) {
+					$layout_id = $this->config->get('config_layout_id');
+				}
+				
+				$module_data = array();
+				
+				$this->load->model('setting/extension');
+				
+				$extensions = $this->model_setting_extension->getExtensions('module');
+				
+				foreach ($extensions as $extension) {
+					$modules = $this->config->get($extension['code'] . '_module');
+						
+					if ($modules) {
+						foreach ($modules as $module) {
+							if ($module['layout_id'] == $layout_id && $module['position'] == 'header_bottom' && $module['status']) {
+								$module_data['header_bottom'][] = array(
+										'code'       => $extension['code'],
+										'setting'    => $module,
+										'sort_order' => $module['sort_order']
+								);
+							} elseif($module['layout_id'] == $layout_id && $module['position'] == 'header_top' && $module['status']) {
+								$module_data['header_top'][] = array(
+										'code'       => $extension['code'],
+										'setting'    => $module,
+										'sort_order' => $module['sort_order']
+								);
+							}
+						}
+					}
+				}
+				
+				foreach ($module_data as $k => $v) {
+					
+					if (!empty($module_data[$k])) {
+					
+						$sort_order = array();
+					
+						foreach ($module_data[$k] as $key => $value) {
+							$sort_order[$key] = $value['sort_order'];
+						}
+							
+						array_multisort($sort_order, SORT_ASC, $module_data[$k]);
+							
+						$this->data['modules'][$k] = array();
+							
+						foreach ($module_data[$k] as $module) {
+							$module = $this->getChild('module/' . $module['code'], $module['setting']);
+								
+							if ($module) {
+								$this->data['modules'][$k][] = $module;
+							}
+						}
+					
+					}
+					
+				}
+			]]>
+			</add>
+		</operation>
+	</file>
+	
+	<file name="catalog/controller/common/footer.php">
+		<operation>
+			<search position="before"><![CDATA[if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/footer.tpl')) {]]></search>
+			<add>
+			<![CDATA[
+				$this->load->model('design/layout');
+				$this->load->model('catalog/category');
+				$this->load->model('catalog/product');
+				$this->load->model('catalog/information');
+				
+				if (isset($this->request->get['route'])) {
+					$route = (string)$this->request->get['route'];
+				} else {
+					$route = 'common/home';
+				}
+				
+				$layout_id = 0;
+				
+				if ($route == 'product/category' && isset($this->request->get['path'])) {
+					$path = explode('_', (string)$this->request->get['path']);
+				
+					$layout_id = $this->model_catalog_category->getCategoryLayoutId(end($path));
+				}
+				
+				if ($route == 'product/product' && isset($this->request->get['product_id'])) {
+					$layout_id = $this->model_catalog_product->getProductLayoutId($this->request->get['product_id']);
+				}
+				
+				if ($route == 'information/information' && isset($this->request->get['information_id'])) {
+					$layout_id = $this->model_catalog_information->getInformationLayoutId($this->request->get['information_id']);
+				}
+				
+				if (!$layout_id) {
+					$layout_id = $this->model_design_layout->getLayout($route);
+				}
+				
+				if (!$layout_id) {
+					$layout_id = $this->config->get('config_layout_id');
+				}
+				
+				$module_data = array();
+				
+				$this->load->model('setting/extension');
+				
+				$extensions = $this->model_setting_extension->getExtensions('module');
+				
+				foreach ($extensions as $extension) {
+					$modules = $this->config->get($extension['code'] . '_module');
+						
+					if ($modules) {
+						foreach ($modules as $module) {
+							if ($module['layout_id'] == $layout_id && $module['position'] == 'footer_bottom' && $module['status']) {
+								$module_data['footer_bottom'][] = array(
+										'code'       => $extension['code'],
+										'setting'    => $module,
+										'sort_order' => $module['sort_order']
+								);
+							} elseif($module['layout_id'] == $layout_id && $module['position'] == 'footer_top' && $module['status']) {
+								$module_data['footer_top'][] = array(
+										'code'       => $extension['code'],
+										'setting'    => $module,
+										'sort_order' => $module['sort_order']
+								);
+							}
+						}
+					}
+				}
+				
+				foreach ($module_data as $k => $v) {
+					
+					if (!empty($module_data[$k])) {
+					
+						$sort_order = array();
+					
+						foreach ($module_data[$k] as $key => $value) {
+							$sort_order[$key] = $value['sort_order'];
+						}
+							
+						array_multisort($sort_order, SORT_ASC, $module_data[$k]);
+							
+						$this->data['modules'][$k] = array();
+							
+						foreach ($module_data[$k] as $module) {
+							$module = $this->getChild('module/' . $module['code'], $module['setting']);
+								
+							if ($module) {
+								$this->data['modules'][$k][] = $module;
+							}
+						}
+					
+					}
+					
+				}
+			]]>
+			</add>
+		</operation>
+	</file>
+</modification>

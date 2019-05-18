@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+
+	<id>Custom Menu</id>
+	<version>2.5.1</version>
+	<vqmver>2.1.7</vqmver>
+	<author>Suraj</author>
+	<file name="admin/model/catalog/category.php">
+            <operation>
+                <search position="before"><![CDATA[public function getCategories($data) {]]></search>
+                <add><![CDATA[  
+                    public function getCategoriesNames() {
+                        $query = $this->db->query("SELECT name FROM " . DB_PREFIX . "category_description ");
+                        return $query->rows;
+                    }
+                    public function getCategoriesNamesId() {
+                        $query = $this->db->query("SELECT cat.category_id, cat_des.name FROM " . DB_PREFIX . "category_description as cat_des join ". DB_PREFIX."category as cat on cat_des.category_id = cat.category_id where cat.status = 1 ");
+                        return $query->rows;
+                    }
+                    ]]>
+                </add>
+            </operation>	
+        </file>
+        <file name="admin/model/catalog/information.php">
+            <operation>
+                <search position="before"><![CDATA[public function getInformations($data = array()) {]]></search>
+                <add><![CDATA[  
+                    public function getAllInformationPages() {
+                            $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "information i LEFT JOIN " . DB_PREFIX . "information_description id ON (i.information_id = id.information_id) WHERE id.language_id = '" . (int)$this->config->get('config_language_id') . "' AND i.status = 1");
+
+                            return $query->rows;
+                    }
+                    ]]>
+                </add>
+            </operation>	
+        </file>
+        <file name="catalog/controller/common/header.php">
+            <operation>
+                <search position="after"><![CDATA[protected function index() {]]></search>
+                <add><![CDATA[  
+                    $module_name = 'custommenu';
+                    $this->load->model('setting/extension');
+                    $installed_modules = $this->model_setting_extension->getModule($module_name);
+                    if(in_array($module_name, $installed_modules)) {
+                      $this->data['custommenu'] = $module = $this->getChild('module/custommenu');
+                    }
+                    ]]>
+                </add>
+            </operation>	
+        </file>
+</modification>

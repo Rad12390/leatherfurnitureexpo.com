@@ -1,0 +1,49 @@
+<modification>
+    <id><![CDATA[Lagacy website data (Zen cart data old)]]></id>
+    <version><![CDATA[1.4+]]></version>
+    <vqmver><![CDATA[1.0.0]]></vqmver>
+    <author><![CDATA[intersoft]]></author>
+    <file name="admin/controller/common/header.php">
+		
+        <operation>
+            <search position="after"><![CDATA[$this->data['text_recurring_profile'] = $this->language->get('text_recurring_profile');]]></search>
+            <add><![CDATA[	
+
+     $this->data['text_legacy_data'] = "Legacy website data";
+	
+]]></add>
+        </operation>
+           <operation>
+            <search position="after"><![CDATA[$this->data['voucher'] = $this->url->link('sale/voucher', 'token=' . $this->session->data['token'], 'SSL');]]></search>
+            <add><![CDATA[	
+
+    $this->data['legacy_data_link'] = $this->url->link('sale/legacydata', 'token=' . $this->session->data['token'], 'SSL');
+	
+]]></add>
+        </operation>
+    </file>
+    
+    <file name="admin/view/template/common/header.tpl">
+		<operation>
+			<search position="after"><![CDATA[<li><a href="<?php echo $contact; ?>"><?php echo $text_contact; ?></a></li>]]></search>
+			<add><![CDATA[
+<li><a href="<?php echo $legacy_data_link; ?>"><?php echo $text_legacy_data; ?></a></li>
+]]></add>
+		</operation>
+		
+	</file>
+        
+        <file name="system/database/ipsmysql.php">
+		<operation>
+			<search position="replace"><![CDATA[if (!$this->link = mysql_connect($hostname, $username, $password)) {]]></search>
+<add><![CDATA[
+
+if (!$this->link = mysql_connect($hostname, $username, $password,true)) {
+]]></add>
+		</operation>
+		
+	</file>
+        
+
+  
+</modification>

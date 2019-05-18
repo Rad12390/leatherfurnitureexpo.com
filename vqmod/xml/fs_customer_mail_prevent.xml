@@ -1,0 +1,18 @@
+<modification>
+	<id>Stop new customer email</id>
+	<version>1.0</version>
+	<vqmver>2.3.0</vqmver>
+	<author>Intersoft Professional</author>
+<file name="catalog/model/account/customer.php">
+         <operation>
+		<search position="replace"><![CDATA[public function addCustomer($data) {]]></search>		
+		<add><![CDATA[public function addCustomer($data, $prevent_email=false) {]]></add>
+	</operation>
+        <operation>
+		<search position="before"><![CDATA[$mail = new Mail();]]></search>		
+		<add><![CDATA[                if($prevent_email)
+                                        return;
+                    ]]></add>
+	</operation>   
+</file>
+</modification>

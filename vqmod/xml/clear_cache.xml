@@ -1,0 +1,111 @@
+<modification>
+
+	<id>Clear Cache</id>
+	<version>1.0.0</version>
+	<vqmver>2.1.5</vqmver>
+	<author>ovife21</author>
+	
+	<file name="admin/view/template/tool/error_log.tpl">
+		<operation>
+			<search position="replace"><![CDATA[<a href="<?php echo $clear; ?>" class="button"><?php echo $button_clear; ?></a>]]></search>
+			<add><![CDATA[<a href="<?php echo $clear; ?>" class="button"><?php echo $button_clear; ?></a><a href="<?php echo $clear_cache; ?>" class="button"><?php echo $button_clear_cache; ?></a>]]></add>
+		</operation>		
+	</file>
+	
+	<file name="admin/language/english/tool/error_log.php">
+		<operation>
+			<search position="after"><![CDATA[$_['text_success']  = 'Success: You have successfully cleared your error log!';]]></search>
+			<add><![CDATA[$_['text_success_cache']  = 'Success: You have successfully cleared your cache!';]]></add>
+		</operation>		
+	</file>
+	
+	<file name="admin/language/english/english.php">
+		<operation>
+			<search position="after"><![CDATA[$_['button_clear']]]></search>
+			<add><![CDATA[$_['button_clear_cache']            = 'Clear Cache';]]></add>
+		</operation>		
+	</file>
+
+	<file name="admin/controller/tool/error_log.php">
+		<operation>
+			<search position="after"><![CDATA[$this->data['button_clear'] = $this->language->get('button_clear');]]></search>
+			<add><![CDATA[$this->data['button_clear_cache'] = $this->language->get('button_clear_cache');]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[$this->data['clear'] = $this->url->link('tool/error_log/clear', 'token=' . $this->session->data['token'], 'SSL');]]></search>
+			<add><![CDATA[$this->data['clear_cache'] = $this->url->link('tool/error_log/clearcache', 'token=' . $this->session->data['token'], 'SSL');]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[public function clear() {]]></search>
+			<add><![CDATA[	
+	public function clearcache() {
+	$this->deleteAll(DIR_IMAGE.'cache');
+	mkdir(DIR_IMAGE.'cache');
+	$this->deleteAll(DIR_CACHE);
+	mkdir(DIR_CACHE);
+	
+	$vqcache = DIR_APPLICATION.'../vqmod/vqcache';
+	$vqcache = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $vqcache);
+	$this->deleteAll($vqcache);
+	mkdir($vqcache);
+	
+	$this->session->data['success'] = 'Success: You have successfully cleared your CACHE!';
+		
+	$this->redirect($this->url->link('tool/error_log', 'token=' . $this->session->data['token'], 'SSL'));
+	
+	}
+	
+	private function deleteAll($directory, $empty = false) {
+    if(substr($directory,-1) == "/") {
+        $directory = substr($directory,0,-1);
+    }
+
+    if(!file_exists($directory) || !is_dir($directory)) {
+        return false;
+    } elseif(!is_readable($directory)) {
+        return false;
+    } else {
+        $directoryHandle = opendir($directory);
+       
+        while ($contents = readdir($directoryHandle)) {
+            if($contents != '.' && $contents != '..') {
+                $path = $directory . "/" . $contents;
+               
+                if(is_dir($path)) {
+                    $this->deleteAll($path);
+                } else {
+                    unlink($path);
+                }
+            }
+        }
+       
+        closedir($directoryHandle);
+
+        if($empty == false) {
+            if(!rmdir($directory)) {
+                return false;
+            }
+        }
+       
+        return true;
+    }
+	}
+	
+	]]></add>
+		</operation>		
+		<operation>
+			<search position="before"><![CDATA[if (isset($this->session->data['success'])) {]]></search>
+			<add><![CDATA[if (isset($this->session->data['success_cache'])) {
+			$this->data['success_cache'] = $this->session->data['success_cache'];
+		
+			unset($this->session->data['success_cache']);
+		} else {
+			$this->data['success_cache'] = '';
+		}]]></add>
+		</operation>
+		
+	</file>
+	
+	
+</modification>
+

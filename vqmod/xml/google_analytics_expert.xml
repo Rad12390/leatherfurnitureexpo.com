@@ -1,0 +1,985 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<modification>
+    <id><![CDATA[Google Analytics Expert]]></id>
+    <version><![CDATA[1.5.2 - 1.5.6x - Default]]></version>
+    <vqmver><![CDATA[5.2.9.4]]></vqmver>
+    <author><![CDATA[spitos]]></author>
+
+    <!-- begin admin changes -->
+    <file name="admin/controller/setting/store.php">
+        <operation>
+            <search position="before"><![CDATA[
+			if (isset($this->error['warning'])) {
+			]]></search>
+            <add><![CDATA[
+			if (isset($this->error['ga_conversion_id'])) {
+			$this->data['error_ga_conversion_id'] = $this->error['ga_conversion_id'];
+			} else {
+			$this->data['error_ga_conversion_id'] = '';
+			}
+		
+			if (isset($this->error['ga_label'])) {
+			$this->data['error_ga_label'] = $this->error['ga_label'];
+			} else {
+			$this->data['error_ga_label'] = '';
+			}
+			]]></add>
+        </operation>
+        <operation>
+            <search position="before"><![CDATA[
+			if (!$this->request->post['config_name']) {
+			]]></search>
+            <add><![CDATA[
+			$this->load->language('setting/setting');
+			if (($this->request->post['config_ga_adwords'] == 1) && empty($this->request->post['config_ga_conversion_id'])) {
+			$this->error['ga_conversion_id'] = $this->language->get('error_ga_conversion_id');
+			}
+			
+			if (($this->request->post['config_ga_adwords'] == 1) && empty($this->request->post['config_ga_label'])) {
+			$this->error['ga_label'] = $this->language->get('error_ga_label');
+			}
+
+			]]></add>
+        </operation>
+        <operation>
+            <search position="before" index="1"><![CDATA[
+			$this->data['button_save'] = $this->language->get('button_save');
+			]]></search>
+            <add><![CDATA[
+			$this->load->language('setting/setting');
+			$this->data['entry_ga_exclude_admin'] = $this->language->get('entry_ga_exclude_admin');
+			$this->data['entry_ga_tracking_type'] = $this->language->get('entry_ga_tracking_type');
+			$this->data['entry_ga_conversion_id'] = $this->language->get('entry_ga_conversion_id');
+			$this->data['entry_ga_remarketing'] = $this->language->get('entry_ga_remarketing');
+			$this->data['entry_ga_cookie'] = $this->language->get('entry_ga_cookie');
+			$this->data['entry_ga_adwords'] = $this->language->get('entry_ga_adwords');
+			$this->data['entry_ga_label'] = $this->language->get('entry_ga_label');
+			$this->data['entry_ua_tracking'] = $this->language->get('entry_ua_tracking');
+			$this->data['entry_google_analytics'] = $this->language->get('entry_google_analytics');
+			
+			if (isset($this->request->get['store_id'])) {
+			$store = $this->model_setting_store->getStore($this->request->get['store_id']);
+			$domainurl = new getDomain();
+            $this->data['domainurl'] = $domainurl->domain($store['url']);
+            $this->data['config_ga_domain'] = $this->data['domainurl'];
+            }
+			]]></add>
+        </operation>
+        <operation>
+            <search position="after"><![CDATA[
+			$this->data['text_image_manager'] = $this->language->get('text_image_manager');	
+			]]></search>
+            <add><![CDATA[
+			$this->load->language('setting/setting');
+			$this->data['text_classic'] = $this->language->get('text_classic');
+			$this->data['text_universal'] = $this->language->get('text_universal');
+			$this->data['text_enabled'] = $this->language->get('text_enabled');
+			$this->data['text_disabled'] = $this->language->get('text_disabled');
+			$this->data['text_exclude'] = $this->language->get('text_exclude');
+			$this->data['text_include'] = $this->language->get('text_include');
+			]]></add>
+        </operation>	
+        <operation>
+            <search position="before" index="1"><![CDATA[
+			$this->template = 'setting/store_form.tpl';
+			]]></search>
+            <add><![CDATA[
+			if (isset($this->request->post['config_ga_exclude_admin'])) {
+				$this->data['config_ga_exclude_admin'] = $this->request->post['config_ga_exclude_admin'];
+			} elseif (isset($store_info['config_ga_exclude_admin'])) {
+				$this->data['config_ga_exclude_admin'] = $store_info['config_ga_exclude_admin'];
+			} else {
+				$this->data['config_ga_exclude_admin'] = '';
+			}
+			
+			if (isset($this->request->post['config_ga_tracking_type'])) {
+				$this->data['config_ga_tracking_type'] = $this->request->post['config_ga_tracking_type'];
+			} elseif (isset($store_info['config_ga_tracking_type'])) {
+				$this->data['config_ga_tracking_type'] = $store_info['config_ga_tracking_type'];
+			} else {
+				$this->data['config_ga_tracking_type'] = '';
+			}
+			
+			if (isset($this->request->post['config_ga_conversion_id'])) {
+				$this->data['config_ga_conversion_id'] = $this->request->post['config_ga_conversion_id'];
+			} elseif (isset($store_info['config_ga_conversion_id'])) {
+				$this->data['config_ga_conversion_id'] = $store_info['config_ga_conversion_id'];
+			} else {
+				$this->data['config_ga_conversion_id'] = '';
+			}
+			
+			if (isset($this->request->post['config_ga_remarketing'])) {
+				$this->data['config_ga_remarketing'] = $this->request->post['config_ga_remarketing'];
+			} elseif (isset($store_info['config_ga_remarketing'])) {
+				$this->data['config_ga_remarketing'] = $store_info['config_ga_remarketing'];
+			} else {
+				$this->data['config_ga_remarketing'] = '';
+			}
+			
+			if (isset($this->request->post['config_ga_cookie'])) {
+				$this->data['config_ga_cookie'] = $this->request->post['config_ga_cookie'];
+			} elseif (isset($store_info['config_ga_cookie'])) {
+				$this->data['config_ga_cookie'] = $store_info['config_ga_cookie'];
+			} else {
+				$this->data['config_ga_cookie'] = '';
+			}
+			
+			if (isset($this->request->post['config_ga_adwords'])) {
+				$this->data['config_ga_adwords'] = $this->request->post['config_ga_adwords'];
+			} elseif (isset($store_info['config_ga_adwords'])) {
+				$this->data['config_ga_adwords'] = $store_info['config_ga_adwords'];
+			} else {
+				$this->data['config_ga_adwords'] = '';
+			}
+			
+			if (isset($this->request->post['config_ga_label'])) {
+				$this->data['config_ga_label'] = $this->request->post['config_ga_label'];
+			} elseif (isset($store_info['config_ga_label'])) {
+				$this->data['config_ga_label'] = $store_info['config_ga_label'];
+			} else {
+				$this->data['config_ga_label'] = '';
+			}
+			
+			if (isset($this->request->post['config_ua_tracking'])) {
+				$this->data['config_ua_tracking'] = $this->request->post['config_ua_tracking'];
+			} elseif (isset($store_info['config_ua_tracking'])) {
+				$this->data['config_ua_tracking'] = $store_info['config_ua_tracking'];
+			} else {
+				$this->data['config_ua_tracking'] = '';
+			}
+
+			if (isset($this->request->post['config_google_analytics'])) {
+				$this->data['config_google_analytics'] = $this->request->post['config_google_analytics'];
+			} elseif (isset($store_info['config_google_analytics'])) {
+				$this->data['config_google_analytics'] = $store_info['config_google_analytics'];
+			} else {
+				$this->data['config_google_analytics'] = '';
+			}
+			]]></add>
+        </operation>
+        <operation>
+            <search position="after"><![CDATA[
+			$this->data['tab_server'] = $this->language->get('tab_server');
+			]]></search>
+            <add><![CDATA[
+			$this->data['tab_analytics'] = $this->language->get('tab_analytics');
+			]]></add>
+        </operation>
+        <operation>
+            <search position="before"><![CDATA[
+            ?>
+            ]]></search>
+            <add><![CDATA[
+		class getDomain {
+            public function domain($url)
+            {
+                global $subtlds;
+                $slds = "";
+                $url = strtolower(preg_replace("(https?://)", "", $url));
+
+               $host = parse_url('http://'.$url,PHP_URL_HOST);
+
+                preg_match("/[^\.\/]+\.[^\.\/]+$/", $host, $matches);
+                foreach($subtlds as $sub){
+                    if (preg_match('/\.'.preg_quote($sub).'$/', $host, $xyz)){
+                        preg_match("/[^\.\/]+\.[^\.\/]+\.[^\.\/]+$/", $host, $matches);
+                    }
+                }
+
+                return @$matches[0];
+            }
+
+            public function get_tlds(){
+            	global $subtlds;
+                //$address = 'http://mxr.mozilla.org/mozilla-central/source/netwerk/dns/effective_tld_names.dat?raw=1';
+                $address = 'https://publicsuffix.org/list/effective_tld_names.dat';
+                
+                                
+                if (extension_loaded('curl')) {
+                
+                	$ch = curl_init();
+                	$timeout = 5;
+                	curl_setopt($ch, CURLOPT_URL, $address); //set url
+                	curl_setopt($ch, CURLOPT_HEADER, true); //get header
+                	curl_setopt($ch, CURLOPT_NOBODY, true); //do not include response body
+                	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); //do not show in browser the response
+                	//curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); //follow any redirects
+                	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout); //follow any timeout
+                	curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13');
+                	//$file_contents = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL); //extract the url from the header response
+                	$file_contents = curl_exec($ch);
+                	curl_close($ch);
+                	$content = array();
+                	$content = explode("\n", $file_contents);
+                
+				} else {
+					$content = file($address);
+				}
+                
+                foreach($content as $num => $line){
+                        $line = trim($line);
+                        if($line == '') continue;
+                        if(@substr($line[0], 0, 2) == '/') continue;
+                        $line = @preg_replace("/[^a-zA-Z0-9\.]/", '', $line);
+                        if($line == '') continue;  //$line = '.'.$line;
+                        if(@$line[0] == '.') $line = substr($line, 1);
+                        if(!strstr($line, '.')) continue;
+                        $subtlds[] = $line;
+                        //echo "{$num}: '{$line}'"; echo "<br>";
+                }
+                
+                $subtlds = (isset($subtlds) && is_array($subtlds)) ? $subtlds : array(); // initialize if necessary
+
+
+                $subtlds = array_merge(array(
+                        'co.uk', 'me.uk', 'net.uk', 'org.uk', 'sch.uk', 'ac.uk', 
+                        'gov.uk', 'nhs.uk', 'police.uk', 'mod.uk', 'asn.au', 'com.au',  'com.br', 'com.tr',
+                        'net.au', 'id.au', 'org.au', 'edu.au', 'gov.au', 'csiro.au', 'co.nz', 'co.za'
+                        ),$subtlds);
+
+                $subtlds = array_unique($subtlds);
+            
+                return $subtlds;    
+            }
+		} 
+            
+            $subtlds = new getDomain();
+            $subtlds->get_tlds();
+            ]]></add>
+        </operation>
+    </file>
+    <file name="admin/view/template/setting/store_form.tpl">
+        <operation>
+            <search position="after"><![CDATA[
+			<?php echo $header; ?>
+			]]></search>
+            <add><![CDATA[
+	<script type="text/javascript"><!--
+	$(document).ready(function() {
+	if ($('.show-adwords:checked').val() == '1') {
+	    $(".adwords-visible").show();  
+	} else {
+		$(".adwords-visible").hide();
+	}
+
+	$("input:radio.show-adwords").click(function() {
+	if ((this).value == 1) {
+		$(".adwords-visible").show();
+	} else {
+		$(".adwords-visible").hide();
+	}
+	});
+	});
+	//--></script>]]></add>
+        </operation>
+        <operation>
+            <search position="replace"><![CDATA[
+			<a href="#tab-server"><?php echo $tab_server; ?></a>
+			]]></search>
+            <add><![CDATA[
+			<a href="#tab-server"><?php echo $tab_server; ?></a><a href="#tab-analytics"><?php echo $tab_analytics; ?></a>
+			]]></add>
+        </operation>
+        <operation>
+            <search position="before"><![CDATA[
+			</form>
+			]]></search>
+            <add><![CDATA[
+			<div id="tab-analytics">
+          	<table class="form">
+          	<tr>
+              <td>Domain URL:</td>
+              <td><?php if (isset($domainurl)) { ?><input type="hidden" name="config_ga_domain" value="<?php echo $domainurl; ?>" /><?php echo $domainurl; ?>
+              <?php } else { ?>
+              Please save your settings then reload the Google Analytics Expert tab and save your settings again, ensuring Domain URL is set to complete installation.
+              <?php } ?>
+              </td>
+            </tr>
+          	<tr>
+              <td>Google Analytics Expert Version:</td>
+              <td>5.2.9.4</td>
+            </tr>
+            <tr>
+              <td><?php echo $entry_ga_exclude_admin; ?></td>
+              <td><?php if ($config_ga_exclude_admin) { ?>
+              	<input type="radio" name="config_ga_exclude_admin" value="2" <?php if ($config_ga_exclude_admin == 2) { echo ' checked="checked"'; } ?> />
+                <?php echo $text_include; ?>
+                <input type="radio" name="config_ga_exclude_admin" value="1" <?php if ($config_ga_exclude_admin == 1) { echo ' checked="checked"'; } ?> />
+                <?php echo $text_exclude; ?>
+                <?php } else { ?>
+                <input type="radio" name="config_ga_exclude_admin" value="2" checked="checked" />
+                <?php echo $text_include; ?>
+                <input type="radio" name="config_ga_exclude_admin" value="1" />
+                <?php echo $text_exclude; ?>
+                <?php } ?></td>
+            </tr>
+            <tr>
+              <td><?php echo $entry_ga_tracking_type; ?></td>
+              <td><?php if ($config_ga_tracking_type) { ?>
+                <input type="radio" name="config_ga_tracking_type" value="1" <?php if ($config_ga_tracking_type == 1) { echo ' checked="checked"'; } ?> />
+                <?php echo $text_classic; ?>
+                <input type="radio" name="config_ga_tracking_type" value="2" <?php if ($config_ga_tracking_type == 2) { echo ' checked="checked"'; } ?> />
+                <?php echo $text_universal; ?>
+                <?php } else { ?>
+                <input type="radio" name="config_ga_tracking_type" value="1" />
+                <?php echo $text_classic; ?>
+                <input type="radio" name="config_ga_tracking_type" value="2" checked="checked" />
+                <?php echo $text_universal; ?>
+                <?php } ?></td>
+            </tr>
+            <tr>
+              <td><?php echo $entry_ua_tracking; ?></td>
+              <td><input type="text" name="config_ua_tracking" value="<?php echo $config_ua_tracking; ?>" /></td>
+            </tr>
+            <tr>
+              <td><?php echo $entry_ga_remarketing; ?></td>
+              <td><?php if ($config_ga_remarketing) { ?>
+              	<input type="radio" name="config_ga_remarketing" value="2" <?php if ($config_ga_remarketing == 2) { echo ' checked="checked"'; } ?> />
+                <?php echo $text_disabled; ?>
+                <input type="radio" name="config_ga_remarketing" value="1" <?php if ($config_ga_remarketing == 1) { echo ' checked="checked"'; } ?> />
+                <?php echo $text_enabled; ?>
+                <?php } else { ?>
+                <input type="radio" name="config_ga_remarketing" value="2" checked="checked" />
+                <?php echo $text_disabled; ?>
+                <input type="radio" name="config_ga_remarketing" value="1" />
+                <?php echo $text_enabled; ?>
+                <?php } ?></td>
+            </tr>
+            <tr>
+              <td><?php echo $entry_ga_cookie; ?></td>
+              <td><?php if ($config_ga_cookie) { ?>
+              	<input type="radio" name="config_ga_cookie" value="2" <?php if ($config_ga_cookie == 2) { echo ' checked="checked"'; } ?> />
+                <?php echo $text_disabled; ?>
+                <input type="radio" name="config_ga_cookie" value="1" <?php if ($config_ga_cookie == 1) { echo ' checked="checked"'; } ?> />
+                <?php echo $text_enabled; ?>
+                <?php } else { ?>
+                <input type="radio" name="config_ga_cookie" value="2" checked="checked" />
+                <?php echo $text_disabled; ?>
+                <input type="radio" name="config_ga_cookie" value="1" />
+                <?php echo $text_enabled; ?>
+                <?php } ?></td>
+            </tr>
+            <tr>
+              <td><?php echo $entry_ga_adwords; ?></td>
+              <td><?php if ($config_ga_adwords) { ?>
+              	<input class="show-adwords" type="radio" name="config_ga_adwords" value="2" <?php if ($config_ga_adwords == 2) { echo ' checked="checked"'; } ?> />
+                <?php echo $text_disabled; ?>
+                <input class="show-adwords" type="radio" name="config_ga_adwords" value="1" <?php if ($config_ga_adwords == 1) { echo ' checked="checked"'; } ?> />
+                <?php echo $text_enabled; ?>
+                <?php } else { ?>
+                <input class="show-adwords" type="radio" name="config_ga_adwords" value="2" checked="checked" />
+                <?php echo $text_disabled; ?>
+                <input class="show-adwords" type="radio" name="config_ga_adwords" value="1" />
+                <?php echo $text_enabled; ?>
+                <?php } ?></td>
+            </tr>
+            <tr class="adwords-visible">
+              <td><?php echo $entry_ga_conversion_id; ?></td>
+              <td><input type="text" name="config_ga_conversion_id" value="<?php echo $config_ga_conversion_id; ?>" />
+              	<?php if ($error_ga_conversion_id) { ?>
+                <span class="error"><?php echo $error_ga_conversion_id; ?></span>
+                <?php } ?></td>
+            </tr>
+            <tr class="adwords-visible">
+              <td><?php echo $entry_ga_label; ?></td>
+              <td><input type="text" name="config_ga_label" value="<?php echo $config_ga_label; ?>" />
+              	<?php if ($error_ga_label) { ?>
+                <span class="error"><?php echo $error_ga_label; ?></span>
+                <?php } ?></td>
+            </tr>
+			 </table>
+        	</div>
+			]]></add>
+        </operation>
+    </file>
+    <file name="admin/controller/setting/setting.php">
+        <operation>
+            <search position="before"><![CDATA[
+			if (isset($this->error['warning'])) {
+			]]></search>
+            <add><![CDATA[
+			if (isset($this->error['ga_conversion_id'])) {
+			$this->data['error_ga_conversion_id'] = $this->error['ga_conversion_id'];
+			} else {
+			$this->data['error_ga_conversion_id'] = '';
+			}
+		
+			if (isset($this->error['ga_label'])) {
+			$this->data['error_ga_label'] = $this->error['ga_label'];
+			} else {
+			$this->data['error_ga_label'] = '';
+			}
+			]]></add>
+        </operation>
+        <operation>
+            <search position="before"><![CDATA[
+			if (!$this->request->post['config_name']) {
+			]]></search>
+            <add><![CDATA[
+			if (($this->request->post['config_ga_adwords'] == 1) && empty($this->request->post['config_ga_conversion_id'])) {
+			$this->error['ga_conversion_id'] = $this->language->get('error_ga_conversion_id');
+			}
+			
+			if (($this->request->post['config_ga_adwords'] == 1) && empty($this->request->post['config_ga_label'])) {
+			$this->error['ga_label'] = $this->language->get('error_ga_label');
+			}
+
+			]]></add>
+        </operation>
+        <operation>
+            <search position="after"><![CDATA[
+			$this->data['entry_error_filename'] = $this->language->get('entry_error_filename');
+			]]></search>
+            <add><![CDATA[
+			$this->data['entry_ga_exclude_admin'] = $this->language->get('entry_ga_exclude_admin');
+			$this->data['entry_ga_tracking_type'] = $this->language->get('entry_ga_tracking_type');
+			$this->data['entry_ga_conversion_id'] = $this->language->get('entry_ga_conversion_id');
+			$this->data['entry_ga_remarketing'] = $this->language->get('entry_ga_remarketing');
+			$this->data['entry_ga_cookie'] = $this->language->get('entry_ga_cookie');
+			$this->data['entry_ga_adwords'] = $this->language->get('entry_ga_adwords');
+			$this->data['entry_ga_label'] = $this->language->get('entry_ga_label');
+			$this->data['entry_ua_tracking'] = $this->language->get('entry_ua_tracking');
+			]]></add>
+        </operation>	
+        <operation>
+            <search position="after"><![CDATA[
+			$this->data['text_smtp'] = $this->language->get('text_smtp');	
+			]]></search>
+            <add><![CDATA[
+			$this->data['text_classic'] = $this->language->get('text_classic');
+			$this->data['text_universal'] = $this->language->get('text_universal');
+			$this->data['text_enabled'] = $this->language->get('text_enabled');
+			$this->data['text_disabled'] = $this->language->get('text_disabled');
+			$this->data['text_exclude'] = $this->language->get('text_exclude');
+			$this->data['text_include'] = $this->language->get('text_include');
+			]]></add>
+        </operation>
+        <operation>
+            <search position="before"><![CDATA[
+			if (isset($this->request->post['config_google_analytics'])) {
+			]]></search>
+            <add><![CDATA[
+			$domainurl = new getDomain();
+            $this->data['domainurl'] = $domainurl->domain(HTTP_CATALOG);
+            $this->data['config_ga_domain'] = $this->data['domainurl'];
+
+			if (isset($this->request->post['config_ga_exclude_admin'])) {
+				$this->data['config_ga_exclude_admin'] = $this->request->post['config_ga_exclude_admin']; 
+			} else {
+				$this->data['config_ga_exclude_admin'] = $this->config->get('config_ga_exclude_admin');
+			}
+			
+			if (isset($this->request->post['config_ga_tracking_type'])) {
+				$this->data['config_ga_tracking_type'] = $this->request->post['config_ga_tracking_type']; 
+			} else {
+				$this->data['config_ga_tracking_type'] = $this->config->get('config_ga_tracking_type');
+			}
+			
+			if (isset($this->request->post['config_ga_conversion_id'])) {
+				$this->data['config_ga_conversion_id'] = $this->request->post['config_ga_conversion_id']; 
+			} else {
+				$this->data['config_ga_conversion_id'] = $this->config->get('config_ga_conversion_id');
+			}
+			
+			if (isset($this->request->post['config_ga_remarketing'])) {
+				$this->data['config_ga_remarketing'] = $this->request->post['config_ga_remarketing']; 
+			} else {
+				$this->data['config_ga_remarketing'] = $this->config->get('config_ga_remarketing');
+			}
+			
+			if (isset($this->request->post['config_ga_cookie'])) {
+				$this->data['config_ga_cookie'] = $this->request->post['config_ga_cookie']; 
+			} else {
+				$this->data['config_ga_cookie'] = $this->config->get('config_ga_cookie');
+			}
+			
+			if (isset($this->request->post['config_ga_adwords'])) {
+				$this->data['config_ga_adwords'] = $this->request->post['config_ga_adwords'];
+			} else {
+				$this->data['config_ga_adwords'] = $this->config->get('config_ga_adwords');
+			}
+			
+			if (isset($this->request->post['config_ga_label'])) {
+				$this->data['config_ga_label'] = $this->request->post['config_ga_label']; 
+			} else {
+				$this->data['config_ga_label'] = $this->config->get('config_ga_label');
+			}
+			
+			if (isset($this->request->post['config_ua_tracking'])) {
+				$this->data['config_ua_tracking'] = $this->request->post['config_ua_tracking']; 
+			} else {
+				$this->data['config_ua_tracking'] = $this->config->get('config_ua_tracking');
+			}
+			]]></add>
+        </operation>
+        <operation>
+            <search position="after"><![CDATA[
+			$this->data['tab_server'] = $this->language->get('tab_server');
+			]]></search>
+            <add><![CDATA[
+			$this->data['tab_analytics'] = $this->language->get('tab_analytics');
+			]]></add>
+        </operation>
+        <operation>
+            <search position="before"><![CDATA[
+            ?>
+            ]]></search>
+            <add><![CDATA[
+		class getDomain {
+            public function domain($url)
+            {
+                global $subtlds;
+                $slds = "";
+                $url = strtolower(preg_replace("(https?://)", "", $url));
+
+               $host = parse_url('http://'.$url,PHP_URL_HOST);
+
+                preg_match("/[^\.\/]+\.[^\.\/]+$/", $host, $matches);
+                foreach($subtlds as $sub){
+                    if (preg_match('/\.'.preg_quote($sub).'$/', $host, $xyz)){
+                        preg_match("/[^\.\/]+\.[^\.\/]+\.[^\.\/]+$/", $host, $matches);
+                    }
+                }
+
+                return @$matches[0];
+            }
+
+            public function get_tlds(){
+            	global $subtlds;
+                //$address = 'http://mxr.mozilla.org/mozilla-central/source/netwerk/dns/effective_tld_names.dat?raw=1';
+                $address = 'https://publicsuffix.org/list/effective_tld_names.dat';
+                
+                                
+                if (extension_loaded('curl')) {
+                
+                	$ch = curl_init();
+                	$timeout = 5;
+                	curl_setopt($ch, CURLOPT_URL, $address); //set url
+                	curl_setopt($ch, CURLOPT_HEADER, true); //get header
+                	curl_setopt($ch, CURLOPT_NOBODY, true); //do not include response body
+                	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); //do not show in browser the response
+                	//curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); //follow any redirects
+                	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout); //follow any timeout
+                	curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13');
+                	//$file_contents = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL); //extract the url from the header response
+                	$file_contents = curl_exec($ch);
+                	curl_close($ch);
+                	$content = array();
+                	$content = explode("\n", $file_contents);
+                
+				} else {
+					$content = file($address);
+				}
+                
+                foreach($content as $num => $line){
+                        $line = trim($line);
+                        if($line == '') continue;
+                        if(@substr($line[0], 0, 2) == '/') continue;
+                        $line = @preg_replace("/[^a-zA-Z0-9\.]/", '', $line);
+                        if($line == '') continue;  //$line = '.'.$line;
+                        if(@$line[0] == '.') $line = substr($line, 1);
+                        if(!strstr($line, '.')) continue;
+                        $subtlds[] = $line;
+                        //echo "{$num}: '{$line}'"; echo "<br>";
+                }
+                
+                $subtlds = (isset($subtlds) && is_array($subtlds)) ? $subtlds : array(); // initialize if necessary
+
+
+                $subtlds = array_merge(array(
+                        'co.uk', 'me.uk', 'net.uk', 'org.uk', 'sch.uk', 'ac.uk', 
+                        'gov.uk', 'nhs.uk', 'police.uk', 'mod.uk', 'asn.au', 'com.au',  'com.br', 'com.tr',
+                        'net.au', 'id.au', 'org.au', 'edu.au', 'gov.au', 'csiro.au', 'co.nz', 'co.za'
+                        ),$subtlds);
+
+                $subtlds = array_unique($subtlds);
+            
+                return $subtlds;    
+            }
+		} 
+            
+            $subtlds = new getDomain();
+            $subtlds->get_tlds();
+            ]]></add>
+        </operation>
+    </file>
+    <file name="admin/language/*/setting/setting.php">
+        <operation>
+            <search position="after"><![CDATA[
+			// Error
+			]]></search>
+            <add><![CDATA[
+			$_['error_ga_conversion_id']    = 'You have enabled AdWords conversion tracking but have not entered Conversion ID details!';
+			$_['error_ga_label']            = 'You have enabled AdWords conversion tracking but have not entered Conversion Label details!';
+			]]></add>
+        </operation>
+        <operation>
+            <search position="before"><![CDATA[
+			// Heading
+			]]></search>
+            <add><![CDATA[
+			//Tabs
+			$_['tab_analytics']                  = 'Google Analytics Expert';
+			]]></add>
+        </operation>
+        <operation>
+            <search position="before"><![CDATA[
+			$_['entry_google_analytics']
+			]]></search>
+            <add><![CDATA[
+			$_['entry_ga_exclude_admin']    = 'Exclude Admin Visits/Data:<br /><span style="font-size:11px;color:#666666;">Set to Exclude if you don\'t want any front-end site activity being sent to Google Analytics for reporting when logged in to the back-end as admin. This covers all data sent to GA.</span>';
+			$_['entry_ga_tracking_type']    = 'Google Analytics Tracking Type:<br /><span style="font-size:11px;color:#666666;">Check out this blog as a quick reference for the differences in tracking types: <a href="http://cutroni.com/blog/2013/03/21/migrating-to-universal-analytics/" target="_blank">Migrating to Universal Analytics</a><br /><strong>IMPORTANT:</strong> You must check and select the correct type of tracking for your account or no data will be collected!</span>';
+			$_['entry_ga_conversion_id']    = 'Google AdWords Conversion ID:<br /><span style="font-size:11px;color:#666666;">If using AdWords, you can get this from the conversion you have set up</span>';
+			$_['entry_ga_remarketing']      = 'Display Advertising:<br /><span style="font-size:11px;color:#666666;">Set to Enabled if you have Remarketing campaigns enabled in a Google AdWords account that is linked to your Google Analytics account that you wish to track, or if you wish to take advantage of Demographics and Interests reporting.<br /><a target="_blank" href="https://support.google.com/analytics/answer/3450482?hl=en">More info on these features</a></span>';
+			$_['entry_ga_cookie']      		= 'EU Cookie Consent Popup:<br /><span style="font-size:11px;color:#666666;">Set to Enabled if you are in the EU and wish to meet the requirements of the EU Cookie Law, which was enforced on 26th May 2012.</span>';
+			$_['entry_ga_adwords']      	= 'Google AdWords Conversion Data:<br /><span style="font-size:11px;color:#666666;">Set to Enabled if you use Google Adwords and would like to track conversion data for your account</span>';
+			$_['entry_ga_label']      		= 'Google AdWords Conversion Label:<br /><span style="font-size:11px;color:#666666;">If using AdWords, you can get this from the conversion you have set up</span>';
+			$_['entry_ua_tracking']      	= 'Google Analytics Property ID:<br /><span style="font-size:11px;color:#666666;">Example: UA-12345678-1</span>';
+			]]></add>
+        </operation>
+        <operation>
+            <search position="after"><![CDATA[
+			// Text
+			]]></search>
+            <add><![CDATA[
+			$_['text_classic']    		= 'Classic';
+			$_['text_universal']    	= 'Universal';
+			$_['text_enabled']    		= 'Enabled';
+			$_['text_disabled']    		= 'Disabled';
+			$_['text_exclude']    		= 'Exclude';
+			$_['text_include']    		= 'Include';
+			]]></add>
+        </operation>
+    </file>
+    <file name="admin/view/template/setting/setting.tpl">
+        <operation>
+            <search position="after"><![CDATA[
+			<?php echo $header; ?>
+			]]></search>
+            <add><![CDATA[
+	<script type="text/javascript"><!--
+	$(document).ready(function() {
+	if ($('.show-adwords:checked').val() == '1') {
+	    $(".adwords-visible").show();  
+	} else {
+		$(".adwords-visible").hide();
+	}
+
+	$("input:radio.show-adwords").click(function() {
+	if ((this).value == 1) {
+		$(".adwords-visible").show();
+	} else {
+		$(".adwords-visible").hide();
+	}
+	});
+	});
+	//--></script>]]></add>
+        </operation>
+        <operation>
+            <search position="replace" offset="1"><![CDATA[
+			<td><?php echo $entry_google_analytics; ?></td>
+			]]></search>
+            <add><![CDATA[]]></add>
+        </operation>
+        <operation>
+            <search position="replace"><![CDATA[
+			<a href="#tab-server"><?php echo $tab_server; ?></a>
+			]]></search>
+            <add><![CDATA[
+			<a href="#tab-server"><?php echo $tab_server; ?></a><a href="#tab-analytics"><?php echo $tab_analytics; ?></a>
+			]]></add>
+        </operation>
+        <operation>
+            <search position="before"><![CDATA[
+			</form>
+			]]></search>
+            <add><![CDATA[
+			<div id="tab-analytics">
+          	<table class="form">
+          	<tr>
+              <td>Domain URL:</td>
+              <td><?php if (isset($domainurl)) { ?><input type="hidden" name="config_ga_domain" value="<?php echo $domainurl; ?>" /><?php echo $domainurl; ?>
+              <?php } else { ?>
+              Please save your settings then reload the Google Analytics Expert tab and save your settings again, ensuring Domain URL is set to complete installation.
+              <?php } ?>
+              </td>
+            </tr>
+          	<tr>
+              <td>Google Analytics Expert Version:</td>
+              <td>5.2.9.4</td>
+            </tr>
+            <tr>
+              <td><?php echo $entry_ga_exclude_admin; ?></td>
+              <td><?php if ($config_ga_exclude_admin) { ?>
+              	<input type="radio" name="config_ga_exclude_admin" value="2" <?php if ($config_ga_exclude_admin == 2) { echo ' checked="checked"'; } ?> />
+                <?php echo $text_include; ?>
+                <input type="radio" name="config_ga_exclude_admin" value="1" <?php if ($config_ga_exclude_admin == 1) { echo ' checked="checked"'; } ?> />
+                <?php echo $text_exclude; ?>
+                <?php } else { ?>
+                <input type="radio" name="config_ga_exclude_admin" value="2" checked="checked" />
+                <?php echo $text_include; ?>
+                <input type="radio" name="config_ga_exclude_admin" value="1" />
+                <?php echo $text_exclude; ?>
+                <?php } ?></td>
+            </tr>
+            <tr>
+              <td><?php echo $entry_ga_tracking_type; ?></td>
+              <td><?php if ($config_ga_tracking_type) { ?>
+                <input type="radio" name="config_ga_tracking_type" value="1" <?php if ($config_ga_tracking_type == 1) { echo ' checked="checked"'; } ?> />
+                <?php echo $text_classic; ?>
+                <input type="radio" name="config_ga_tracking_type" value="2" <?php if ($config_ga_tracking_type == 2) { echo ' checked="checked"'; } ?> />
+                <?php echo $text_universal; ?>
+                <?php } else { ?>
+                <input type="radio" name="config_ga_tracking_type" value="1" />
+                <?php echo $text_classic; ?>
+                <input type="radio" name="config_ga_tracking_type" value="2" checked="checked" />
+                <?php echo $text_universal; ?>
+                <?php } ?></td>
+            </tr>
+            <tr>
+              <td><?php echo $entry_ua_tracking; ?></td>
+              <td><input type="text" name="config_ua_tracking" value="<?php echo $config_ua_tracking; ?>" /></td>
+            </tr>
+            <tr>
+              <td><?php echo $entry_ga_remarketing; ?></td>
+              <td><?php if ($config_ga_remarketing) { ?>
+              	<input type="radio" name="config_ga_remarketing" value="2" <?php if ($config_ga_remarketing == 2) { echo ' checked="checked"'; } ?> />
+                <?php echo $text_disabled; ?>
+                <input type="radio" name="config_ga_remarketing" value="1" <?php if ($config_ga_remarketing == 1) { echo ' checked="checked"'; } ?> />
+                <?php echo $text_enabled; ?>
+                <?php } else { ?>
+                <input type="radio" name="config_ga_remarketing" value="2" checked="checked" />
+                <?php echo $text_disabled; ?>
+                <input type="radio" name="config_ga_remarketing" value="1" />
+                <?php echo $text_enabled; ?>
+                <?php } ?></td>
+            </tr>
+            <tr>
+              <td><?php echo $entry_ga_cookie; ?></td>
+              <td><?php if ($config_ga_cookie) { ?>
+              	<input type="radio" name="config_ga_cookie" value="2" <?php if ($config_ga_cookie == 2) { echo ' checked="checked"'; } ?> />
+                <?php echo $text_disabled; ?>
+                <input type="radio" name="config_ga_cookie" value="1" <?php if ($config_ga_cookie == 1) { echo ' checked="checked"'; } ?> />
+                <?php echo $text_enabled; ?>
+                <?php } else { ?>
+                <input type="radio" name="config_ga_cookie" value="2" checked="checked" />
+                <?php echo $text_disabled; ?>
+                <input type="radio" name="config_ga_cookie" value="1" />
+                <?php echo $text_enabled; ?>
+                <?php } ?></td>
+            </tr>
+            <tr>
+              <td><?php echo $entry_ga_adwords; ?></td>
+              <td><?php if ($config_ga_adwords) { ?>
+              	<input class="show-adwords" type="radio" name="config_ga_adwords" value="2" <?php if ($config_ga_adwords == 2) { echo ' checked="checked"'; } ?> />
+                <?php echo $text_disabled; ?>
+                <input class="show-adwords" type="radio" name="config_ga_adwords" value="1" <?php if ($config_ga_adwords == 1) { echo ' checked="checked"'; } ?> />
+                <?php echo $text_enabled; ?>
+                <?php } else { ?>
+                <input class="show-adwords" type="radio" name="config_ga_adwords" value="2" checked="checked" />
+                <?php echo $text_disabled; ?>
+                <input class="show-adwords" type="radio" name="config_ga_adwords" value="1" />
+                <?php echo $text_enabled; ?>
+                <?php } ?></td>
+            </tr>
+            <tr class="adwords-visible">
+              <td><?php echo $entry_ga_conversion_id; ?></td>
+              <td><input type="text" name="config_ga_conversion_id" value="<?php echo $config_ga_conversion_id; ?>" />
+              	<?php if ($error_ga_conversion_id) { ?>
+                <span class="error"><?php echo $error_ga_conversion_id; ?></span>
+                <?php } ?></td>
+            </tr>
+            <tr class="adwords-visible">
+              <td><?php echo $entry_ga_label; ?></td>
+              <td><input type="text" name="config_ga_label" value="<?php echo $config_ga_label; ?>" />
+              	<?php if ($error_ga_label) { ?>
+                <span class="error"><?php echo $error_ga_label; ?></span>
+                <?php } ?></td>
+            </tr>
+			 </table>
+        	</div>
+			]]></add>
+        </operation>
+    </file>
+    <!-- end admin changes -->
+
+    <!-- begin catalog changes -->
+    <!-- begin admin login check changes -->
+    <file name="catalog/controller/common/header.php">
+        <operation>
+            <search position="after"><![CDATA[protected function index() {]]></search>
+            <add><![CDATA[$this->load->library('user');
+		$this->user = new User($this->registry);]]></add>
+        </operation>
+    </file>	
+    <!-- end admin login check changes -->
+    <file name="catalog/view/theme/sofa/template/common/header.tpl,catalog/view/theme/sofa/tablet_template/common/header.tpl,catalog/view/theme/sofa/mobile_template/common/header.tpl">
+        <operation error="log">
+            <search position="replace"><![CDATA[<?php echo $google_analytics; ?>]]></search>
+            <add><![CDATA[
+                <script type="text/javascript">
+                    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+                    ga('create', '<?php echo $this->config->get("config_ua_tracking"); ?>', '<?php echo $this->config->get("config_ga_domain"); ?>');
+                    <?php if ($this->config->get('config_ga_remarketing') == 1) {
+                        //echo "ga('require', 'displayfeatures');";
+                    } ?> 
+                    ga('send', 'pageview');
+                    </script>
+               ]]></add>
+        </operation>
+        <operation error="skip">
+            <search position="after"><![CDATA[<link rel="stylesheet" type="text/css" href="catalog/view/theme/<?php echo $this->config->get('config_template'); ?>/stylesheet/ie7.css" />]]></search>
+            <add><![CDATA[<style type="text/css">li#change-settings{position:relative;top:-26px}</style>]]></add>
+        </operation>
+    </file>
+    <!-- begin e-commerce -->
+	
+    <!-- begin checkout operations -->
+    <file name="catalog/view/theme/sofa/template/checkout/cart_custom_two.tpl" error="skip">
+        <operation error="skip">
+            <search position="before"><![CDATA[
+			<div id="content" class="sc-page">
+			]]></search>
+            <add><![CDATA[
+			<img src="image/data/ga.png" onload="<?php if ($this->config->get('config_ga_tracking_type') == 2) { echo "ga('send', 'pageview', '/cart_custom_two');";} else{echo "_gaq.push(['_trackPageview','/cart_custom_two']);"; } ?>">
+			]]></add>
+        </operation>
+    </file>
+    <!-- end  checkout operations -->
+
+    <!-- begin event tracking code for cart page -->
+    <file name="catalog/view/theme/sofa/template/product/product_bundle_right.tpl,catalog/view/theme/sofa/mobile_template/product/product_bundle_right.tpl">
+        <operation error="skip">
+            <search position="before"><![CDATA[<?php echo $footer; ?>]]></search>
+            <add><![CDATA[
+                           <script>
+                                   $('#form-bundle-addtocart').on({
+                submit: function (e) {  
+                            
+              ga('require', 'ec');
+              ga('ec:addProduct', { 
+                    'id': <?php echo $product_id; ?>,
+                    'name': '<?php echo $product_name; ?>',
+                    'category': '<?php echo $category_name; ?>',
+                    'brand': '<?php echo $product_model; ?>',
+                    'variant': '',
+                    'price': $('[name=bundle_price_sum]').val(),
+                    'quantity': $('[name=bundle_quantity_sum]').val()              
+              });
+               ga('ec:setAction', 'add');
+               ga('send', 'event', 'UX', 'click', 'add to cart');
+            
+
+        }
+    });              </script>      
+			]]></add>
+        </operation>
+        <operation error="skip">
+            <search position="replace"><![CDATA[<input type="button" value="<?php echo $button_cart; ?>" onclick="$('#form-bundle-addtocart').submit();" class="button" />]]></search>
+            <add><![CDATA[
+                            <input type="button" value="<?php echo $button_cart; ?>" onclick="addToCart()" class="button" />
+			]]></add>
+        </operation>
+    </file>
+	
+    <!-- end event tracking -->
+
+    <file name="catalog/view/theme/sofa/template/common/header.tpl,catalog/view/theme/sofa/tablet_template/common/header.tpl,catalog/view/theme/sofa/mobile_template/common/header.tpl">
+        <operation info="Updated Adwords code for Google Analytics">
+            <search position="before"><![CDATA[</head>]]></search>
+            <add><![CDATA[
+               <script async src="https://www.googletagmanager.com/gtag/js?id=AW-992202035"></script>
+                <script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'AW-992202035'); </script>
+                
+               ]]></add>
+        </operation>
+	</file>
+    
+    <file name="catalog/view/theme/*/template/checkout/custom_success.tpl">
+            <operation info="Updated Adwords code for custom success page">
+                <search position="before"><![CDATA[
+                <?php echo $footer; ?>
+                ]]></search>
+                <add><![CDATA[
+                    <script>   gtag('event', 'conversion', { 'send_to': 'AW-992202035/q3GuCNWZrggQs5qP2QM', 'value': 1.0, 'currency': 'USD', 'transaction_id': '<?php echo $order_detail['order_id']; ?>' }); </script> 
+                 ]]></add>
+            </operation>
+	</file>
+    
+    <file name="catalog/view/theme/sofa/template/common/footer.tpl">
+        <operation info="Adroll code for footer">
+            <search position="before"><![CDATA[</body>]]></search>
+            <add><![CDATA[
+                <script type="text/javascript">
+            adroll_adv_id = "4MMYOPKTGJCXFF3JMC7YCP";
+            adroll_pix_id = "AZRMFDBWONENHFPVIG6WJF";
+    (function () {
+        var _onload = function(){
+            if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+            if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+            var scr = document.createElement("script");
+            var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+            scr.setAttribute('async', 'true');
+            scr.type = "text/javascript";
+            scr.src = host + "/j/roundtrip.js";
+            ((document.getElementsByTagName('head') || [null])[0] ||
+                document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+        };
+        if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+        else {window.attachEvent('onload', _onload)}
+    }());
+                  </script>
+            ]]></add>            
+        </operation>    
+    </file> 
+
+    <file name="catalog/view/theme/*/template/checkout/custom_success.tpl">
+        <operation info= " Adroll code for success page">
+            <search position="before"><![CDATA[
+                <?php echo $footer; ?>
+                ]]></search>
+            <add><![CDATA[
+                     <!-- AdRoll code on order succes page -->
+                    <?php $adroll_conversion_value = 0;
+                          $adroll_conversion_value = round(($order_detail['total'] - $order_detail['order_tax']), 2); 
+                    ?>
+                    <script type="text/javascript">
+                        adroll_conversion_value = <?php echo $adroll_conversion_value ?>;
+                        adroll_currency = "<?php echo $order_detail['currency_code']; ?>"
+                        adroll_custom_data = {"ORDER_ID": "<?php echo $order_detail['order_id']; ?>", "USER_ID":"<?php echo $order_detail['customer_id']; ?>"}
+                    </script>
+                ]]></add>
+        </operation>
+    </file>
+    
+     
+      <file name="catalog/view/theme/sofa/template/common/footer.tpl">
+        <operation info="Sumo code for footer">
+            <search position="before"><![CDATA[</body>]]></search>
+            <add><![CDATA[
+            <script async>(function(s,u,m,o,j,v){j=u.createElement(m);v=u.getElementsByTagName(m)[0];j.async=1;j.src=o;j.dataset.sumoSiteId='72f14d1380603a7563689556b59ba5df5cfe3c13cc851231bb784e70f7771a0d';v.parentNode.insertBefore(j,v)})(window,document,'script','//load.sumo.com/');</script>
+            ]]></add>            
+        </operation> 
+    </file> 
+    
+    
+     <file name="catalog/view/theme/sofa/template/common/footer.tpl">
+        <operation info="Bing Conversion Tracking Code For Footer">
+            <search position="before"><![CDATA[</body>]]></search>
+            <add><![CDATA[<script>(function(w,d,t,r,u){var f,n,i;w[u]=w[u]||[],f=function(){var o={ti:"4077096"};o.q=w[u],w[u]=new UET(o),w[u].push("pageLoad")},n=d.createElement(t),n.src=r,n.async=1,n.onload=n.onreadystatechange=function(){var s=this.readyState;s&&s!=="loaded"&&s!=="complete"||(f(),n.onload=n.onreadystatechange=null)},i=d.getElementsByTagName(t)[0],i.parentNode.insertBefore(n,i)})(window,document,"script","//bat.bing.com/bat.js","uetq");</script>
+            <noscript><img src="//bat.bing.com/action/0?ti=4077096&Ver=2" height="0" width="0" style="display:none; visibility: hidden;" /></noscript>
+            ]]></add>            
+        </operation> 
+    </file> 
+        
+    
+    
+    
+    
+    <!-- end catalog changes -->
+
+</modification>

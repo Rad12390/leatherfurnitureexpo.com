@@ -1,0 +1,477 @@
+<modification>
+    <id><![CDATA[OpenCart CloudCache CDN Integration]]></id>
+    <version><![CDATA[4.0]]></version>
+    <vqmver><![CDATA[2.3.0]]></vqmver>
+    <author><![CDATA[intersoft]]></author>
+    <file name="catalog/model/tool/image.php">
+		
+        <operation>
+            <search position="replace"><![CDATA[return $this->config->get('config_ssl') . 'image/' . $new_image;]]></search>
+            <add><![CDATA[	
+                if ($this->config->get('cdn_status'))
+                {
+                         if ($this->config->get('cdn_images')) 
+                         {
+                            $cdn_protocol = (isset($_SERVER['HTTPS']) && (($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1'))) ? 'https://' : 'http://'; 
+                            $cdn_domain = $cdn_protocol . $this->config->get('cdn_domain'); 
+                            return $cdn_domain . 'image/' . $new_image;      
+                         }
+                         else
+                         {
+                            return $this->config->get('config_ssl') . 'image/' . $new_image;
+                         }      
+
+                }
+                else
+                {
+                    return $this->config->get('config_ssl') . 'image/' . $new_image;
+                }
+            ]]></add>
+        </operation>
+        
+        <operation>
+            <search position="replace"><![CDATA[return $this->config->get('config_url') . 'image/' . $new_image;]]></search>
+            <add><![CDATA[	
+
+	if ($this->config->get('cdn_status')) {
+                if ($this->config->get('cdn_images')) {
+		$cdn_protocol = (isset($_SERVER['HTTPS']) && (($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1'))) ? 'https://' : 'http://'; 
+	        $cdn_domain = $cdn_protocol . $this->config->get('cdn_domain'); 
+                return $cdn_domain . 'image/' . $new_image;      
+                }else{
+                return $this->config->get('config_url') . 'image/' . $new_image;
+       }      
+                          
+		
+	}else{
+       return $this->config->get('config_url') . 'image/' . $new_image;
+}
+]]></add>
+        </operation>
+    </file>
+    
+    <file name="system/library/response.php">
+        <operation>
+            <search position="replace"><![CDATA[echo $ouput;]]></search>
+            <add><![CDATA[
+  if (strpos($_SERVER['REQUEST_URI'],'admin')== false) {
+    echo cdn_output($ouput);
+}else{
+                            echo $ouput;
+}
+
+
+]]></add>
+        </operation>
+        <operation>
+            <search position="replace"><![CDATA[?>]]></search>
+            <add><![CDATA[	
+function cdn_output($result) {
+	global $config;
+                      
+	if ($config->get('cdn_status')) {
+		$cdn_protocol = (isset($_SERVER['HTTPS']) && (($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1'))) ? 'https://' : 'http://';
+                $server = $cdn_protocol. $_SERVER['SERVER_NAME'].'/' ;
+		$cdn_domain = $cdn_protocol . $config->get('cdn_domain');
+		if ($config->get('cdn_images')) {
+			    
+			$result = str_replace('src="' . $server . 'image/', 'src="' . $cdn_domain . 'image/', $result);
+                        $result = str_replace('src="image/', 'src="' . $cdn_domain . 'image/', $result);
+                        $result = str_replace("background-image: url('image/data/", "background-image: url('".$cdn_domain . 'image/data/', $result);     
+			
+		}
+		
+		
+	}
+	return $result;
+}
+?>]]></add>
+        </operation>
+    </file>
+    
+    
+    <file name="catalog/view/theme/sofa/*/common/header.tpl">
+		
+        <operation>
+    <search position="replace"><![CDATA[<link rel="stylesheet" type="text/css" href="catalog/view/theme/sofa/stylesheet/stylesheet.css" />]]></search>
+            <add><![CDATA[	
+                    <?php
+                    if ($this->config->get('cdn_status')) {
+                        if ($this->config->get('cdn_css')) 
+                        {
+                            $cdn_protocol = (isset($_SERVER['HTTPS']) && (($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1'))) ? 'https://' : 'http://'; 
+                            $cdn_domain = $cdn_protocol . $this->config->get('cdn_domain_data_type'); 
+                                    
+                        ?>
+                            <link rel="stylesheet" href="<?php echo $cdn_domain;?>catalog/view/theme/sofa/stylesheet/stylesheet.css" />
+                        <?php
+                        }
+                        else
+                        {
+                        ?>
+                            <link rel="stylesheet" href="catalog/view/theme/sofa/stylesheet/stylesheet.css" />
+                        <?php
+                        }      
+
+
+                        }else{
+                        ?>
+                            <link rel="stylesheet" href="catalog/view/theme/sofa/stylesheet/stylesheet.css" />
+                        <?php
+
+                        }
+                        ?>
+    ]]></add>
+        </operation>
+        <operation>
+    <search position="replace"><![CDATA[<link rel="stylesheet" type="text/css" href="catalog/view/theme/sofa/stylesheet/fonts.css" />]]></search>
+            <add><![CDATA[	
+                    <?php
+                    if ($this->config->get('cdn_status')) {
+                        if ($this->config->get('cdn_css')) 
+                        {
+                            $cdn_protocol = (isset($_SERVER['HTTPS']) && (($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1'))) ? 'https://' : 'http://'; 
+                            $cdn_domain = $cdn_protocol . $this->config->get('cdn_domain_data_type'); 
+                                    
+                        ?>
+                            <link rel="stylesheet" href="<?php echo $cdn_domain;?>catalog/view/theme/sofa/stylesheet/fonts.css" />
+                        <?php
+                        }
+                        else
+                        {
+                        ?>
+                            <link rel="stylesheet" href="catalog/view/theme/sofa/stylesheet/fonts.css" />
+                        <?php
+                        }      
+
+
+                        }else{
+                        ?>
+                            <link rel="stylesheet" href="catalog/view/theme/sofa/stylesheet/fonts.css" />
+                        <?php
+
+                        }
+                        ?>
+    ]]></add>
+        </operation>
+        <operation>
+    <search position="replace"><![CDATA[<link rel="stylesheet" type="text/css" href="catalog/view/theme/sofa/stylesheet/cart_custom.css" />]]></search>
+            <add><![CDATA[	
+                    <?php
+                    if ($this->config->get('cdn_status')) {
+                        if ($this->config->get('cdn_css')) 
+                        {
+                            $cdn_protocol = (isset($_SERVER['HTTPS']) && (($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1'))) ? 'https://' : 'http://'; 
+                            $cdn_domain = $cdn_protocol . $this->config->get('cdn_domain_data_type'); 
+                                    
+                        ?>
+                            <link rel="stylesheet" href="<?php echo $cdn_domain;?>catalog/view/theme/sofa/stylesheet/cart_custom.css" />
+                        <?php
+                        }
+                        else
+                        {
+                        ?>
+                            <link rel="stylesheet" href="catalog/view/theme/sofa/stylesheet/cart_custom.css" />
+                        <?php
+                        }      
+
+
+                        }else{
+                        ?>
+                            <link rel="stylesheet" href="catalog/view/theme/sofa/stylesheet/cart_custom.css" />
+                        <?php
+
+                        }
+                        ?>
+    ]]></add>
+        </operation>
+        <operation>
+    <search position="replace"><![CDATA[<link rel="stylesheet" type="text/css" href="catalog/view/theme/sofa/stylesheet/layout.css" />]]></search>
+            <add><![CDATA[	
+                    <?php
+                    if ($this->config->get('cdn_status')) {
+                        if ($this->config->get('cdn_css')) 
+                        {
+                            $cdn_protocol = (isset($_SERVER['HTTPS']) && (($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1'))) ? 'https://' : 'http://'; 
+                            $cdn_domain = $cdn_protocol . $this->config->get('cdn_domain_data_type'); 
+                                    
+                        ?>
+                            <link rel="stylesheet" href="<?php echo $cdn_domain;?>catalog/view/theme/sofa/stylesheet/layout.css" />
+                        <?php
+                        }
+                        else
+                        {
+                        ?>
+                            <link rel="stylesheet" href="catalog/view/theme/sofa/stylesheet/layout.css" />
+                        <?php
+                        }      
+
+
+                        }else{
+                        ?>
+                            <link rel="stylesheet" href="catalog/view/theme/sofa/stylesheet/layout.css" />
+                        <?php
+
+                        }
+                        ?>
+    ]]></add>
+        </operation>
+        <operation>
+    <search position="replace"><![CDATA[<link rel="<?php echo $style['rel']; ?>" type="text/css" href="<?php echo $style['href']; ?>" media="<?php echo $style['media']; ?>" />]]></search>
+            <add><![CDATA[	
+                    <?php
+                    if ($this->config->get('cdn_status')) {
+                        if ($this->config->get('cdn_css')) 
+                        {
+                            $cdn_protocol = (isset($_SERVER['HTTPS']) && (($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1'))) ? 'https://' : 'http://'; 
+                            $cdn_domain = $cdn_protocol . $this->config->get('cdn_domain_data_type'); 
+                            $style  = str_replace(((isset($_SERVER['HTTPS']) && (($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1'))) ? HTTPS_SERVER : HTTP_SERVER), '',$style ) ;  //code so that any absolute path added got removed from script first          
+                        ?>
+                            <link rel="stylesheet" href="<?php echo $cdn_domain.$style['href'];?>" media="<?php echo $style['media']; ?>"  />
+                        <?php
+                        }
+                        else
+                        {
+                        ?>
+                            <link rel="stylesheet" href="<?php echo $style['href']; ?>" media="<?php echo $style['media']; ?>" />
+                        <?php
+                        }      
+
+
+                        }else{
+                        ?>
+                            <link rel="stylesheet" href="<?php echo $style['href']; ?>" media="<?php echo $style['media']; ?>" />
+                        <?php
+
+                        }
+                        ?>
+    ]]></add>
+        </operation>
+        <operation>
+    <search position="replace"><![CDATA[<link rel="stylesheet" type="text/css" href="catalog/view/javascript/jquery/ui/themes/ui-lightness/jquery-ui-1.8.16.custom.css" />]]></search>
+            <add><![CDATA[	
+                    <?php
+                    if ($this->config->get('cdn_status')) {
+                        if ($this->config->get('cdn_css')) 
+                        {
+                            $cdn_protocol = (isset($_SERVER['HTTPS']) && (($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1'))) ? 'https://' : 'http://'; 
+                            $cdn_domain = $cdn_protocol . $this->config->get('cdn_domain_data_type'); 
+                                    
+                        ?>
+                            <link rel="stylesheet" href="<?php echo $cdn_domain;?>catalog/view/javascript/jquery/ui/themes/ui-lightness/jquery-ui-1.8.16.custom.css"/>
+                        <?php
+                        }
+                        else
+                        {
+                        ?>
+                            <link rel="stylesheet" href="catalog/view/javascript/jquery/ui/themes/ui-lightness/jquery-ui-1.8.16.custom.css"/>
+                        <?php
+                        }      
+
+
+                        }else{
+                        ?>
+                            <link rel="stylesheet" href="catalog/view/javascript/jquery/ui/themes/ui-lightness/jquery-ui-1.8.16.custom.css" />
+                        <?php
+
+                        }
+                        ?>
+    ]]></add>
+        </operation>
+       
+        <operation>
+    <search position="replace"><![CDATA[<script type="text/javascript" src="catalog/view/javascript/common.js"></script>]]></search>
+            <add><![CDATA[	
+                    <?php
+                    if ($this->config->get('cdn_status')) {
+                        if ($this->config->get('cdn_js')) 
+                        {
+                            $cdn_protocol = (isset($_SERVER['HTTPS']) && (($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1'))) ? 'https://' : 'http://'; 
+                            $cdn_domain = $cdn_protocol . $this->config->get('cdn_domain_data_type'); 
+                                    
+                        ?>
+                            <script async type="text/javascript" src="<?php echo $cdn_domain;?>catalog/view/javascript/common.js"></script>
+                        <?php
+                        }
+                        else
+                        {
+                        ?>
+                            <script async type="text/javascript" src="catalog/view/javascript/common.js"></script>
+                        <?php
+                        }      
+
+
+                        }else{
+                        ?>
+                           <script async type="text/javascript" src="catalog/view/javascript/common.js"></script>
+                        <?php
+
+                        }
+                        ?>
+    ]]></add>
+        </operation>
+        <operation>
+    <search position="replace"><![CDATA[<script type="text/javascript" src="catalog/view/javascript/jquery/ui/jquery-ui-1.8.16.custom.min.js"></script>]]></search>
+            <add><![CDATA[	
+                    <?php
+                    if ($this->config->get('cdn_status')) {
+                        if ($this->config->get('cdn_js')) 
+                        {
+                            $cdn_protocol = (isset($_SERVER['HTTPS']) && (($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1'))) ? 'https://' : 'http://'; 
+                            $cdn_domain = $cdn_protocol . $this->config->get('cdn_domain_data_type'); 
+                                    
+                        ?>
+                            <script type="text/javascript" src="<?php echo $cdn_domain;?>catalog/view/javascript/jquery/ui/jquery-ui-1.8.16.custom.min.js"></script>
+                        <?php
+                        }
+                        else
+                        {
+                        ?>
+                           <script type="text/javascript" src="catalog/view/javascript/jquery/ui/jquery-ui-1.8.16.custom.min.js"></script>
+                        <?php
+                        }      
+
+
+                        }else{
+                        ?>
+                           <script type="text/javascript" src="catalog/view/javascript/jquery/ui/jquery-ui-1.8.16.custom.min.js"></script>
+                        <?php
+
+                        }
+                        ?>
+    ]]></add>
+        </operation>
+        <operation>
+    <search position="replace"><![CDATA[<script type="text/javascript" src="<?php echo $script; ?>"></script>]]></search>
+            <add><![CDATA[	
+                    <?php
+                    if ($this->config->get('cdn_status')) {
+                        if ($this->config->get('cdn_js')) 
+                        {
+                            $cdn_protocol = (isset($_SERVER['HTTPS']) && (($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1'))) ? 'https://' : 'http://'; 
+                            $cdn_domain = $cdn_protocol . $this->config->get('cdn_domain_data_type'); 
+                                 
+                           $script  = str_replace(((isset($_SERVER['HTTPS']) && (($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1'))) ? HTTPS_SERVER : HTTP_SERVER), '',$script ) ;  //code so that any absolute path added got removed from script first  
+                        ?>
+                           <script type="text/javascript" src="<?php echo $cdn_domain.$script;?>"></script>
+                        <?php
+                        }
+                        else
+                        {
+                        ?>
+                          <script type="text/javascript" src="<?php echo $script; ?>"></script>
+                        <?php
+                        }      
+
+
+                        }else{
+                        ?>
+                           <script type="text/javascript" src="<?php echo $script; ?>"></script>
+                        <?php
+
+                        }
+                        ?>
+    ]]></add>
+        </operation>
+        <operation>
+    <search position="replace"><![CDATA[<script type="text/javascript" src="catalog/view/javascript/jquery/wz_tooltip.js"></script>]]></search>
+            <add><![CDATA[	
+                    <?php
+                    if ($this->config->get('cdn_status')) {
+                        if ($this->config->get('cdn_js')) 
+                        {
+                            $cdn_protocol = (isset($_SERVER['HTTPS']) && (($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1'))) ? 'https://' : 'http://'; 
+                            $cdn_domain = $cdn_protocol . $this->config->get('cdn_domain_data_type'); 
+                                    
+                        ?>
+                            <script async type="text/javascript" src="<?php echo $cdn_domain; ?>catalog/view/javascript/jquery/wz_tooltip.js"></script>
+                        <?php
+                        }
+                        else
+                        {
+                        ?>
+                            <script async type="text/javascript" src="catalog/view/javascript/jquery/wz_tooltip.js"></script>
+                        <?php
+                        }      
+
+
+                        }else{
+                        ?>
+                            <script async type="text/javascript" src="catalog/view/javascript/jquery/wz_tooltip.js"></script>
+                        <?php
+
+                        }
+                        ?>
+    ]]></add>
+        </operation>
+         <operation>
+    <search position="replace"><![CDATA[<script type="text/javascript" src="catalog/view/javascript/jquery/jquery-1.7.1.min.js"></script>]]></search>
+            <add><![CDATA[	
+                    <?php
+                    if ($this->config->get('cdn_status')) {
+                        if ($this->config->get('cdn_js')) 
+                        {
+                            $cdn_protocol = (isset($_SERVER['HTTPS']) && (($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1'))) ? 'https://' : 'http://'; 
+                            $cdn_domain = $cdn_protocol . $this->config->get('cdn_domain_data_type'); 
+                                    
+                        ?>
+                           <script type="text/javascript" src="<?php echo $cdn_domain; ?>catalog/view/javascript/jquery/jquery-1.7.1.min.js"></script>
+                           
+                        <?php
+                        }
+                        else
+                        {
+                        ?>
+                            <script type="text/javascript" src="catalog/view/javascript/jquery/jquery-1.7.1.min.js"></script>
+                        <?php
+                        }      
+
+
+                        }else{
+                        ?>
+                            <script type="text/javascript" src="catalog/view/javascript/jquery/jquery-1.7.1.min.js"></script>
+                        <?php
+
+                        }
+                        ?>
+    ]]></add>
+        </operation>
+	</file>
+        
+        <!--file name="catalog/view/theme/sofa/template/common/footer.tpl">
+		
+            <operation>
+                <search position="replace">
+            <![CDATA[<script type="text/javascript" src="index.php?route=sofa/assets/js&amp;j2v=<?php echo JOURNAL_VERSION; ?>"></script>]]></search>
+                <add><![CDATA[	
+                            <?php
+                            if ($this->config->get('cdn_status')) {
+                if ($this->config->get('cdn_images')) {
+		$cdn_protocol = (isset($_SERVER['HTTPS']) && (($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1'))) ? 'https://' : 'http://'; 
+	        $cdn_domain = $cdn_protocol . $this->config->get('cdn_domain'); 
+                            ?>
+                <script type="text/javascript" src="<?php echo  $cdn_domain;?>index.php?route=sofa/assets/js&amp;j2v=<?php echo JOURNAL_VERSION; ?>"></script>
+                          
+                            <?php
+              
+                }else{
+                            ?>
+             <script type="text/javascript" src="index.php?route=sofa/assets/js&amp;j2v=<?php echo JOURNAL_VERSION; ?>"></script>
+                            <?php
+       }      
+                          
+		
+	}else{
+                            ?>
+                           <script type="text/javascript" src="index.php?route=sofa/assets/js&amp;j2v=<?php echo JOURNAL_VERSION; ?>"></script>
+                            <?php
+      
+}
+                            ?>
+]]></add>
+		</operation>
+	</file-->
+        
+   
+  
+</modification>

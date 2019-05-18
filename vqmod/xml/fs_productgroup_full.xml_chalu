@@ -1,0 +1,666 @@
+<modification>
+	<id>Grouped Product</id>
+	<version>4.0</version>
+	<vqmver>2.3.0</vqmver>
+	<author>www.fabiom7.com - fabiome77@hotmail.it</author>
+	
+<!-- CONFIGURABLE Product -->
+<file name="system/library/cart.php">
+	<operation>
+		<search position="after"><![CDATA[
+			foreach ($options as $product_option_id => $option_value) {
+		]]></search>
+		<add><![CDATA[
+			$product_configurable_query = $this->db->query("SELECT product_type FROM " . DB_PREFIX . "product_grouped_type WHERE product_id = '" . (int)$product_id . "' AND product_type = 'config'");
+			
+			if ($product_configurable_query->num_rows) {
+				//catalog/model/catalog/product/product.php | public function getProduct($product_id)
+				if ($this->customer->isLogged()) {
+					$customer_group_id = $this->customer->getCustomerGroupId(); } else {
+					$customer_group_id = $this->config->get('config_customer_group_id');
+				}
+				
+				$getproductby_productoptionid_query = $this->db->query("SELECT DISTINCT p.model, p.price, p.points, p.tax_class_id, p.weight, pd.name AS name, (SELECT price FROM " . DB_PREFIX . "product_discount pd2 WHERE pd2.product_id = p.product_id AND pd2.customer_group_id = '" . (int)$customer_group_id . "' AND pd2.quantity = '1' AND ((pd2.date_start = '0000-00-00' OR pd2.date_start < NOW()) AND (pd2.date_end = '0000-00-00' OR pd2.date_end > NOW())) ORDER BY pd2.priority ASC, pd2.price ASC LIMIT 1) AS discount, (SELECT price FROM " . DB_PREFIX . "product_special ps WHERE ps.product_id = p.product_id AND ps.customer_group_id = '" . (int)$customer_group_id . "' AND ((ps.date_start = '0000-00-00' OR ps.date_start < NOW()) AND (ps.date_end = '0000-00-00' OR ps.date_end > NOW())) ORDER BY ps.priority ASC, ps.price ASC LIMIT 1) AS special, (SELECT points FROM " . DB_PREFIX . "product_reward pr WHERE pr.product_id = p.product_id AND customer_group_id = '" . (int)$customer_group_id . "') AS reward FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) WHERE p.product_id = '" . (int)$product_option_id . "' AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'");
+			   
+				if ((float)$getproductby_productoptionid_query->row['special']) {
+					$prezzo = $getproductby_productoptionid_query->row['special'];
+				} else {
+					$prezzo = $getproductby_productoptionid_query->row['price'];
+				}
+				
+				if (!(float)$product_query->row['price']) {
+					$option_price += $option_value * $prezzo;
+				}
+				
+				$option_points += $option_value * $getproductby_productoptionid_query->row['points'];
+				
+				if (!(float)$product_query->row['weight']) {
+					$option_weight += $option_value * $getproductby_productoptionid_query->row['weight'];
+				}
+				
+				$option_data[] = array(
+					'product_option_id'       => $product_option_id, //id prodotti acquistati
+					'product_option_value_id' => $option_value, //quantita acquistata dei prodotti
+					'option_id'               => '',
+					'option_value_id'         => '',
+					'name'                    => $option_value . 'x ' . $getproductby_productoptionid_query->row['name'],
+					'option_value'            => $getproductby_productoptionid_query->row['model'],
+					'type'                    => 'configurable',//oe
+					'quantity'                => '',
+					'subtract'                => '',
+					'price'                   => $prezzo, //'', utile per ciascuna tassa
+					'tax_class_id'            => $getproductby_productoptionid_query->row['tax_class_id'], //add row per ciascuna tassa
+					'price_prefix'            => '',
+					'points'                  => $option_value * $getproductby_productoptionid_query->row['points'],
+					'points_prefix'           => '+',									
+					'weight'                  => '',
+					'weight_prefix'           => ''
+				);	
+			}
+		]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[
+			public function remove($key) {
+		]]></search>
+		<add><![CDATA[
+			public function addConfig($product_id, $grp_product_id, $qty, $option = array()) {
+				if ($option) {
+					$key = (int)$product_id . ':' . (int)$grp_product_id . ':' . base64_encode(serialize($option));
+				} else {
+					$key = (int)$product_id . ':' . (int)$grp_product_id;
+				}
+				
+				if ((int)$qty && ((int)$qty > 0)) {
+					$this->session->data['cart'][$key] = (int)$qty;
+				} else {
+	  				$this->remove($key);
+				}
+		
+				$this->data = array();
+  			}
+		]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[
+			if ($product['tax_class_id']) {
+		]]></search>
+		<add><![CDATA[
+			$product_configurable_query = $this->db->query("SELECT product_type FROM " . DB_PREFIX . "product_grouped_type WHERE product_id = '" . $product['product_id'] . "' AND product_type = 'config'");
+			
+			if ($product_configurable_query->num_rows && !(float)$product['price']) {
+				foreach ($product['option'] as $gp_option) if($gp_option['tax_class_id']) {
+					$tax_rates = $this->tax->getRates($gp_option['price'], $gp_option['tax_class_id']);
+					
+					foreach ($tax_rates as $tax_rate) {
+						if (!isset($tax_data[$tax_rate['tax_rate_id']])) {
+							$tax_data[$tax_rate['tax_rate_id']] = ($tax_rate['amount'] * $gp_option['product_option_value_id'] * $product['quantity']);
+						} else {
+							$tax_data[$tax_rate['tax_rate_id']] += ($tax_rate['amount'] * $gp_option['product_option_value_id'] * $product['quantity']);
+						}
+					}
+				}
+			} else
+		]]></add>
+	</operation>
+</file>
+
+<file name="catalog/controller/checkout/cart.php">
+	<operation>
+		<search position="before"><![CDATA[public function add() {]]></search>
+		<add><![CDATA[
+		public function addConfig() {
+			if (isset($this->request->post['product_id'])) {
+				$product_id = $this->request->post['product_id'];
+			} else {
+				$product_id = 0;
+			}
+			
+			$this->load->model('catalog/product');
+			
+			$product_info = $this->model_catalog_product->getProduct($product_id);
+			
+			if ($product_info) {
+				if (isset($this->request->post['quantity'])) {
+					$quantity = $this->request->post['quantity'];
+				} else {
+					$quantity = 1;
+				}
+								
+				if (isset($this->request->post['option'])) {
+					$option = array_filter($this->request->post['option']);
+				} else {
+					$option = array();
+				}
+				
+				$error_cart = false;
+				
+				if (!$option) {
+					$error_cart = '1&cqty=' . $this->request->post['quantity'];
+					
+				} elseif ((float)$product_info['weight']) {
+					$peso_min = $product_info['weight'] - ($product_info['weight'] / 100 * $this->config->get('weight_allow_config_min'));
+					$peso_max = $product_info['weight'] + ($product_info['weight'] / 100 * $this->config->get('weight_allow_config_max'));
+					if ($this->request->post['weight_sum'] < $peso_min) {
+						$error_cart = '4&cqty=' . $this->request->post['quantity'] . '&cset=' . base64_encode(serialize($option));
+					} elseif ($this->request->post['weight_sum'] > $peso_max) {
+						$error_cart = '5&cqty=' . $this->request->post['quantity'] . '&cset=' . base64_encode(serialize($option));
+					}
+					
+				} elseif ($option) {					
+					foreach ($option as $grouped_id => $qty) {
+						$config_option_in_cart_q = $this->db->query("SELECT option_type FROM " . DB_PREFIX . "product_grouped WHERE product_id = '" . (int)$product_id . "' AND grouped_id = '" . (int)$grouped_id . "'");
+						
+						$config_option_qty_q = $this->db->query("SELECT option_min_qty FROM " . DB_PREFIX . "product_grouped_configurable WHERE product_id = '" . (int)$product_id . "' AND option_type = '" . $config_option_in_cart_q->row['option_type'] . "' AND language_id = '" . (int)$this->config->get('config_language_id') . "'");
+						
+						if (substr($config_option_qty_q->row['option_min_qty'],0,1) > $qty) {
+							$error_cart = '2&cqty=' . $this->request->post['quantity'] . '&cset=' . base64_encode(serialize($option));
+						}
+						
+						$grouped_option[] = $config_option_in_cart_q->row['option_type'];
+					}
+					
+					$config_option_all_q = $this->db->query("SELECT option_required, option_type FROM " . DB_PREFIX . "product_grouped_configurable WHERE product_id = '" . (int)$product_id . "' AND language_id = '" . (int)$this->config->get('config_language_id') . "'");
+					
+					foreach ($config_option_all_q->rows as $key => $value) {
+						if ($value['option_required'] && !in_array($value['option_type'], $grouped_option)) {
+							$error_cart = '3&cqty=' . $this->request->post['quantity'] . '&cset=' . base64_encode(serialize($option));
+						}
+					}
+				}
+				
+				if (!$error_cart) {
+					if (isset($this->session->data['cart']) && $this->request->post['current_set']) {
+						unset($this->session->data['cart'][$product_id . ':' . $this->request->post['current_set']]);
+					}
+					
+					$this->cart->addConfig($product_id, $quantity, $option); //go to library
+					unset($this->session->data['shipping_method']);
+					unset($this->session->data['shipping_methods']);
+					unset($this->session->data['payment_method']);
+					unset($this->session->data['payment_methods']);
+					//unset($this->session->data['reward']);
+				}
+			}
+			
+			if (!$error_cart) {
+				$this->redirect($this->url->link('checkout/cart'));
+			} else {
+				$this->redirect($this->url->link('product/product_grouped', 'product_id=' . $product_id . '&error=' . $error_cart));
+			}
+		}
+		]]></add>
+	</operation>
+</file>
+
+<!-- S Link nel carrello x modifica configurazione prodotto e visualizzazione prezzo corretto -->
+<file name="catalog/controller/checkout/cart.php">
+	<operation>
+		<search position="before"><![CDATA[
+			$this->data['products'][] = array(
+		]]></search>
+		<add><![CDATA[
+			$product_configurable_query = $this->db->query("SELECT product_type FROM " . DB_PREFIX . "product_grouped_type WHERE product_id = '" . (int)$product['product_id'] . "' AND product_type = 'config'");
+			
+			if ($product_configurable_query->num_rows) {	
+				if((!(float)$product['price'] && $this->config->get('config_customer_price') && $this->customer->isLogged())
+				|| (!(float)$product['price'] && !$this->config->get('config_customer_price'))) {
+					$config_price = 0;
+					$config_total = 0;
+					
+					foreach ($product['option'] as $gp_option) {
+						$config_price += $this->tax->calculate($gp_option['price'], $gp_option['tax_class_id'], $this->config->get('config_tax')) * $gp_option['product_option_value_id'];
+						$config_total += $this->tax->calculate($gp_option['price'], $gp_option['tax_class_id'], $this->config->get('config_tax')) * $gp_option['product_option_value_id'] * $product['quantity'];
+					}
+					
+					$price = $this->currency->format($config_price);
+					$total = $this->currency->format($config_total);
+				}
+				
+				$cset = $this->url->link('product/product_grouped', '&product_id=' . $product['product_id'] . '&cset=' . str_replace($product['product_id'] . ':', '', $product['key']));
+			} else {
+				$cset = false;
+			}
+		]]></add>
+	</operation>
+	<operation>
+		<search position="after"><![CDATA[$this->data['products'][] = array(]]></search>
+		<add><![CDATA['cset' => $cset,]]></add>
+	</operation>
+</file>
+<!-- Button edit is defined in: catalog/language/english.php -->
+<file name="catalog/view/theme/*/template/checkout/cart.tpl">
+	<operation>
+		<search position="before"><![CDATA[
+			<?php if (!$product['stock'])
+		]]></search>
+		<add><![CDATA[
+			<?php if ($product['cset']) { ?>
+			<span style="margin-left:25px;">[ <a href="<?php echo $product['cset']; ?>"><?php echo $this->language->get('button_edit'); ?></a> ]</span>
+			<?php } ?>
+		]]></add>
+	</operation>
+</file>
+
+<file name="catalog/controller/module/cart.php">
+	<operation>
+		<search position="before"><![CDATA[
+			$this->data['products'][] = array(
+		]]></search>
+		<add><![CDATA[
+			$product_configurable_query = $this->db->query("SELECT product_type FROM " . DB_PREFIX . "product_grouped_type WHERE product_id = '" . (int)$product['product_id'] . "' AND product_type = 'config'");
+			
+			if ($product_configurable_query->num_rows) {	
+				if((!(float)$product['price'] && $this->config->get('config_customer_price') && $this->customer->isLogged())
+				|| (!(float)$product['price'] && !$this->config->get('config_customer_price'))) {
+					$config_price = 0;
+					$config_total = 0;
+					
+					foreach ($product['option'] as $gp_option) {
+						$config_price += $this->tax->calculate($gp_option['price'], $gp_option['tax_class_id'], $this->config->get('config_tax')) * $gp_option['product_option_value_id'];
+						$config_total += $this->tax->calculate($gp_option['price'], $gp_option['tax_class_id'], $this->config->get('config_tax')) * $gp_option['product_option_value_id'] * $product['quantity'];
+					}
+					
+					$price = $this->currency->format($config_price);
+					$total = $this->currency->format($config_total);
+				}
+				
+				$cset = $this->url->link('product/product_grouped', '&product_id=' . $product['product_id'] . '&cset=' . str_replace($product['product_id'] . ':', '', $product['key']));
+			} else {
+				$cset = false;
+			}
+		]]></add>
+	</operation>
+	<operation>
+		<search position="after"><![CDATA[$this->data['products'][] = array(]]></search>
+		<add><![CDATA['cset' => $cset,]]></add>
+	</operation>
+</file>
+<!-- Button edit is defined in: catalog/language/english.php -->
+<file name="catalog/view/theme/*/template/module/cart.tpl">
+	<operation>
+		<search position="after"><![CDATA[
+			$product['name']; ?></a>
+		]]></search>
+		<add><![CDATA[
+			<?php if ($product['cset']) { ?>
+			<span style="margin-left:15px;">[ <a href="<?php echo $product['cset']; ?>"><?php echo $this->language->get('button_edit'); ?></a> ]</span>
+			<?php } ?>
+		]]></add>
+	</operation>
+</file>
+<!-- E Link nel carrello x modifica configurazione prodotto -->
+
+<!-- START - Subtract products stock by customer order -->
+<file name="catalog/model/checkout/order.php">
+	<operation>
+		<search position="after"><![CDATA[
+			$order_option_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_option WHERE order_id = '" . (int)$order_id . "' AND order_product_id = '" . (int)$order_product['order_product_id'] . "'");
+		]]></search>
+		<add><![CDATA[
+			$product_configurable_query = $this->db->query("SELECT product_type FROM " . DB_PREFIX . "product_grouped_type WHERE product_id = '" . (int)$order_product['product_id'] . "' AND product_type = 'config'");
+			
+			if ($product_configurable_query->num_rows) {
+				foreach ($order_option_query->rows as $configurable_option) {
+					$configurable_qty = ($order_product['quantity'] * $configurable_option['product_option_value_id']);
+					$this->db->query("UPDATE " . DB_PREFIX . "product SET quantity = (quantity - " . (int)$configurable_qty . ") WHERE product_id = '" . (int)$configurable_option['product_option_id'] . "' AND subtract = '1'");
+				}
+			}
+		]]></add>
+	</operation>
+</file>
+<!-- END - Subtract products stock by customer order -->
+
+<!-- START Order Edit by admin -->
+<file name="admin/view/template/sale/order_form.tpl">
+	<operation>
+		<search position="before"><![CDATA[
+			if (option['type'] == 'text') {
+		]]></search>
+		<add><![CDATA[
+			if (option['type'] == 'configurable') {
+				html += '<div id="option-' + option['product_option_id'] + '">';
+				
+				if (option['required'] == '1') {
+					html += '<span class="required">*</span> ';
+				}
+				
+				html += '<strong>' + option['option_type_name'] + '</strong> ';
+				html += '<input type="text" size="1" name="option[' + option['product_option_id'] + ']" value="' + option['option_value'] + '" />';
+				html += ' x ' + option['name'];
+				html += '</div>';
+				html += '<br />';
+			}
+		]]></add>
+	</operation>
+</file>
+<file name="admin/controller/catalog/product.php">
+	<operation>
+		<search position="before"><![CDATA[
+			$product_options = $this->model_catalog_product->getProductOptions($result['product_id']);
+		]]></search>
+		<add><![CDATA[
+			$qa = $this->db->query("SELECT pg.grouped_id, pgc.option_name, pgc.option_required, p.model, p.price, pd.name FROM " . DB_PREFIX . "product_grouped pg LEFT JOIN " . DB_PREFIX . "product_grouped_configurable pgc ON (pg.option_type = pgc.option_type) LEFT JOIN " . DB_PREFIX . "product p ON (pg.grouped_id = p.product_id) LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) WHERE pg.product_id = '" . (int)$result['product_id'] . "' AND pgc.language_id = '" . (int)$this->config->get('config_language_id') . "' AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY pg.option_type, pg.grouped_sort_order");
+			
+			if ($qa->num_rows) {
+				foreach ($qa->rows as $grouped) {
+					$option_data[] = array(
+						'product_option_id' => $grouped['grouped_id'],
+						'option_id'         => '',
+						'name'              => $grouped['name'] . ': ' . $grouped['model'] . ' (' . $this->currency->format($grouped['price'], $this->config->get('config_currency')) . ')',
+						'option_type_name'  => $grouped['option_name'],
+						'type'              => 'configurable',
+						'option_value'      => '',
+						'required'          => $grouped['option_required']
+					);
+				}
+			}
+		]]></add>
+	</operation>
+</file>
+<file name="catalog/controller/checkout/manual.php">
+	<operation>
+		<search position="before"><![CDATA[
+			} elseif ($option['type'] == 'checkbox') {
+		]]></search>
+		<add><![CDATA[
+			} elseif ($option['type'] == 'configurable') {
+				$option_data[$option['product_option_id']] = $option['product_option_value_id'];
+		]]></add>
+	</operation>
+</file>
+<!-- END Order Edit by admin -->
+
+<!-- START - Subtract products stock by admin order. add | edit | delete -->
+<file name="admin/model/sale/order.php">
+	<!-- editOrder($order_id, $data) function and deleteOrder($order_id) for restock -->
+	<operation>
+		<search position="after"><![CDATA[
+			$option_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_option WHERE order_id = '" . (int)$order_id . "' AND order_product_id = '" . (int)$product['order_product_id'] . "'");
+		]]></search>
+		<add><![CDATA[
+			// Restock products before subtracting the stock later on
+			$product_configurable_query = $this->db->query("SELECT product_type FROM " . DB_PREFIX . "product_grouped_type WHERE product_id = '" . (int)$product['product_id'] . "' AND product_type = 'config'");
+			
+			if ($product_configurable_query->num_rows) {
+				foreach ($option_query->rows as $configurable_option) {
+					$configurable_qty = ($product['quantity'] * $configurable_option['product_option_value_id']);
+					
+					$this->db->query("UPDATE " . DB_PREFIX . "product SET quantity = (quantity + " . (int)$configurable_qty . ") WHERE product_id = '" . (int)$configurable_option['product_option_id'] . "' AND subtract = '1'");
+				}
+			}
+		]]></add>
+	</operation>
+	<!-- addOrder($data) function, and editOrder($order_id, $data) function, for subtract stock -->
+	<operation>
+		<search position="before"><![CDATA[
+			$this->db->query("UPDATE " . DB_PREFIX . "product_option_value SET quantity = (quantity - " . (int)$order_product['quantity'] . ") WHERE product_option_value_id = '" . (int)$order_option['product_option_value_id'] . "' AND subtract = '1'");
+		]]></search>
+		<add><![CDATA[
+			$product_configurable_query = $this->db->query("SELECT product_type FROM " . DB_PREFIX . "product_grouped_type WHERE product_id = '" . (int)$order_product['product_id'] . "' AND product_type = 'config'");
+			
+			if ($product_configurable_query->num_rows) {
+				$configurable_qty = ($order_product['quantity'] * $order_option['product_option_value_id']);
+					
+				$this->db->query("UPDATE " . DB_PREFIX . "product SET quantity = (quantity - " . (int)$configurable_qty . ") WHERE product_id = '" . (int)$order_option['product_option_id'] . "' AND subtract = '1'");
+			} else {
+		]]></add>
+	</operation>
+	<operation>
+		<search position="after"><![CDATA[
+			$this->db->query("UPDATE " . DB_PREFIX . "product_option_value SET quantity = (quantity - " . (int)$order_product['quantity'] . ") WHERE product_option_value_id = '" . (int)$order_option['product_option_value_id'] . "' AND subtract = '1'");
+		]]></search>
+		<add><![CDATA[
+			}
+		]]></add>
+	</operation>
+</file>
+<!-- END - Subtract products stock by admin order. add | edit | delete -->
+
+
+<!-- START Reward points for configurable product -->
+<file name="catalog/controller/checkout/cart.php">
+	<operation><!-- public function index() { - protected function validateReward() { -->
+		<search position="before"><![CDATA[
+			if ($product['points']) {
+		]]></search>
+		<add><![CDATA[
+			$product_configurable_query = $this->db->query("SELECT product_type FROM " . DB_PREFIX . "product_grouped_type WHERE product_id = '" . (int)$product['product_id'] . "' AND product_type = 'config'");
+				
+				if ($product_configurable_query->num_rows && $product['reward'] == 1) {
+					$product_points_sum = 0;
+					$product_points_apply = true;
+					
+					foreach ($product['option'] as $configurable_option) {
+						if ($configurable_option['points']) {
+							$product_points_sum += $configurable_option['points'];
+						} else {
+							$product_points_apply = false;
+						}
+					}
+					
+					$points_total = $product_points_apply ? $product_points_sum : 0;
+				} else
+		]]></add>
+	</operation>
+	<operation>
+		<search position="before"><![CDATA[
+			$this->data['products'][] = array(
+		]]></search>
+		<add><![CDATA[
+			$product_configurable_query = $this->db->query("SELECT product_type FROM " . DB_PREFIX . "product_grouped_type WHERE product_id = '" . (int)$product['product_id'] . "' AND product_type = 'config'");
+				
+			if ($product_configurable_query->num_rows && $product['reward'] == 1) {
+				$product_reward_sum = 0;
+				$product_reward_apply = true;
+				
+				foreach ($product['option'] as $configurable_option) {
+					if ($configurable_option['points']) {
+						$product_reward_sum += $configurable_option['points'];
+					} else {
+						$product_reward_apply = false;
+					}
+				}
+				
+				$product['reward'] = $product_reward_apply ? $product_reward_sum : 0;
+			}
+		]]></add>
+	</operation>
+</file>
+<file name="catalog/model/total/reward.php">
+	<operation>
+		<search position="before" index="1"><![CDATA[
+			if ($product['points']) {
+		]]></search>
+		<add><![CDATA[
+			$product_configurable_query = $this->db->query("SELECT product_type FROM " . DB_PREFIX . "product_grouped_type WHERE product_id = '" . (int)$product['product_id'] . "' AND product_type = 'config'");
+				
+			if ($product_configurable_query->num_rows && $product['reward'] == 1) {
+				$product_points_sum = 0;
+				$product_points_apply = true;
+				
+				foreach ($product['option'] as $configurable_option) {
+					if ($configurable_option['points']) {
+						$product_points_sum += $configurable_option['points'];
+					} else {
+						$product_points_apply = false;
+					}
+				}
+				
+				$points_total = $product_points_apply ? $product_points_sum : 0;
+			} else
+		]]></add>
+	</operation>
+</file>
+<!-- END Reward points for configurable product -->
+
+<!-- BUNDLE Product -->
+<file name="system/library/cart.php">
+	<operation>
+		<search position="before"><![CDATA[
+			public function remove($key) {
+		]]></search>
+		<add><![CDATA[
+			public function addBundle($product_id, $qty, $option = array()) {
+				if (!$option) {
+      				$key = (int)$product_id;
+    			} else {
+      				$key = (int)$product_id . ':' . base64_encode(serialize($option));
+    			}
+    			
+				if ((int)$qty && ((int)$qty > 0)) {
+					$this->session->data['cart'][$key] = (int)$qty;
+				} else {
+	  				$this->remove($key);
+				}
+		
+				$this->data = array();
+  			}
+  			public function addGroupBundle($product_id , $qty, $option = array()) {
+  				if (!$option) {
+      				$key = (int)$product_id; 
+    			} else {
+      				$key = (int)$product_id . ':' . base64_encode(serialize($option)); 
+    			}
+    					
+				if ((int)$qty && ((int)$qty > 0)) {
+					$this->session->data['cart'][$key] = (int)$qty;
+				} else {
+	  				$this->remove($key);
+				}
+		
+				$this->data = array();
+  			}
+		]]></add>
+	</operation>
+	
+</file>
+<file name="catalog/controller/checkout/cart.php">
+	<operation>
+		<search position="before"><![CDATA[public function add() {]]></search>
+		<add><![CDATA[
+		public function addBundle() {
+			$this->load->model('catalog/product');
+			
+			if (!empty($this->request->post['quantity'])) {
+				$error_cart = false;
+				$quantity_check = 0;
+				
+				foreach ($this->request->post['quantity'] as $product_id => $quantity) {
+					$quantity_check += $quantity;
+					 
+					$product_info = $this->model_catalog_product->getProduct($product_id);
+					
+					if ($product_info && $quantity) {
+						if (isset($this->request->post['option'])) {
+							$option = array_filter($this->request->post['option']);
+						} else {
+							$option = array();
+						}
+						
+						$product_options = $this->model_catalog_product->getProductOptions($product_id);
+						
+						foreach ($product_options as $product_option) {
+							if ($product_option['required'] && empty($option[$product_option['product_option_id']])) {
+								$error_cart = true;
+							}
+						}
+					}
+				}
+				
+				if (!$error_cart) {
+					foreach ($this->request->post['quantity'] as $product_id => $quantity) {
+						$product_info = $this->model_catalog_product->getProduct($product_id);
+						
+						if ($product_info) {
+							if (isset($this->request->post['option'])) {
+								$option = array_filter($this->request->post['option']);
+							} else {
+								$option = array();
+							}
+							
+							$this->cart->addBundle($product_id, $quantity, $option); //go to library
+							unset($this->session->data['shipping_method']);
+							unset($this->session->data['shipping_methods']);
+							unset($this->session->data['payment_method']);
+							unset($this->session->data['payment_methods']);
+							//unset($this->session->data['reward']);
+						}
+					}
+				}
+			}
+			
+			if (!$error_cart && $quantity_check) {
+				$this->redirect($this->url->link('checkout/cart'));	
+			} else {
+				$this->redirect($this->url->link('product/product_grouped', 'product_id=' . $this->request->post['product_id'] . '&error=1'));
+			}
+		}
+
+		public function addGroupBundle() {
+			$this->load->model('catalog/product');
+			if (!empty($this->request->post['quantity'])) {
+				$error_cart = false;
+				$quantity_check = 0;
+				
+				$group_product_info = $this->model_catalog_product->getProduct($this->request->post['product_id']);
+
+				foreach ($this->request->post['quantity'] as $product_id => $quantity) {
+					$quantity_check += $quantity;
+					 
+					$product_info = $this->model_catalog_product->getProduct($product_id);
+					
+					if ($product_info && $quantity) {
+						if (isset($this->request->post['option'])) {
+							$option = array_filter($this->request->post['option']);
+						} else {
+							$option = array();
+						}
+						
+						$product_options = $this->model_catalog_product->getProductOptions($this->request->post['product_id']);
+						
+						foreach ($product_options as $product_option) {
+							if ($product_option['required'] && empty($option[$product_option['product_option_id']])) {
+								$error_cart = true;
+							}
+						}
+					}
+				}
+				
+				if (!$error_cart) {
+					
+					$group_product_info = $this->model_catalog_product->getProduct($this->request->post['product_id']);
+
+					foreach ($this->request->post['quantity'] as $product_id => $quantity) {
+						$product_info = $this->model_catalog_product->getProduct($product_id);
+						
+						if ($product_info) {
+							if (isset($this->request->post['option'])) {
+								$option = array_filter($this->request->post['option']);
+							} else {
+								$option = array();
+							}
+							
+							$this->cart->addGroupBundle($product_id, $quantity, $option); //go to library
+							$this->session->data['groupd_id'] = $this->request->post['product_id'];
+							unset($this->session->data['shipping_method']);
+							unset($this->session->data['shipping_methods']);
+							unset($this->session->data['payment_method']);
+							unset($this->session->data['payment_methods']);
+							//unset($this->session->data['reward']);
+						}
+					}
+				}
+			}
+			
+			if (!$error_cart && $quantity_check) {
+				$this->redirect($this->url->link('checkout/cart'));	
+			} else {
+				$this->redirect($this->url->link('product/product_grouped', 'product_id=' . $this->request->post['product_id'] . '&error=1'));
+			}
+		}
+
+		]]></add>
+	</operation>
+</file>
+</modification>

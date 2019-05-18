@@ -1,0 +1,113 @@
+<modification>
+	<id>Allow User to Add Custom Price for Product on Edit Order</id>
+	<version>1.0</version>
+	<vqmver>2.3.0</vqmver>
+	<author>Intersoft Professional</author>
+        
+        
+<file name="system/library/cart.php" error="log">
+                 
+        <operation error="log">
+		<search position="replace" error="log"><![CDATA[public function addGroupBundle($product_id , $qty, $option = array(), $grpid,$main_product_id='') {]]></search>
+		<add><![CDATA[     
+                     public function addGroupBundle($product_id , $qty, $option = array(), $grpid,$main_product_id='', $custom_price=-1) {         
+                    ]]>
+                </add>
+	</operation>
+        <operation error="log">
+            <search position="after" index="3" error="log"><![CDATA[
+                             $this->session->data['cart'][$key] = (int)$qty;
+                          ]]></search>
+            <add><![CDATA[     
+                                  if(isset($custom_price) && ($custom_price>=0)) {
+                                     $this->session->data['custom_price'][$key]          = floatval($custom_price);
+                                  }
+                              ]]>
+            </add>
+       </operation>
+        
+        <operation error="log">
+            <search position="before" error="log"><![CDATA[
+                            $product_reward_query = $this->db->query("SELECT points FROM " . DB_PREFIX . "product_reward WHERE product_id = '" . (int) $product_id . "' AND customer_group_id = '" . (int) $customer_group_id . "'");
+                          ]]></search>
+            <add><![CDATA[  if((isset($this->session->data['custom_price'])) && $this->session->data['custom_price']) {
+                                  if(isset($this->session->data['custom_price'][$key])) {
+                                     $price = $this->session->data['custom_price'][$key];
+                                  }
+                              }]]>
+            </add>
+        </operation>
+      
+        
+</file>        
+
+<file name="admin/controller/catalog/product_grouped.php">
+    <operation>
+		<search position="after"><![CDATA[$product_price = $this->currency->format($gruppo['product_price']);]]></search>		
+		<add><![CDATA[ $product_price_without_currency = $this->currency->format($gruppo['product_price'],'', '', false) ;        ]]></add>
+    </operation>  
+    <operation>
+		<search position="after"><![CDATA['product_price' => $product_price,]]></search>		
+		<add><![CDATA[ 'product_price_without_currency' => $product_price_without_currency,]]></add>
+    </operation>
+    <operation>
+		<search position="after"><![CDATA[$str1= $this->currency->format($gradepricevalue['grade_price']);    ]]></search>		
+		<add><![CDATA[ $str3= $this->currency->format($gradepricevalue['grade_price'],'', '', false);]]></add>
+    </operation>
+    <operation>
+		<search position="replace"><![CDATA[$str[]=json_encode(array("gp_id" => $str2,"gradeprice" => $str1));]]></search>		
+		<add><![CDATA[ $str[]=json_encode(array("gp_id" => $str2,"gradeprice" => $str1,"price_without_currency" => $str3));]]></add>
+    </operation>
+</file>
+
+<file name="admin/view/template/sale/customorder_form.tpl">
+    <operation>
+		<search position="replace"><![CDATA[html += '<td id="td_price_' + product_grouped['product_id'] + '">' + product_grouped['product_price'] + ' </td>';]]></search>		
+		<add><![CDATA[ html += '<td id="td_price_' + product_grouped['product_id'] + '">' + product_grouped['product_price'] + ' Or <?php echo $this->currency->getSymbolLeft($currency_code); ?><input type="text" name="custom_price['+ product_grouped['product_id']  +']" value = "" placeholder="Custom Price"/> <?php echo $this->currency->getSymbolRight($currency_code); ?> </td>'; ]]></add>
+    </operation>
+    <operation>
+		<search position="replace"><![CDATA[$('#td_price_'+gradeprice['gp_id']).text(gradeprice['gradeprice']);]]></search>		
+		<add><![CDATA[$('#td_price_'+gradeprice['gp_id']).html(gradeprice['gradeprice'] + ' Or <?php echo $this->currency->getSymbolLeft($currency_code); ?><input type="text" name="custom_price['+ gradeprice['gp_id']  +']" value = "" placeholder="Custom Price"/><?php echo $this->currency->getSymbolRight($currency_code); ?>')]]></add>
+    </operation>
+    <operation>
+		<search position="after"><![CDATA[html += '<input type="number" name="order_custom_product[new_products][key][' + json['custom_order_product'][main_product_key][i]['subproducts'][j]['key'] +']" value="'+json['custom_order_product'][main_product_key][i]['subproducts'][j]['quantity'] +'" min="1">';]]></search>		
+		<add><![CDATA[
+                        if(json['custom_order_product'][main_product_key][i]['subproducts'][j]['custom_price'] != '') { 
+                                                                            html += '<input type="hidden" name="order_custom_product[new_products][custom_price][' + json['custom_order_product'][main_product_key][i]['subproducts'][j]['key'] +']" value="'+json['custom_order_product'][main_product_key][i]['subproducts'][j]['custom_price'] +'" min="1">';
+                                                                    }
+                    ]]></add>
+    </operation>
+</file>
+
+<file name="catalog/controller/checkout/manual.php">
+    <operation>
+		<search position="replace"><![CDATA[$this->cart->addGroupBundle($product_id, $quantity, $option,'87',$this->request->post['product_id']);]]></search>		
+		<add><![CDATA[  // Set variable for Custom price of Admin Order
+                            if(isset($this->request->post['custom_price'][$product_id]) && (is_numeric($this->request->post['custom_price'][$product_id]))) {
+                                $custom_price =  $this->request->post['custom_price'][$product_id];
+                                    $this->cart->addGroupBundle($product_id, $quantity, $option,'87',$this->request->post['product_id'],$custom_price);
+                            }
+                            else {
+                                $this->cart->addGroupBundle($product_id, $quantity, $option,'87',$this->request->post['product_id']);
+                            }]]></add>
+    </operation>
+    <operation>
+		<search position="before"><![CDATA[if(isset($this->request->post['order_custom_product']['new_products']['key'])) {]]></search>		
+		<add><![CDATA[  // Set Custom Price seesion for product custom price
+                            if(isset($this->request->post['order_custom_product']['new_products']['custom_price'])) {
+                                    $this->session->data['custom_price'] = $this->request->post['order_custom_product']['new_products']['custom_price'];
+                                }
+                ]]></add>
+    </operation>
+    <operation>
+		<search position="before"><![CDATA[unset($this->session->data['order_custom_product']);]]></search>		
+		<add><![CDATA[ unset($this->session->data['custom_price']);  ]]></add>
+    </operation>
+    <operation>
+		<search position="before"><![CDATA['sub_product_row_id'  => (isset($product['sub_product_row_id']) ? $product['sub_product_row_id'] : 0),]]></search>		
+		<add><![CDATA['custom_price'        => (isset($this->session->data['custom_price'][$product['key']]) ? $this->session->data['custom_price'][$product['key']] : ''),]]></add>
+    </operation>
+    
+</file>
+
+</modification>

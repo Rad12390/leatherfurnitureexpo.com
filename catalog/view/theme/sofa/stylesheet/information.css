@@ -1,0 +1,290 @@
+/*==============BREAD FINANCING ==================*/
+
+ #content .financing{
+	width:1030px;
+	margin:0 auto;
+    padding-top:0;
+    border:1px solid #ccc;
+}
+
+.financing .how-it-wrks {
+  text-align: center;
+  padding: 15px;
+  background: #828282;
+}
+  .how-it-wrks h2, .how-it-wrks p{ color: #fff;}
+.how-it-wrks p{
+    font-size:14px;
+}
+.financing .methods{
+      padding:10px 0;
+}
+  
+.methods .img {
+  float: left;
+  width: 10%;
+  margin-right: 20px;
+}
+.methods .right-txt{ width:86%; float:right; padding:10px;}
+.chk-rate {
+    width: 150px;
+  margin: 20px auto 15px;
+  text-align: center;
+}
+.chk-rate span {
+  border: 1px solid #acacac;
+  font-size: 18px;
+  padding: 10px;
+  cursor:pointer;
+    background-color:#5185b7;
+}
+  
+ .methods.clearfix:nth-child(2n+1) {
+  background: #f0f0f0 none repeat scroll 0 0;
+}
+
+.clearfix:after {
+  visibility: hidden;
+  display: block;
+  font-size: 0;
+  content: " ";
+  clear: both;
+  height: 0;
+}
+.clearfix { display: inline-block; }
+/* start commented backslash hack \*/
+* html .clearfix { height: 1%; }
+.clearfix { display: block; }
+/* close commented backslash hack */
+  
+  /*RESPONSIVE CODE*/  
+  
+  
+  @media(max-width:768px){
+
+    .methods .right-txt{ padding:0 !important;}
+
+}
+    @media(min-width:767px){
+    .methods .img{ margin-top:-5px;}
+ }
+
+  @media(max-width:1024px){
+  
+  .financing{ width:100%;}
+    
+}
+  @media(max-width:580px){
+  .methods .img {
+	  float: none;
+	  margin-right: 0;
+	  text-align: center;
+	  width: 100%;
+}
+
+  .methods .right-txt {
+	  float: none;
+	  padding: 10px;
+	  width: 100%;
+}
+   .methods .right-txt h2{ font-size:14px;}
+   .methods .right-txt p{ font-size:12px;}
+}
+/*==============BREAD FINANCING ==================*/
+
+
+
+/*===== FINANCING STYLE STARTS =====*/
+
+.financing{ padding:20px 0; }
+.financing .afirm-logo, .afirm-image{ margin:10px 0; text-align:center; }
+.financing .afirm-image img{
+	padding:3px;
+}
+.financing ul li{ margin:8px 0; }
+
+/*===== FINANCING STYLE ENDS =====*/
+
+/*===== EKORNES STARTS =====*/
+
+.ekornes{
+	border-top:1px solid #585858;
+	border-bottom:1px solid #585858;
+	margin:20px 0;	
+}
+.ekornes h2{
+	line-height:80px;
+	font-family:FuturaBT-Medium;
+	font-weight:normal;
+	font-size:21px;
+	color:#616161;
+}
+.ekornes-block { padding: 25px 0 65px; text-align:center; }
+.ekornes h2 img{ float:left; margin:0 20px 0 0; }
+.ekornes .ekorn-bot img{ float:right; }
+.ekornes-block > a { display:inline-block; text-decoration:none; width:49%; }
+.ekornes-block > a span{ display:block; color:#616161; font-size:25px; font-family:MyriadProRegular; }
+
+
+/*===== EKORNES ENDS =====*/
+
+/*===== SEDONA PAGE STARTS =====*/
+
+.sedona-lanster{
+	padding:30px 0 0;
+}
+.sedona-lanster p{
+	font-size:30px;
+	font-family:FelixTitlingMT;
+	background-color:#acacac;
+	text-align:center;
+	padding:30px 0;
+	margin:0 0 2px;
+	color:#fff;
+}
+.sedona-lanster .center-image{
+	width:155px;
+	
+}
+.sedona-lanster tr td{ 
+	padding:30px 0;
+	color:#6e6e6e;
+	font-family:FuturaBT-Medium;
+	text-align:center;
+	vertical-align:middle;
+	text-transform:none;
+	font-size:16px;
+}
+.sedona-lanster tr:first-child td{
+	padding:0;
+}
+.sedona-lanster .odd-color{
+	background-color:#ebebeb;
+}
+.sedona-lanster .center-image-bg{ background-color:#f9f9f9;}
+.sedona-lanster span{
+	font-size:78px;
+	position:relative;
+	margin:0 0 15px;
+	display:inline-block;
+	font-family:latobold;
+}
+.sedona-lanster span sup {
+	font-size: 37px;
+	left: -23px;
+	position: absolute;
+	top: 4px;
+}
+.sedona-lanster span em{
+	bottom: -12px;
+	font-size: 19px;
+	left:27%;
+	position: absolute;
+	text-align: center;
+	font-family:MyriadPro;
+	font-size:14px;
+	letter-spacing:1px;
+}
+.sedona-btn {
+	border: 1px solid;
+	border-radius:4px;
+	color: #6693bd;
+	display: block;
+	font-family:FuturaBT-Medium;
+	font-size: 31px;
+	padding:15px 0;
+	text-decoration: none;
+	text-transform: uppercase;
+}
+
+/*===== SEDONA PAGE ENDS =====*/
+
+/*===== HERO SPECIAL STARTS =====*/
+
+.hero-top{ position:relative; margin-top:40px;  }
+	.hero-top img{ width:100%; }
+	.hero-top-content{
+		position:absolute;
+		right:0;
+		top:0;
+		background:rgba(62,121,177,.8);
+		width:505px;
+		height:99.4%;
+		padding:50px 35px;
+		box-sizing:border-box;
+	}
+	.hero-top-content h1{
+		color:#fff;
+		font-size:40px;
+		font-family:LatoBlack;
+	}
+	.hero-top-content p{
+		color:#fff;
+		font-size:20px;
+		font-family:LatoRegular;
+		margin-top: 0px;
+		line-height:26px;
+		text-transform:none;
+	}
+	.hero-top-content p strong{
+		font-size:30px;
+		display:block;
+		text-transform:uppercase;
+		padding-bottom:5px;
+	}
+	.hero-top-content p span{
+		font-size:15px;
+		display:block;
+		padding:20px 0 0;
+	}
+	.hero-top-content p small{ font-family:latobold; }
+	.hero-bottom{
+		background-color:#eef0f2;
+		margin-top:20px;
+		padding-left:30px;
+	}
+	.hero-bottom .militry{
+		float:right;
+	}
+	.hero-bottom h2{
+		color:#5387b9;
+		font-size:34px;
+		font-family:LatoBlack;
+		padding-top:30px;
+	}
+	.hero-bottom p{
+		color:#6e6e6e;
+		font-size:18px;
+		font-family:latobold;
+		text-transform:none;
+	}
+
+/*===== HERO SPECIAL STARTS =====*/
+
+/*===== RESPONSIVE STYLE =====*/
+
+@media (min-width:768px) and (max-width:1023px) {
+
+.hero-top-content{ padding:50px 35px; }
+	.hero-bottom .militry {
+		margin-top: 30px;
+		width: 50%;
+	}
+	
+}
+
+@media( max-width:767px ){
+	
+	/*===== HERO PAGE =====*/
+	
+	.hero-top-content{ 
+		width:100%; 
+		height:100%;
+		position:static;
+		padding:10px 15px;
+	}
+	.hero-bottom{ padding-left:0; }
+	.hero-bottom br{ display:none; }
+	.hero-bottom .militry{ width:100%; text-align:center; display:block; float:none; }
+	.hero-bottom h2, .hero-bottom p{ padding-left:10px; }
+}
